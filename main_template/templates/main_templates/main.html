@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Based Phishing Detection & Prevention LMS</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; line-height: 1.6;">
+
+    <!-- Top Security Status Bar -->
+    <div style="background-color: #1e293b; border-bottom: 1px solid #334155; padding: 8px 20px; font-size: 13px; color: #94a3b8; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <span style="display: inline-block; width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; margin-right: 6px;"></span>
+            <strong>AI Detection Engine v2.4:</strong> Active & Monitoring Real-Time Threats
+        </div>
+        <div style="display: flex; gap: 15px;">
+            <span>🛡️ Models: Scikit-learn / TensorFlow</span>
+            <span>⚡ DB Status: MySQL Online</span>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header style="background-color: rgba(15, 23, 42, 0.95); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #1e293b; backdrop-filter: blur(8px);">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <a href="#" style="font-size: 22px; font-weight: 700; color: #38bdf8; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                <span style="background-color: #0284c7; color: #ffffff; padding: 6px 10px; border-radius: 6px; font-size: 16px;">AI</span>
+                PhishShield LMS
+            </a>
+            
+            <nav style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+                <a href="#detector" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">AI Scanner</a>
+                <a href="#courses" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">LMS Modules</a>
+                <a href="#analytics" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">Threat Stats</a>
+                <a href="#analyst" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">Analyst Hub</a>
+                <a href="#" style="text-decoration: none; color: #38bdf8; font-weight: 600; padding: 8px 16px; border: 1px solid #0284c7; border-radius: 6px; font-size: 14px;">Sign In</a>
+                <a href="#" style="text-decoration: none; color: #ffffff; background-color: #0284c7; font-weight: 600; padding: 8px 18px; border-radius: 6px; font-size: 14px; box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);">Register</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section style="background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%); padding: 80px 20px 60px 20px; text-align: center; border-bottom: 1px solid #1e293b;">
+        <div style="max-width: 900px; margin: 0 auto;">
+            <span style="background-color: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-size: 13px; padding: 6px 16px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Unified Security & Training Platform</span>
+            <h1 style="font-size: 46px; margin: 20px 0 15px 0; font-weight: 800; line-height: 1.2; color: #ffffff;">AI-Powered Phishing Detection & Prevention System</h1>
+            <p style="font-size: 18px; color: #94a3b8; max-width: 750px; margin: 0 auto 35px auto;">
+                Detect suspicious websites, phishing emails, malicious mobile apps, and scam phone numbers using advanced Machine Learning and Natural Language Processing.
+            </p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="#detector" style="background-color: #0284c7; color: #ffffff; padding: 14px 28px; text-decoration: none; font-weight: 600; border-radius: 6px; font-size: 15px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);">Analyze Suspicious Threat</a>
+                <a href="#courses" style="background-color: #1e293b; color: #f8fafc; border: 1px solid #334155; padding: 14px 28px; text-decoration: none; font-weight: 600; border-radius: 6px; font-size: 15px;">Explore LMS Awareness Tips</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Multi-Channel Threat Scanner Module -->
+    <section id="detector" style="max-width: 1000px; margin: -40px auto 60px auto; padding: 0 20px; position: relative; z-index: 10;">
+        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 30px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h2 style="font-size: 22px; margin: 0 0 8px 0; color: #ffffff;">Multi-Channel AI Risk Scanner</h2>
+                <p style="font-size: 14px; color: #94a3b8; margin: 0;">Select a vector below to test URL features, NLP email patterns, APK risk, or phone caller data.</p>
+            </div>
+
+            <!-- Vector Selector Tabs -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap;">
+                <button type="button" style="background-color: #0284c7; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">🌐 Check Website / URL</button>
+                <button type="button" style="background-color: #334155; color: #cbd5e1; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">✉️ Check Email Content</button>
+                <button type="button" style="background-color: #334155; color: #cbd5e1; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">📱 Mobile Application</button>
+                <button type="button" style="background-color: #334155; color: #cbd5e1; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">📞 Phone Number</button>
+            </div>
+
+            <!-- Input & Action -->
+            <form onsubmit="event.preventDefault();" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" placeholder="Enter URL (e.g., http://login-verify-account-security.com)..." required style="flex: 1; min-width: 280px; padding: 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                <button type="submit" style="background-color: #10b981; color: #ffffff; border: none; padding: 14px 28px; border-radius: 6px; font-weight: 700; font-size: 14px; cursor: pointer;">Run AI Analysis</button>
+            </form>
+
+            <!-- Risk Score Indicator Preview -->
+            <div style="margin-top: 25px; padding: 15px; background-color: #0f172a; border-radius: 8px; border-left: 4px solid #ef4444; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <span style="font-size: 12px; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Sample Result Status</span>
+                    <h4 style="margin: 2px 0 0 0; color: #ef4444; font-size: 16px;">HIGH RISK DETECTED (Phishing)</h4>
+                    <p style="font-size: 13px; color: #cbd5e1; margin: 4px 0 0 0;">Reasons: Domain age &lt; 5 days, suspicious keywords, missing SSL, IP-based URL structure.</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 24px; font-weight: 800; color: #ef4444;">89 / 100</div>
+                    <span style="font-size: 12px; color: #94a3b8;">AI Risk Score</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Specifications & System Architecture Grid -->
+    <section id="analytics" style="max-width: 1200px; margin: 0 auto 80px auto; padding: 0 20px;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 style="font-size: 28px; color: #ffffff; margin-bottom: 8px;">System Performance & Overview</h2>
+            <p style="color: #94a3b8; font-size: 15px;">Powered by Python, Scikit-learn, TensorFlow, and Django REST API backends.</p>
+        </div>
+
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+            <div style="flex: 1; min-width: 240px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 25px; text-align: center;">
+                <div style="font-size: 32px; font-weight: 800; color: #38bdf8; margin-bottom: 5px;">98.4%</div>
+                <div style="font-size: 14px; color: #94a3b8; font-weight: 600;">ML Model Accuracy</div>
+            </div>
+            <div style="flex: 1; min-width: 240px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 25px; text-align: center;">
+                <div style="font-size: 32px; font-weight: 800; color: #10b981; margin-bottom: 5px;">4 Vectors</div>
+                <div style="font-size: 14px; color: #94a3b8; font-weight: 600;">Web, Email, Apps & Phone</div>
+            </div>
+            <div style="flex: 1; min-width: 240px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 25px; text-align: center;">
+                <div style="font-size: 32px; font-weight: 800; color: #f59e0b; margin-bottom: 5px;">Real-Time</div>
+                <div style="font-size: 14px; color: #94a3b8; font-weight: 600;">Warnings & Recommendations</div>
+            </div>
+            <div style="flex: 1; min-width: 240px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 25px; text-align: center;">
+                <div style="font-size: 32px; font-weight: 800; color: #ec4899; margin-bottom: 5px;">Verified</div>
+                <div style="font-size: 14px; color: #94a3b8; font-weight: 600;">Analyst Reviewed Records</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LMS Modules & Awareness Training Section -->
+    <section id="courses" style="background-color: #162032; padding: 70px 20px; border-top: 1px solid #1e293b; border-bottom: 1px solid #1e293b;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 50px;">
+                <h2 style="font-size: 30px; color: #ffffff; margin-bottom: 10px;">LMS Interactive Learning Modules</h2>
+                <p style="color: #94a3b8; font-size: 15px;">Master cyber threat identification with built-in awareness tips and guided scenarios.</p>
+            </div>
+
+            <div style="display: flex; gap: 25px; flex-wrap: wrap; justify-content: center;">
+                <!-- Module 1 -->
+                <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; overflow: hidden; flex: 1; min-width: 280px; max-width: 360px;">
+                    <div style="background-color: #0284c7; padding: 20px; color: white;">
+                        <span style="font-size: 11px; font-weight: 700; background-color: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 4px;">MODULE 01</span>
+                        <h3 style="font-size: 18px; margin: 10px 0 0 0;">URL & Web Feature Analysis</h3>
+                    </div>
+                    <div style="padding: 20px;">
+                        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">Understand domain age, SSL validation, redirection chains, and IP-based URL masks.</p>
+                        <ul style="font-size: 13px; color: #cbd5e1; padding-left: 18px; margin-bottom: 20px;">
+                            <li>HTTPS vs HTTP Inspection</li>
+                            <li>Suspicious Keyword Identification</li>
+                            <li>URL Shortener Risks</li>
+                        </ul>
+                        <a href="#" style="display: block; text-align: center; background-color: #334155; color: #ffffff; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: 600; font-size: 13px;">Start Learning Module</a>
+                    </div>
+                </div>
+
+                <!-- Module 2 -->
+                <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; overflow: hidden; flex: 1; min-width: 280px; max-width: 360px;">
+                    <div style="background-color: #0d9488; padding: 20px; color: white;">
+                        <span style="font-size: 11px; font-weight: 700; background-color: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 4px;">MODULE 02</span>
+                        <h3 style="font-size: 18px; margin: 10px 0 0 0;">Email NLP & Sender Verification</h3>
+                    </div>
+                    <div style="padding: 20px;">
+                        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">Analyze urgency language, sender spoofing, malicious attachments, and executive impersonation.</p>
+                        <ul style="font-size: 13px; color: #cbd5e1; padding-left: 18px; margin-bottom: 20px;">
+                            <li>NLP Subject Line Scoring</li>
+                            <li>Header & DKIM/SPF Basics</li>
+                            <li>Social Engineering Tactics</li>
+                        </ul>
+                        <a href="#" style="display: block; text-align: center; background-color: #334155; color: #ffffff; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: 600; font-size: 13px;">Start Learning Module</a>
+                    </div>
+                </div>
+
+                <!-- Module 3 -->
+                <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; overflow: hidden; flex: 1; min-width: 280px; max-width: 360px;">
+                    <div style="background-color: #d97706; padding: 20px; color: white;">
+                        <span style="font-size: 11px; font-weight: 700; background-color: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 4px;">MODULE 03</span>
+                        <h3 style="font-size: 18px; margin: 10px 0 0 0;">Mobile & Phone Fraud Detection</h3>
+                    </div>
+                    <div style="padding: 20px;">
+                        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">Evaluate app metadata, dangerous permissions, SMS phishing (Smishing), and voice vishing.</p>
+                        <ul style="font-size: 13px; color: #cbd5e1; padding-left: 18px; margin-bottom: 20px;">
+                            <li>Android APK Risk Factors</li>
+                            <li>Country/Area Code Audits</li>
+                            <li>User Incident Reporting</li>
+                        </ul>
+                        <a href="#" style="display: block; text-align: center; background-color: #334155; color: #ffffff; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: 600; font-size: 13px;">Start Learning Module</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Role-Based Dashboard Access Portal -->
+    <section id="analyst" style="max-width: 1200px; margin: 80px auto; padding: 0 20px;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 style="font-size: 28px; color: #ffffff; margin-bottom: 8px;">Role-Based System Access</h2>
+            <p style="color: #94a3b8; font-size: 15px;">Tailored interfaces for System Administrators, Security Analysts, and End-Users.</p>
+        </div>
+
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+            <!-- Admin Card -->
+            <div style="flex: 1; min-width: 280px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 25px;">
+                <h3 style="color: #38bdf8; font-size: 18px; margin-top: 0;">🛠️ Admin Portal</h3>
+                <p style="font-size: 13px; color: #94a3b8;">Manage users, verify analysts, update AI datasets, view overall threat statistics, and handle complaints.</p>
+                <a href="#" style="color: #38bdf8; font-size: 13px; font-weight: 700; text-decoration: none;">Access Admin Panel &rarr;</a>
+            </div>
+
+            <!-- Analyst Card -->
+            <div style="flex: 1; min-width: 280px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 25px;">
+                <h3 style="color: #10b981; font-size: 18px; margin-top: 0;">🔍 Security Analyst Hub</h3>
+                <p style="font-size: 13px; color: #94a3b8;">Analyze reported URLs/APKs, verify incidents, manage threat intelligence, and answer user queries.</p>
+                <a href="#" style="color: #10b981; font-size: 13px; font-weight: 700; text-decoration: none;">Analyst Workspace &rarr;</a>
+            </div>
+
+            <!-- User Portal -->
+            <div style="flex: 1; min-width: 280px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 25px;">
+                <h3 style="color: #f59e0b; font-size: 18px; margin-top: 0;">👤 Student / User Portal</h3>
+                <p style="font-size: 13px; color: #94a3b8;">Check suspicious links, view AI explanations, report new threats, ask security doubts, and take courses.</p>
+                <a href="#" style="color: #f59e0b; font-size: 13px; font-weight: 700; text-decoration: none;">Enter User Workspace &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="background-color: #0b1120; border-top: 1px solid #1e293b; padding: 40px 20px; font-size: 13px; color: #64748b;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px;">
+            <div style="max-width: 350px;">
+                <h4 style="color: #ffffff; font-size: 16px; margin: 0 0 10px 0;">AI PhishShield LMS</h4>
+                <p style="margin: 0; color: #94a3b8;">An AI-driven Phishing Detection & Prevention System utilizing Machine Learning and NLP for unified cybersecurity learning and real-time threat detection.</p>
+            </div>
+            <div>
+                <h5 style="color: #ffffff; font-size: 14px; margin: 0 0 10px 0;">Detection Vectors</h5>
+                <p style="margin: 3px 0; color: #94a3b8;">Websites & URLs Analysis</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Email NLP Content Scans</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Mobile APK Risk Analysis</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Phone Pattern Detection</p>
+            </div>
+            <div>
+                <h5 style="color: #ffffff; font-size: 14px; margin: 0 0 10px 0;">System Specs</h5>
+                <p style="margin: 3px 0; color: #94a3b8;">Backend: Python-Django REST Framework</p>
+                <p style="margin: 3px 0; color: #94a3b8;">ML: Scikit-learn / TensorFlow / NLTK</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Database: MySQL</p>
+            </div>
+        </div>
+        <div style="max-width: 1200px; margin: 30px auto 0 auto; border-top: 1px solid #1e293b; padding-top: 20px; text-align: center; color: #64748b;">
+            <p style="margin: 0;">&copy; 2026 AI Phishing Detection & Prevention System. Built for Cybersecurity LMS Education.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

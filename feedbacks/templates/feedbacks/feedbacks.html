@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Feedback & Rating Portal - AI PhishShield LMS</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Star Rating Custom Styling */
+        .star-rating {
+            display: flex;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 32px;
+            user-select: none;
+        }
+
+        .star {
+            color: #334155;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .star.active, .star.hovered {
+            color: #f59e0b;
+            text-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+            transform: scale(1.15);
+        }
+
+        /* Category Chips Styling */
+        .category-chip {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .category-chip:hover {
+            border-color: #38bdf8;
+            color: #38bdf8;
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        .category-chip.selected {
+            background-color: #0284c7;
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+        }
+
+        /* Custom Range Slider */
+        .nps-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #334155;
+            outline: none;
+        }
+
+        .nps-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #38bdf8;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+            border: 2px solid #ffffff;
+        }
+
+        .nps-slider::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #38bdf8;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+            border: 2px solid #ffffff;
+        }
+
+        /* Modal Blur */
+        .modal-overlay {
+            backdrop-filter: blur(8px);
+        }
+
+        /* Input Focus Style */
+        input:focus, select:focus, textarea:focus {
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Security Status Bar -->
+    <div style="background-color: #1e293b; border-bottom: 1px solid #334155; padding: 8px 20px; font-size: 13px; color: #94a3b8; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="display: inline-block; width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
+            <span><strong>User Voice & Continuous Feedback Loop:</strong> Active Telemetry v2.4</span>
+        </div>
+        <div style="display: flex; gap: 15px; font-size: 12px;">
+            <span>⭐ Avg Satisfaction: 4.8 / 5.0</span>
+            <span>💬 Review SLA: &lt; 12 hrs</span>
+            <span>⚡ Portal Status: Operational</span>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header style="background-color: rgba(15, 23, 42, 0.95); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #1e293b; backdrop-filter: blur(8px);">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <a href="#" style="font-size: 22px; font-weight: 700; color: #38bdf8; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                <span style="background-color: #0284c7; color: #ffffff; padding: 6px 10px; border-radius: 6px; font-size: 16px; font-weight: 800;">AI</span>
+                PhishShield LMS
+            </a>
+            
+            <nav style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+                <a href="#" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">AI Scanner</a>
+                <a href="#" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">LMS Modules</a>
+                <a href="#" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">Threat Stats</a>
+                <a href="#" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">Complaint Center</a>
+                <a href="#" style="text-decoration: none; color: #38bdf8; font-weight: 600; font-size: 14px; border-bottom: 2px solid #38bdf8; padding-bottom: 2px;">Feedback Window</a>
+                <a href="#" style="text-decoration: none; color: #38bdf8; font-weight: 600; padding: 8px 16px; border: 1px solid #0284c7; border-radius: 6px; font-size: 14px;">Sign In</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Portal Content -->
+    <main style="flex: 1; padding: 40px 20px; background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);">
+        <div style="max-width: 1050px; margin: 0 auto;">
+            
+            <!-- Hero Title Section -->
+            <div style="text-align: center; margin-bottom: 35px;">
+                <span style="background-color: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-size: 12px; padding: 4px 14px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 12px;">Continuous System Improvement</span>
+                <h1 style="font-size: 32px; margin: 0 0 10px 0; font-weight: 800; color: #ffffff;">User Experience & Feedback Portal</h1>
+                <p style="font-size: 15px; color: #94a3b8; margin: 0 auto; max-width: 680px;">Share your experience with AI PhishShield LMS! Rate our detection models, request course enhancements, or help refine our threat scanner engine.</p>
+            </div>
+
+            <!-- System Rating Summary Metric Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 35px;">
+                <!-- Stat Card 1 -->
+                <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="font-size: 28px; font-weight: 800; color: #f59e0b; display: flex; justify-content: center; align-items: center; gap: 6px;">
+                        <span>4.85</span> <span style="font-size: 18px; color: #64748b;">/ 5.0</span>
+                    </div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-top: 4px;">Overall Satisfaction</div>
+                    <div style="font-size: 11px; color: #10b981; margin-top: 4px;">▲ +0.12 from last release</div>
+                </div>
+
+                <!-- Stat Card 2 -->
+                <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="font-size: 28px; font-weight: 800; color: #38bdf8;">1,248</div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-top: 4px;">Total Feedback Submissions</div>
+                    <div style="font-size: 11px; color: #cbd5e1; margin-top: 4px;">From 842 Active Learners</div>
+                </div>
+
+                <!-- Stat Card 3 -->
+                <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="font-size: 28px; font-weight: 800; color: #10b981;">94%</div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-top: 4px;">Feature Implementation Rate</div>
+                    <div style="font-size: 11px; color: #10b981; margin-top: 4px;">34 Ideas Adopted v2.4</div>
+                </div>
+
+                <!-- Stat Card 4 -->
+                <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="font-size: 28px; font-weight: 800; color: #c084fc;">+78</div>
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-top: 4px;">Net Promoter Score (NPS)</div>
+                    <div style="font-size: 11px; color: #c084fc; margin-top: 4px;">World-Class Experience Tier</div>
+                </div>
+            </div>
+
+            <!-- Tab Switching Controls -->
+            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;">
+                <button id="tabBtnFeedback" onclick="switchTab('submit')" style="background-color: #0284c7; color: #ffffff; border: 1px solid #0284c7; padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    ⭐ Submit New Feedback
+                </button>
+                <button id="tabBtnHistory" onclick="switchTab('history')" style="background-color: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    💬 Community & Admin Responses (<span id="feedbackCountBadge">3</span>)
+                </button>
+            </div>
+
+            <!-- SECTION 1: Submit Feedback Form -->
+            <div id="sectionSubmit" style="display: block;">
+                <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 35px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+                    
+                    <form id="feedbackForm" onsubmit="handleFeedbackSubmit(event)" style="display: flex; flex-direction: column; gap: 24px;">
+                        
+                        <!-- 1. Category Selector Chips -->
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 10px;">
+                                What area of PhishShield LMS are you reviewing? <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="hidden" id="selectedCategory" value="AI Model Accuracy" required>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <div class="category-chip selected" onclick="selectCategory(this, 'AI Model Accuracy')">
+                                    🤖 AI Model Accuracy
+                                </div>
+                                <div class="category-chip" onclick="selectCategory(this, 'LMS Course Content')">
+                                    🎓 LMS Course Modules
+                                </div>
+                                <div class="category-chip" onclick="selectCategory(this, 'UI/UX Experience')">
+                                    🎨 UI/UX Interface
+                                </div>
+                                <div class="category-chip" onclick="selectCategory(this, 'Scanner Performance')">
+                                    ⚡ Scanner Speed & API
+                                </div>
+                                <div class="category-chip" onclick="selectCategory(this, 'Feature Request')">
+                                    💡 Feature Suggestion
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Interactive Star Rating -->
+                        <div style="background-color: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 20px; text-align: center;">
+                            <label style="display: block; font-size: 14px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">
+                                Overall Star Rating <span style="color: #ef4444;">*</span>
+                            </label>
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
+                                <div class="star-rating" id="starContainer">
+                                    <span class="star active" data-value="1" onclick="setRating(1)">★</span>
+                                    <span class="star active" data-value="2" onclick="setRating(2)">★</span>
+                                    <span class="star active" data-value="3" onclick="setRating(3)">★</span>
+                                    <span class="star active" data-value="4" onclick="setRating(4)">★</span>
+                                    <span class="star active" data-value="5" onclick="setRating(5)">★</span>
+                                </div>
+                                <span id="ratingLabel" style="font-size: 15px; font-weight: 700; color: #10b981; min-width: 120px; text-align: left;">
+                                    5.0 - Excellent
+                                </span>
+                            </div>
+                            <input type="hidden" id="ratingValue" value="5">
+                        </div>
+
+                        <!-- 3. User & Feature Context -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">
+                                    Full Name / Security ID <span style="color: #ef4444;">*</span>
+                                </label>
+                                <input type="text" id="userName" value="Analyst Sarah Jenkins" required style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">
+                                    Email Address <span style="color: #ef4444;">*</span>
+                                </label>
+                                <input type="email" id="userEmail" value="s.jenkins@organization.com" required style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">
+                                    Specific Module Evaluated
+                                </label>
+                                <select id="evaluatedModule" style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none; cursor: pointer;">
+                                    <option value="URL Threat Scanner">🌐 URL Phishing Threat Scanner</option>
+                                    <option value="Email NLP Analyzer">✉️ Email NLP Content Analyzer</option>
+                                    <option value="LMS Module 1: Phishing Basics">📚 LMS Course 1: Phishing Fundamentals</option>
+                                    <option value="LMS Module 2: Spear Phishing">🎯 LMS Course 2: Executive Impersonation</option>
+                                    <option value="SOC Analyst Dashboard">🛡️ SOC Analyst Dashboard & Complaint Window</option>
+                                    <option value="General Platform Experience">💻 Entire Platform Experience</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 4. Dynamic Feedback Textarea with Word Counter -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <label style="font-size: 13px; font-weight: 600; color: #cbd5e1;">Detailed Feedback & Suggestions <span style="color: #ef4444;">*</span></label>
+                                <span id="wordCount" style="font-size: 11px; color: #64748b;">0 / 200 words</span>
+                            </div>
+                            <textarea id="feedbackText" rows="4" oninput="updateWordCount()" placeholder="Tell us what you liked, what can be improved, or suggestions for new AI phishing features..." required style="width: 100%; box-sizing: border-box; padding: 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none; font-family: inherit; resize: vertical;"></textarea>
+                        </div>
+
+                        <!-- 5. Net Promoter Score (NPS) Scale -->
+                        <div style="background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                                <label style="font-size: 13px; font-weight: 600; color: #cbd5e1;">
+                                    How likely are you to recommend PhishShield LMS to a cybersecurity colleague?
+                                </label>
+                                <span id="npsDisplay" style="background-color: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 2px 10px; border-radius: 12px; font-weight: 700; font-size: 13px;">
+                                    Score: 10 / 10 (Promoter)
+                                </span>
+                            </div>
+                            <input type="range" id="npsScore" min="0" max="10" value="10" class="nps-slider" oninput="updateNPSDisplay(this.value)">
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b; margin-top: 6px;">
+                                <span>0 - Not at all likely</span>
+                                <span>5 - Neutral</span>
+                                <span>10 - Extremely likely</span>
+                            </div>
+                        </div>
+
+                        <!-- 6. Attachment Area -->
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">Attach UI Screenshots or Diagrams <span style="font-size: 11px; color: #64748b;">(Optional - Max 5MB)</span></label>
+                            <div id="dropZone" onclick="document.getElementById('fileInput').click()" style="border: 2px dashed #334155; background-color: #0f172a; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer;">
+                                <input type="file" id="fileInput" multiple style="display: none;" onchange="handleFileSelect(event)">
+                                <span style="font-size: 24px; display: block; margin-bottom: 4px;">🖼️</span>
+                                <span style="font-size: 13px; color: #cbd5e1; font-weight: 600;">Click to attach images</span> or drag and drop files
+                                <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">Supports PNG, JPG, WEBP</p>
+                            </div>
+                            <div id="fileList" style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;"></div>
+                        </div>
+
+                        <!-- 7. Buttons -->
+                        <div style="display: flex; gap: 15px; margin-top: 10px;">
+                            <button type="submit" style="flex: 2; background-color: #0284c7; color: #ffffff; border: none; padding: 14px; border-radius: 6px; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4); display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                🚀 Send Feedback to Product Team
+                            </button>
+                            <button type="button" onclick="resetFeedbackForm()" style="flex: 1; background-color: transparent; border: 1px solid #334155; color: #94a3b8; padding: 14px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer;">
+                                Reset Form
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+            <!-- SECTION 2: Community & Admin Responses -->
+            <div id="sectionHistory" style="display: none;">
+                <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 30px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+                        <div>
+                            <h3 style="font-size: 20px; margin: 0; color: #ffffff; font-weight: 700;">Community Feedback & Product Team Responses</h3>
+                            <p style="font-size: 13px; color: #94a3b8; margin: 4px 0 0 0;">Recent suggestions reviewed by engineering and LMS instructional designers.</p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <select id="categoryFilter" onchange="filterFeedbackCards()" style="padding: 8px 12px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                                <option value="ALL">All Categories</option>
+                                <option value="AI Model Accuracy">AI Model Accuracy</option>
+                                <option value="LMS Course Content">LMS Course Content</option>
+                                <option value="UI/UX Experience">UI/UX Experience</option>
+                                <option value="Feature Request">Feature Request</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Cards Stack -->
+                    <div id="feedbackCardsContainer" style="display: flex; flex-direction: column; gap: 20px;">
+                        
+                        <!-- Sample Card 1 -->
+                        <div class="feedback-card" data-category="AI Model Accuracy" style="background-color: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 22px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                                        <span style="font-weight: 700; color: #ffffff; font-size: 15px;">Alex Rivera (SOC Lead)</span>
+                                        <span style="background-color: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600;">🤖 AI Model Accuracy</span>
+                                    </div>
+                                    <div style="font-size: 12px; color: #64748b;">Evaluated: URL Threat Scanner • Submitted 1 day ago</div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="color: #f59e0b; font-size: 14px;">★★★★★</span>
+                                    <span style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600;">Feature Implemented</span>
+                                </div>
+                            </div>
+
+                            <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 16px 0; line-height: 1.5;">
+                                "The speed of the URL scan is incredible! It would be even better if the scan result provided a breakdown of specific heuristic triggers (e.g., brand spoofing vs suspicious TLDs)."
+                            </p>
+
+                            <!-- Admin Thread Reply -->
+                            <div style="background-color: #1e293b; border-left: 3px solid #0284c7; border-radius: 0 6px 6px 0; padding: 12px 16px; font-size: 13px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                    <span style="font-weight: 700; color: #38bdf8;">🛡️ Product Team Response (Lead ML Engineer)</span>
+                                    <span style="font-size: 11px; color: #64748b;">18 hrs ago</span>
+                                </div>
+                                <p style="color: #94a3b8; margin: 0;">Great suggestion, Alex! We added the "Heuristic Detection Matrix" to the scan modal in the v2.4 patch. You can now view individual confidence weights for domain age and lookalike characters.</p>
+                            </div>
+                        </div>
+
+                        <!-- Sample Card 2 -->
+                        <div class="feedback-card" data-category="LMS Course Content" style="background-color: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 22px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                                        <span style="font-weight: 700; color: #ffffff; font-size: 15px;">Elena Rostova</span>
+                                        <span style="background-color: rgba(192, 132, 252, 0.1); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3); font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600;">🎓 LMS Course Content</span>
+                                    </div>
+                                    <div style="font-size: 12px; color: #64748b;">Evaluated: LMS Course 2 • Submitted 3 days ago</div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="color: #f59e0b; font-size: 14px;">★★★★☆</span>
+                                    <span style="background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600;">In Review</span>
+                                </div>
+                            </div>
+
+                            <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 16px 0; line-height: 1.5;">
+                                "Module 2 interactive quizzes were very engaging. Requesting additional real-world SMS smishing simulation examples in the next curriculum update."
+                            </p>
+
+                            <!-- Admin Thread Reply -->
+                            <div style="background-color: #1e293b; border-left: 3px solid #f59e0b; border-radius: 0 6px 6px 0; padding: 12px 16px; font-size: 13px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                    <span style="font-weight: 700; color: #f59e0b;">🎓 Instructional Design Team</span>
+                                    <span style="font-size: 11px; color: #64748b;">1 day ago</span>
+                                </div>
+                                <p style="color: #94a3b8; margin: 0;">Thanks Elena! Smishing scenarios are currently under review for LMS Module 4, planned for release next month.</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Feedback Success Modal Container -->
+            <div id="feedbackModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.85); z-index: 2000; align-items: center; justify-content: center;">
+                <div style="background-color: #1e293b; border: 1px solid #334155; width: 90%; max-width: 480px; border-radius: 12px; padding: 30px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); text-align: center; position: relative;">
+                    
+                    <div style="width: 60px; height: 60px; background-color: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto; font-size: 28px; color: #10b981;">
+                        ✓
+                    </div>
+
+                    <h3 style="font-size: 22px; margin: 0 0 8px 0; color: #ffffff; font-weight: 700;">Feedback Received!</h3>
+                    <p style="font-size: 14px; color: #94a3b8; margin: 0 0 20px 0;">Thank you for helping us make AI PhishShield LMS safer and more efficient. Your thoughts have been dispatched to our product design queue.</p>
+
+                    <div style="background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 14px; text-align: left; margin-bottom: 20px; font-size: 13px;">
+                        <div style="color: #cbd5e1; font-weight: 600;" id="modalCategorySummary">Category: AI Model Accuracy</div>
+                        <div style="color: #f59e0b;" id="modalRatingSummary">Rating: ★★★★★ (5.0)</div>
+                        <div style="color: #64748b; margin-top: 4px;" id="modalNPSSummary">NPS Score: 10 / 10</div>
+                    </div>
+
+                    <button onclick="closeModalAndSwitch()" style="width: 100%; background-color: #0284c7; color: #ffffff; border: none; padding: 12px; border-radius: 6px; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);">
+                        View in Community Board
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background-color: #0b1120; border-top: 1px solid #1e293b; padding: 40px 20px; font-size: 13px; color: #64748b;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px;">
+            <div style="max-width: 350px;">
+                <h4 style="color: #ffffff; font-size: 16px; margin: 0 0 10px 0;">AI PhishShield LMS</h4>
+                <p style="margin: 0; color: #94a3b8;">An AI-driven Phishing Detection & Prevention System utilizing Machine Learning and NLP for unified cybersecurity learning and real-time threat detection.</p>
+            </div>
+            <div>
+                <h5 style="color: #ffffff; font-size: 14px; margin: 0 0 10px 0;">Feedback Channels</h5>
+                <p style="margin: 3px 0; color: #94a3b8;">Product Design Feedback</p>
+                <p style="margin: 3px 0; color: #94a3b8;">AI Detection Calibration</p>
+                <p style="margin: 3px 0; color: #94a3b8;">LMS Content Requests</p>
+                <p style="margin: 3px 0; color: #94a3b8;">UX Usability Testing</p>
+            </div>
+            <div>
+                <h5 style="color: #ffffff; font-size: 14px; margin: 0 0 10px 0;">System Specs</h5>
+                <p style="margin: 3px 0; color: #94a3b8;">Backend: Python-Django REST Framework</p>
+                <p style="margin: 3px 0; color: #94a3b8;">ML: Scikit-learn / TensorFlow / NLTK</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Database: MySQL</p>
+            </div>
+        </div>
+        <div style="max-width: 1200px; margin: 30px auto 0 auto; border-top: 1px solid #1e293b; padding-top: 20px; text-align: center; color: #64748b;">
+            <p style="margin: 0;">&copy; 2026 AI Phishing Detection & Prevention System. Built for Cybersecurity LMS Education.</p>
+        </div>
+    </footer>
+
+    <!-- Embedded Interactive JavaScript Logic -->
+    <script>
+        let currentRating = 5;
+        let attachedFiles = [];
+
+        // Tab Switch Logic
+        function switchTab(tabName) {
+            const submitSection = document.getElementById('sectionSubmit');
+            const historySection = document.getElementById('sectionHistory');
+            const btnSubmit = document.getElementById('tabBtnFeedback');
+            const btnHistory = document.getElementById('tabBtnHistory');
+
+            if (tabName === 'submit') {
+                submitSection.style.display = 'block';
+                historySection.style.display = 'none';
+                btnSubmit.style.backgroundColor = '#0284c7';
+                btnSubmit.style.color = '#ffffff';
+                btnSubmit.style.borderColor = '#0284c7';
+
+                btnHistory.style.backgroundColor = '#1e293b';
+                btnHistory.style.color = '#cbd5e1';
+                btnHistory.style.borderColor = '#334155';
+            } else {
+                submitSection.style.display = 'none';
+                historySection.style.display = 'block';
+                btnHistory.style.backgroundColor = '#0284c7';
+                btnHistory.style.color = '#ffffff';
+                btnHistory.style.borderColor = '#0284c7';
+
+                btnSubmit.style.backgroundColor = '#1e293b';
+                btnSubmit.style.color = '#cbd5e1';
+                btnSubmit.style.borderColor = '#334155';
+            }
+        }
+
+        // Category Selection
+        function selectCategory(element, categoryName) {
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            document.getElementById('selectedCategory').value = categoryName;
+        }
+
+        // Star Rating Controls
+        const ratingLabels = {
+            1: '1.0 - Needs Improvement',
+            2: '2.0 - Fair',
+            3: '3.0 - Average',
+            4: '4.0 - Good Experience',
+            5: '5.0 - Excellent'
+        };
+
+        function setRating(rating) {
+            currentRating = rating;
+            document.getElementById('ratingValue').value = rating;
+            document.getElementById('ratingLabel').textContent = ratingLabels[rating];
+
+            const stars = document.querySelectorAll('#starContainer .star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // Hover Effect on Stars
+        const starContainer = document.getElementById('starContainer');
+        const stars = starContainer.querySelectorAll('.star');
+
+        stars.forEach((star, index) => {
+            star.addEventListener('mouseenter', () => {
+                stars.forEach((s, i) => {
+                    if (i <= index) {
+                        s.classList.add('hovered');
+                    } else {
+                        s.classList.remove('hovered');
+                    }
+                });
+            });
+
+            star.addEventListener('mouseleave', () => {
+                stars.forEach(s => s.classList.remove('hovered'));
+            });
+        });
+
+        // NPS Slider Display Handler
+        function updateNPSDisplay(val) {
+            const display = document.getElementById('npsDisplay');
+            let tier = 'Promoter';
+            let color = '#38bdf8';
+
+            if (val <= 6) {
+                tier = 'Detractor';
+                color = '#ef4444';
+            } else if (val <= 8) {
+                tier = 'Passive';
+                color = '#f59e0b';
+            } else {
+                tier = 'Promoter';
+                color = '#10b981';
+            }
+
+            display.style.color = color;
+            display.style.borderColor = color;
+            display.textContent = `Score: ${val} / 10 (${tier})`;
+        }
+
+        // Word Counter
+        function updateWordCount() {
+            const textarea = document.getElementById('feedbackText');
+            const wordCountElem = document.getElementById('wordCount');
+            const text = textarea.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+
+            wordCountElem.textContent = `${words} / 200 words`;
+
+            if (words > 200) {
+                wordCountElem.style.color = '#ef4444';
+            } else {
+                wordCountElem.style.color = '#64748b';
+            }
+        }
+
+        // File Selection Handler
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            const fileListContainer = document.getElementById('fileList');
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                attachedFiles.push(file.name);
+
+                const item = document.createElement('div');
+                item.style.cssText = "background-color: #0f172a; border: 1px solid #334155; padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #cbd5e1;";
+                item.innerHTML = `
+                    <span>🖼️ ${file.name} <span style="color:#64748b;">(${(file.size / 1024).toFixed(1)} KB)</span></span>
+                    <span style="color:#ef4444; cursor:pointer; font-weight:bold;" onclick="this.parentElement.remove()">✕</span>
+                `;
+                fileListContainer.appendChild(item);
+            }
+        }
+
+        // Drag & Drop Handlers
+        const dropZone = document.getElementById('dropZone');
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#38bdf8';
+                dropZone.style.backgroundColor = 'rgba(56, 189, 248, 0.05)';
+            }, false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#334155';
+                dropZone.style.backgroundColor = '#0f172a';
+            }, false);
+        });
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            document.getElementById('fileInput').files = files;
+            handleFileSelect({ target: { files: files } });
+        });
+
+        // Form Submission Logic
+        function handleFeedbackSubmit(event) {
+            event.preventDefault();
+
+            const category = document.getElementById('selectedCategory').value;
+            const rating = document.getElementById('ratingValue').value;
+            const userName = document.getElementById('userName').value;
+            const moduleName = document.getElementById('evaluatedModule').value;
+            const feedbackText = document.getElementById('feedbackText').value;
+            const npsVal = document.getElementById('npsScore').value;
+
+            // Generate Star Display
+            let starsHtml = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+
+            // Populate Modal Summaries
+            document.getElementById('modalCategorySummary').textContent = `Category: ${category}`;
+            document.getElementById('modalRatingSummary').textContent = `Rating: ${starsHtml} (${rating}.0)`;
+            document.getElementById('modalNPSSummary').textContent = `NPS Recommendation Score: ${npsVal} / 10`;
+
+            // Append Card dynamically to Community List
+            const container = document.getElementById('feedbackCardsContainer');
+            const newCard = document.createElement('div');
+            newCard.className = 'feedback-card';
+            newCard.setAttribute('data-category', category);
+            newCard.style.cssText = "background-color: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 22px;";
+
+            newCard.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                            <span style="font-weight: 700; color: #ffffff; font-size: 15px;">${userName}</span>
+                            <span style="background-color: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600;">${category}</span>
+                        </div>
+                        <div style="font-size: 12px; color: #64748b;">Evaluated: ${moduleName} • Just Now</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #f59e0b; font-size: 14px;">${starsHtml}</span>
+                        <span style="background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600;">Submitted to Eng Queue</span>
+                    </div>
+                </div>
+
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 16px 0; line-height: 1.5;">
+                    "${feedbackText}"
+                </p>
+
+                <div style="background-color: #1e293b; border-left: 3px solid #0284c7; border-radius: 0 6px 6px 0; padding: 12px 16px; font-size: 13px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="font-weight: 700; color: #38bdf8;">🛡️ Product Team Response</span>
+                        <span style="font-size: 11px; color: #64748b;">Pending Review</span>
+                    </div>
+                    <p style="color: #94a3b8; margin: 0;">Your feedback is currently being reviewed by our system designers and machine learning team.</p>
+                </div>
+            `;
+
+            container.insertBefore(newCard, container.firstChild);
+
+            // Increment badge count
+            const currentBadge = document.getElementById('feedbackCountBadge');
+            currentBadge.textContent = parseInt(currentBadge.textContent) + 1;
+
+            // Show Confirmation Modal
+            document.getElementById('feedbackModal').style.display = 'flex';
+        }
+
+        // Close Modal & Navigate
+        function closeModalAndSwitch() {
+            document.getElementById('feedbackModal').style.display = 'none';
+            resetFeedbackForm();
+            switchTab('history');
+        }
+
+        // Reset Form Logic
+        function resetFeedbackForm() {
+            document.getElementById('feedbackForm').reset();
+            document.getElementById('fileList').innerHTML = '';
+            document.getElementById('wordCount').textContent = '0 / 200 words';
+            setRating(5);
+            updateNPSDisplay(10);
+            attachedFiles = [];
+        }
+
+        // Filter Community Cards
+        function filterFeedbackCards() {
+            const filterVal = document.getElementById('categoryFilter').value;
+            const cards = document.querySelectorAll('.feedback-card');
+
+            cards.forEach(card => {
+                const category = card.getAttribute('data-category');
+                if (filterVal === 'ALL' || category === filterVal) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

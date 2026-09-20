@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - AI PhishShield LMS</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+
+    <!-- Top Security Status Bar -->
+    <div style="background-color: #1e293b; border-bottom: 1px solid #334155; padding: 8px 20px; font-size: 13px; color: #94a3b8; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <span style="display: inline-block; width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; margin-right: 6px;"></span>
+            <strong>AI Detection Engine v2.4:</strong> Active & Monitoring Real-Time Threats
+        </div>
+        <div style="display: flex; gap: 15px;">
+            <span>🛡️ Models: Scikit-learn / TensorFlow</span>
+            <span>⚡ DB Status: MySQL Online</span>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header style="background-color: rgba(15, 23, 42, 0.95); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #1e293b; backdrop-filter: blur(8px);">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <a href="#" style="font-size: 22px; font-weight: 700; color: #38bdf8; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                <span style="background-color: #0284c7; color: #ffffff; padding: 6px 10px; border-radius: 6px; font-size: 16px;">AI</span>
+                PhishShield LMS
+            </a>
+            
+            <nav style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+                <a href="#" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">AI Scanner</a>
+                <a href="#" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">LMS Modules</a>
+                <a href="#" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">Threat Stats</a>
+                <a href="#" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">Analyst Hub</a>
+                <a href="#" style="text-decoration: none; color: #38bdf8; font-weight: 600; padding: 8px 16px; border: 1px solid #0284c7; border-radius: 6px; font-size: 14px;">Sign In</a>
+                <a href="#" style="text-decoration: none; color: #ffffff; background-color: #0284c7; font-weight: 600; padding: 8px 18px; border-radius: 6px; font-size: 14px; box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);">Register</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Registration Section -->
+    <main style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 20px; background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);">
+        <div style="max-width: 560px; width: 100%; background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 40px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+            
+            <!-- Form Title & Badge -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <span style="background-color: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 12px;">Create Account</span>
+                <h1 style="font-size: 26px; margin: 0 0 8px 0; font-weight: 800; color: #ffffff;">Register for AI PhishShield LMS</h1>
+                <p style="font-size: 14px; color: #94a3b8; margin: 0;">Join the security platform for AI-powered phishing detection and training.</p>
+            </div>
+
+            <form onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 20px;">
+                
+                <!-- Account Type Selector (User, Security Analyst, Admin) -->
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">Account Type / Role</label>
+                    <select id="userType" required style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none; cursor: pointer; font-family: inherit;">
+                        <option value="user" style="background-color: #0f172a; color: #ffffff;">👤 End-User / Student</option>
+                        <option value="analyst" style="background-color: #0f172a; color: #ffffff;">🔍 Security Analyst</option>
+                        <option value="admin" style="background-color: #0f172a; color: #ffffff;">🛠️ Administrator</option>
+                    </select>
+                </div>
+
+                <!-- Username Field -->
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">Username</label>
+                    <input type="text" placeholder="e.g. jdoe_security" required style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                </div>
+
+                <!-- Email Address Field -->
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">Email Address</label>
+                    <input type="email" placeholder="name@organization.com" required style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                </div>
+
+                <!-- Phone Number Field -->
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">Phone Number</label>
+                    <input type="tel" placeholder="+1 (555) 000-0000" required style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                </div>
+
+                <!-- New Password Field -->
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">New Password</label>
+                    <input type="password" id="newPassword" placeholder="••••••••••••" required style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                    
+                    <!-- Password Strength Meter Preview -->
+                    <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                        <div style="flex: 1; height: 4px; background-color: #334155; border-radius: 2px; overflow: hidden;">
+                            <div style="width: 65%; height: 100%; background-color: #10b981;"></div>
+                        </div>
+                        <span style="font-size: 11px; color: #10b981; font-weight: 600;">Strong</span>
+                    </div>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="••••••••••••" required style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                </div>
+
+                <!-- Terms & Policies Checkbox -->
+                <div style="display: flex; align-items: flex-start; gap: 8px; margin-top: 4px;">
+                    <input type="checkbox" id="terms" required style="accent-color: #0284c7; width: 16px; height: 16px; margin-top: 2px; cursor: pointer;">
+                    <label for="terms" style="font-size: 13px; color: #94a3b8; cursor: pointer; line-height: 1.4;">
+                        I agree to the <a href="#" style="color: #38bdf8; text-decoration: none;">Terms of Service</a>, <a href="#" style="color: #38bdf8; text-decoration: none;">Security Policy</a>, and consent to security threat dataset logging.
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" style="background-color: #0284c7; color: #ffffff; border: none; padding: 14px; border-radius: 6px; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4); margin-top: 5px;">
+                    Create Account &rarr;
+                </button>
+            </form>
+
+            <!-- Verification Note -->
+            <div style="margin-top: 25px; padding: 14px; background-color: #0f172a; border-radius: 8px; border-left: 4px solid #38bdf8; display: flex; align-items: flex-start; gap: 10px;">
+                <span style="font-size: 16px;">🛡️</span>
+                <div>
+                    <h4 style="margin: 0 0 2px 0; color: #38bdf8; font-size: 13px; font-weight: 700;">Account Approval Workflow</h4>
+                    <p style="font-size: 12px; color: #94a3b8; margin: 0;">Analyst & Administrator roles require manual identity verification before elevated permissions are granted.</p>
+                </div>
+            </div>
+
+            <!-- Existing User Sign In Link -->
+            <div style="text-align: center; margin-top: 25px; font-size: 14px; color: #94a3b8;">
+                Already have an account? 
+                <a href="#" style="color: #38bdf8; font-weight: 600; text-decoration: none; margin-left: 4px;">Sign In here</a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background-color: #0b1120; border-top: 1px solid #1e293b; padding: 40px 20px; font-size: 13px; color: #64748b;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px;">
+            <div style="max-width: 350px;">
+                <h4 style="color: #ffffff; font-size: 16px; margin: 0 0 10px 0;">AI PhishShield LMS</h4>
+                <p style="margin: 0; color: #94a3b8;">An AI-driven Phishing Detection & Prevention System utilizing Machine Learning and NLP for unified cybersecurity learning and real-time threat detection.</p>
+            </div>
+            <div>
+                <h5 style="color: #ffffff; font-size: 14px; margin: 0 0 10px 0;">Detection Vectors</h5>
+                <p style="margin: 3px 0; color: #94a3b8;">Websites & URLs Analysis</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Email NLP Content Scans</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Mobile APK Risk Analysis</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Phone Pattern Detection</p>
+            </div>
+            <div>
+                <h5 style="color: #ffffff; font-size: 14px; margin: 0 0 10px 0;">System Specs</h5>
+                <p style="margin: 3px 0; color: #94a3b8;">Backend: Python-Django REST Framework</p>
+                <p style="margin: 3px 0; color: #94a3b8;">ML: Scikit-learn / TensorFlow / NLTK</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Database: MySQL</p>
+            </div>
+        </div>
+        <div style="max-width: 1200px; margin: 30px auto 0 auto; border-top: 1px solid #1e293b; padding-top: 20px; text-align: center; color: #64748b;">
+            <p style="margin: 0;">&copy; 2026 AI Phishing Detection & Prevention System. Built for Cybersecurity LMS Education.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

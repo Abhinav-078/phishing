@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - PhishShield LMS</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; display: flex; min-height: 100vh;">
+
+    <!-- LEFT SIDEBAR / ADMIN MENU -->
+    <aside style="width: 280px; background-color: #1e293b; border-right: 1px solid #334155; display: flex; flex-direction: column; flex-shrink: 0;">
+        
+        <!-- App Header / Logo -->
+        <div style="padding: 20px; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 10px;">
+            <span style="background-color: #dc2626; color: #ffffff; padding: 6px 10px; border-radius: 6px; font-weight: 700; font-size: 16px;">ADM</span>
+            <div>
+                <div style="font-size: 16px; font-weight: 700; color: #f8fafc;">PhishShield LMS</div>
+                <div style="font-size: 11px; color: #ef4444; font-weight: 600;">System Administrator</div>
+            </div>
+        </div>
+
+        <!-- Admin Profile Credentials -->
+        <div style="padding: 15px 20px; background-color: rgba(15, 23, 42, 0.4); border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 12px;">
+            <div style="width: 38px; height: 38px; background-color: #dc2626; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+                AD
+            </div>
+            <div style="overflow: hidden;">
+                <div style="font-size: 13px; font-weight: 600; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Admin Root</div>
+                <div style="font-size: 11px; color: #ef4444; font-weight: 500;">● Super Administrator</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Navigation Menu -->
+        <nav style="padding: 15px 10px; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+            
+            <a href="#analytics" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background-color: #dc2626; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600;">
+                📊 Overall Security Analytics
+            </a>
+
+            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">User & Staff Verification</div>
+            <a href="#manage-users" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">👥 Manage & Verify Users</a>
+            <a href="#manage-analysts" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🔍 Manage & Verify Security Analysts</a>
+
+            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Threat Inspection Logs</div>
+            <a href="#detection-reports" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📜 Phishing Detection Reports</a>
+            <a href="#suspicious-url" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🌐 Suspicious URLs</a>
+            <a href="#suspicious-email" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">✉️ Suspicious Emails</a>
+            <a href="#suspicious-phno" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📞 Suspicious Phone Numbers</a>
+            <a href="#suspicious-app" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📱 Suspicious Applications</a>
+
+            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Communication & Feedback</div>
+            <a href="#view-complaints" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🚨 View Complaints</a>
+            <a href="#view-feedback" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">⭐ View Feedback</a>
+
+        </nav>
+
+        <!-- Sidebar Logout -->
+        <div style="padding: 15px; border-top: 1px solid #334155;">
+            <a href="#" style="display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; padding: 10px 0; background-color: #334155; color: #ffffff; border: none; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600;">
+                🚪 Admin Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main style="flex-grow: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 25px;">
+        
+        <!-- Page Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid #334155; padding-bottom: 20px;">
+            <div>
+                <h1 style="font-size: 26px; margin: 0; color: #ffffff;">Admin System Console</h1>
+                <p style="font-size: 14px; color: #94a3b8; margin: 4px 0 0 0;">Manage security analysts, verify users, inspect threat reports, and monitor security analytics[cite: 1].</p>
+            </div>
+            <div>
+                <span style="background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 12px; padding: 6px 14px; border-radius: 20px; font-weight: 600;">
+                    System Status: Secure
+                </span>
+            </div>
+        </div>
+
+        <!-- 1. Overall Security Analytics -->
+        <div id="analytics">
+            <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">Overall Security Analytics[cite: 1]</h2>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">Total Phishing Threats Scanned[cite: 1]</div>
+                    <div style="font-size: 28px; font-weight: 700; color: #38bdf8; margin: 5px 0;">12,480</div>
+                    <div style="font-size: 11px; color: #10b981;">↑ Across Web, Email, Apps & Phone[cite: 1]</div>
+                </div>
+                <div style="flex: 1; min-width: 200px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">Pending Analyst Verifications[cite: 1]</div>
+                    <div style="font-size: 28px; font-weight: 700; color: #f59e0b; margin: 5px 0;">5</div>
+                    <div style="font-size: 11px; color: #f59e0b;">Action Required</div>
+                </div>
+                <div style="flex: 1; min-width: 200px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">Active System Complaints[cite: 1]</div>
+                    <div style="font-size: 28px; font-weight: 700; color: #ef4444; margin: 5px 0;">2</div>
+                    <div style="font-size: 11px; color: #ef4444;">Unresolved user complaints[cite: 1]</div>
+                </div>
+                <div style="flex: 1; min-width: 200px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">Verified Phishing Records[cite: 1]</div>
+                    <div style="font-size: 28px; font-weight: 700; color: #10b981; margin: 5px 0;">3,891</div>
+                    <div style="font-size: 11px; color: #10b981;">Added to AI Dataset[cite: 1]</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Manage & Verify (Security Analyst & Users) -->
+        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="font-size: 18px; margin: 0; color: #ffffff;">Manage & Verify Security Analysts[cite: 1]</h2>
+            </div>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #334155; color: #94a3b8;">
+                            <th style="padding: 12px 10px;">Analyst Name</th>
+                            <th style="padding: 12px 10px;">Email</th>
+                            <th style="padding: 12px 10px;">Experience</th>
+                            <th style="padding: 12px 10px;">Status</th>
+                            <th style="padding: 12px 10px;">Verification Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
+                            <td style="padding: 12px 10px; color: #cbd5e1; font-weight: 600;">Dr. Sarah Jenkins</td>
+                            <td style="padding: 12px 10px; color: #94a3b8;">s.jenkins@cybersec.org</td>
+                            <td style="padding: 12px 10px; color: #cbd5e1;">6 Years</td>
+                            <td style="padding: 12px 10px;"><span style="background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-size: 12px;">Pending</span></td>
+                            <td style="padding: 12px 10px; display: flex; gap: 8px;">
+                                <button style="background-color: #10b981; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">Approve & Verify[cite: 1]</button>
+                                <button style="background-color: #ef4444; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">Reject</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px 10px; color: #cbd5e1; font-weight: 600;">Mark Roberson</td>
+                            <td style="padding: 12px 10px; color: #94a3b8;">m.roberson@phishshield.com</td>
+                            <td style="padding: 12px 10px; color: #cbd5e1;">4 Years</td>
+                            <td style="padding: 12px 10px;"><span style="background-color: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-size: 12px;">Verified[cite: 1]</span></td>
+                            <td style="padding: 12px 10px;">
+                                <button style="background-color: #334155; color: #cbd5e1; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Manage User[cite: 1]</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. Suspicious Categories Management (URL, Email, Phone, Application) -->
+        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="font-size: 18px; margin: 0; color: #ffffff;">Suspicious Targets Inspection[cite: 1]</h2>
+                <div style="display: flex; gap: 8px;">
+                    <button style="background-color: #0284c7; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 600;">URLs[cite: 1]</button>
+                    <button style="background-color: #334155; color: #cbd5e1; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;">Emails[cite: 1]</button>
+                    <button style="background-color: #334155; color: #cbd5e1; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;">Phone Numbers[cite: 1]</button>
+                    <button style="background-color: #334155; color: #cbd5e1; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;">Applications[cite: 1]</button>
+                </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #334155; color: #94a3b8;">
+                            <th style="padding: 12px 10px;">Target Value</th>
+                            <th style="padding: 12px 10px;">Vector Type</th>
+                            <th style="padding: 12px 10px;">AI Risk Score</th>
+                            <th style="padding: 12px 10px;">Reported By</th>
+                            <th style="padding: 12px 10px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
+                            <td style="padding: 12px 10px; color: #ef4444; font-weight: 600;">http://update-login-credentials-bank.com</td>
+                            <td style="padding: 12px 10px; color: #cbd5e1;">URL / Website[cite: 1]</td>
+                            <td style="padding: 12px 10px; font-weight: 700; color: #ef4444;">94 / 100[cite: 1]</td>
+                            <td style="padding: 12px 10px; color: #94a3b8;">User (John Doe)[cite: 1]</td>
+                            <td style="padding: 12px 10px;"><a href="#" style="color: #38bdf8; text-decoration: none;">View Report[cite: 1]</a></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
+                            <td style="padding: 12px 10px; color: #f59e0b; font-weight: 600;">+1-800-443-8821</td>
+                            <td style="padding: 12px 10px; color: #cbd5e1;">Phone Number[cite: 1]</td>
+                            <td style="padding: 12px 10px; font-weight: 700; color: #f59e0b;">68 / 100[cite: 1]</td>
+                            <td style="padding: 12px 10px; color: #94a3b8;">User (Alice Smith)[cite: 1]</td>
+                            <td style="padding: 12px 10px;"><a href="#" style="color: #38bdf8; text-decoration: none;">View Report[cite: 1]</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. View Complaints & View Feedback Grid -->
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            
+            <!-- View Complaints Section -->
+            <div style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">View Complaints[cite: 1]</h2>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="background-color: #0f172a; padding: 12px; border-radius: 6px; border-left: 3px solid #ef4444;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 4px;">
+                            <span>From: User (ID: 402)[cite: 1]</span>
+                            <span>Sep 18, 2026</span>
+                        </div>
+                        <p style="font-size: 13px; color: #cbd5e1; margin: 0 0 8px 0;">"The AI scanner labeled a valid internal company domain as suspicious."</p>
+                        <button style="background-color: #0284c7; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer;">Send Reply to Complaint[cite: 1]</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Feedback Section -->
+            <div style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">View Feedback[cite: 1]</h2>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="background-color: #0f172a; padding: 12px; border-radius: 6px; border-left: 3px solid #10b981;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 4px;">
+                            <span>From: User (ID: 108)[cite: 1]</span>
+                            <span>Rating: ⭐⭐⭐⭐⭐</span>
+                        </div>
+                        <p style="font-size: 13px; color: #cbd5e1; margin: 0;">"The SMS and phone number scam detector helped me avoid a fake bank caller! Great LMS tool."[cite: 1]</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

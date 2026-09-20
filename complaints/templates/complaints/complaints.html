@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint & Incident Center - AI PhishShield LMS</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+
+    <!-- Top Security Status Bar -->
+    <div style="background-color: #1e293b; border-bottom: 1px solid #334155; padding: 8px 20px; font-size: 13px; color: #94a3b8; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="display: inline-block; width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
+            <span><strong>AI Detection Engine v2.4:</strong> Active & Monitoring Real-Time Threats</span>
+        </div>
+        <div style="display: flex; gap: 15px; font-size: 12px;">
+            <span>🛡️ SLA Response: &lt; 24h</span>
+            <span>⚡ Portal Status: Operational</span>
+            <span>🔍 Support Queue: 3 Active</span>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header style="background-color: rgba(15, 23, 42, 0.95); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #1e293b; backdrop-filter: blur(8px);">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <a href="#" style="font-size: 22px; font-weight: 700; color: #38bdf8; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                <span style="background-color: #0284c7; color: #ffffff; padding: 6px 10px; border-radius: 6px; font-size: 16px; font-weight: 800;">AI</span>
+                PhishShield LMS
+            </a>
+            
+            <nav style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+                <a href="#" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">AI Scanner</a>
+                <a href="#" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">LMS Modules</a>
+                <a href="#" style="text-decoration: none; color: #cbd5e1; font-weight: 500; font-size: 14px;">Threat Stats</a>
+                <a href="#" style="text-decoration: none; color: #38bdf8; font-weight: 600; font-size: 14px; border-bottom: 2px solid #38bdf8; padding-bottom: 2px;">Complaint Center</a>
+                <a href="#" style="text-decoration: none; color: #38bdf8; font-weight: 600; padding: 8px 16px; border: 1px solid #0284c7; border-radius: 6px; font-size: 14px;">Sign In</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Portal Content -->
+    <main style="flex: 1; padding: 40px 20px; background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);">
+        <div style="max-width: 1000px; margin: 0 auto;">
+            
+            <!-- Page Title Section -->
+            <div style="text-align: center; margin-bottom: 35px;">
+                <span style="background-color: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 12px; padding: 4px 14px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 12px;">Analyst Support & Reporting</span>
+                <h1 style="font-size: 30px; margin: 0 0 10px 0; font-weight: 800; color: #ffffff;">User Complaint & Incident Window</h1>
+                <p style="font-size: 15px; color: #94a3b8; margin: 0; max-width: 650px; margin: 0 auto;">Report AI detection misclassifications, LMS module errors, or submit urgent threat escalation requests directly to our Security Operations Analysts.</p>
+            </div>
+
+            <!-- Tab Switching Controls -->
+            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;">
+                <button id="tabBtnForm" onclick="switchTab('form')" style="background-color: #0284c7; color: #ffffff; border: 1px solid #0284c7; padding: 10px 22px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease;">
+                    📝 New Complaint Form
+                </button>
+                <button id="tabBtnHistory" onclick="switchTab('history')" style="background-color: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 10px 22px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease;">
+                    📋 My Tickets & History (<span id="ticketCountBadge">3</span>)
+                </button>
+            </div>
+
+            <!-- SECTION 1: New Complaint Form -->
+            <div id="sectionForm" style="display: block;">
+                <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 35px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+                    
+                    <form id="complaintForm" onsubmit="handleFormSubmit(event)" style="display: flex; flex-direction: column; gap: 22px;">
+                        
+                        <!-- Top Row: Category & Priority -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                            <!-- Complaint Category -->
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">
+                                    Complaint Category <span style="color: #ef4444;">*</span>
+                                </label>
+                                <select id="complaintCategory" required style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none; cursor: pointer; font-family: inherit;">
+                                    <option value="" disabled selected style="color: #64748b;">Select Complaint Type...</option>
+                                    <option value="False Positive / Model Misclassification" style="background-color: #0f172a;">⚠️ False Positive / AI Model Misclassification</option>
+                                    <option value="LMS Course & Quiz Bug" style="background-color: #0f172a;">🎓 LMS Course Content or Quiz Issue</option>
+                                    <option value="System Technical Glitch" style="background-color: #0f172a;">💻 System Technical Glitch / Performance</option>
+                                    <option value="Threat Escalation Request" style="background-color: #0f172a;">🚨 Urgent Threat Escalation Request</option>
+                                    <option value="Account & Privilege Issue" style="background-color: #0f172a;">👤 Account Access & Permissions Issue</option>
+                                    <option value="Other Security Inquiry" style="background-color: #0f172a;">💬 General Security Inquiry</option>
+                                </select>
+                            </div>
+
+                            <!-- Priority Level -->
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">
+                                    Priority Level <span style="color: #ef4444;">*</span>
+                                </label>
+                                <select id="priorityLevel" required style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none; cursor: pointer; font-family: inherit;">
+                                    <option value="Low" style="background-color: #0f172a; color: #10b981;">🟢 Low - Standard Inquiry (24-48 hrs)</option>
+                                    <option value="Medium" selected style="background-color: #0f172a; color: #38bdf8;">🔵 Medium - Normal Operational Issue (12-24 hrs)</option>
+                                    <option value="High" style="background-color: #0f172a; color: #f59e0b;">🟠 High - Blocking Issue / LMS Error (4-8 hrs)</option>
+                                    <option value="Urgent" style="background-color: #0f172a; color: #ef4444;">🔴 Urgent - Active Phishing Vulnerability (&lt; 2 hrs)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- User Info Bar (Pre-filled / Contextual) -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">User / Reporter Email</label>
+                                <input type="email" id="reporterEmail" value="user.analyst@organization.com" required style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">Scan ID / Reference URL <span style="font-size: 11px; color: #64748b;">(Optional)</span></label>
+                                <input type="text" id="referenceId" placeholder="e.g. SCAN-88492 or https://phish-test.com" style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                            </div>
+                        </div>
+
+                        <!-- Subject Title -->
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">
+                                Subject / Complaint Overview <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="text" id="complaintSubject" placeholder="Brief summary of the issue..." required style="width: 100%; box-sizing: border-box; padding: 12px 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                        </div>
+
+                        <!-- Detailed Description -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <label style="font-size: 13px; font-weight: 600; color: #cbd5e1;">Detailed Incident Description <span style="color: #ef4444;">*</span></label>
+                                <span id="charCount" style="font-size: 11px; color: #64748b;">0 / 1000 characters</span>
+                            </div>
+                            <textarea id="complaintDetails" rows="5" maxlength="1000" oninput="updateCharCount()" placeholder="Please explain what happened, steps to reproduce, or why a URL/email was falsely classified by AI..." required style="width: 100%; box-sizing: border-box; padding: 14px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none; font-family: inherit; resize: vertical;"></textarea>
+                        </div>
+
+                        <!-- File Upload Simulation Area -->
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">Attach Artifacts / Evidence <span style="font-size: 11px; color: #64748b;">(Screenshots, .eml headers, logs - Max 10MB)</span></label>
+                            <div id="dropZone" onclick="document.getElementById('fileInput').click()" style="border: 2px dashed #334155; background-color: #0f172a; border-radius: 8px; padding: 25px; text-align: center; cursor: pointer; transition: border-color 0.2s ease;">
+                                <input type="file" id="fileInput" multiple style="display: none;" onchange="handleFileSelect(event)">
+                                <span style="font-size: 28px; display: block; margin-bottom: 6px;">📁</span>
+                                <span style="font-size: 14px; color: #cbd5e1; font-weight: 600;">Click to browse files</span> or drag and drop files here
+                                <p style="font-size: 12px; color: #64748b; margin: 6px 0 0 0;">Supports PNG, JPG, PDF, EML, TXT</p>
+                            </div>
+                            <div id="fileList" style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;"></div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 15px; margin-top: 10px;">
+                            <button type="submit" style="flex: 2; background-color: #0284c7; color: #ffffff; border: none; padding: 14px; border-radius: 6px; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4); display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                🛡️ Submit Complaint to Analysts
+                            </button>
+                            <button type="button" onclick="resetForm()" style="flex: 1; background-color: transparent; border: 1px solid #334155; color: #94a3b8; padding: 14px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer;">
+                                Reset Form
+                            </button>
+                        </div>
+
+                    </form>
+
+                    <!-- SLA Assurance Banner -->
+                    <div style="margin-top: 25px; padding: 14px; background-color: #0f172a; border-radius: 8px; border-left: 4px solid #0284c7; display: flex; align-items: flex-start; gap: 12px;">
+                        <span style="font-size: 18px;">⚡</span>
+                        <div>
+                            <h4 style="margin: 0 0 2px 0; color: #38bdf8; font-size: 13px; font-weight: 700;">Automatic AI Triage Active</h4>
+                            <p style="font-size: 12px; color: #94a3b8; margin: 0;">Submissions with 'Urgent' priority are dispatched directly to on-call SOC Analysts with automated ML model retrain flags.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SECTION 2: My Tickets & Complaint History -->
+            <div id="sectionHistory" style="display: none;">
+                <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 30px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                        <div>
+                            <h3 style="font-size: 18px; margin: 0; color: #ffffff; font-weight: 700;">Submitted Complaints & Status</h3>
+                            <p style="font-size: 13px; color: #94a3b8; margin: 4px 0 0 0;">Track analyst investigation updates in real-time.</p>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="statusFilter" onchange="filterTickets()" style="padding: 8px 12px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                                <option value="ALL">All Statuses</option>
+                                <option value="Pending Review">Pending Review</option>
+                                <option value="Under Investigation">Under Investigation</option>
+                                <option value="Resolved">Resolved</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Tickets Table -->
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid #334155; color: #94a3b8; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">
+                                    <th style="padding: 12px;">Ticket ID</th>
+                                    <th style="padding: 12px;">Category & Subject</th>
+                                    <th style="padding: 12px;">Priority</th>
+                                    <th style="padding: 12px;">Date Submitted</th>
+                                    <th style="padding: 12px;">Status</th>
+                                    <th style="padding: 12px; text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ticketTableBody">
+                                <!-- Pre-populated Sample Complaint 1 -->
+                                <tr style="border-bottom: 1px solid #1e293b; background-color: rgba(15, 23, 42, 0.5);" data-status="Under Investigation">
+                                    <td style="padding: 14px; font-weight: 700; color: #38bdf8;">#TK-9842</td>
+                                    <td style="padding: 14px;">
+                                        <div style="font-weight: 600; color: #ffffff;">False Positive URL Detection</div>
+                                        <div style="font-size: 11px; color: #64748b;">False Positive / Model Misclassification</div>
+                                    </td>
+                                    <td style="padding: 14px;"><span style="background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">High</span></td>
+                                    <td style="padding: 14px; color: #94a3b8;">2026-03-28</td>
+                                    <td style="padding: 14px;"><span style="background-color: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Under Investigation</span></td>
+                                    <td style="padding: 14px; text-align: right;"><button onclick="viewTicketDetails('#TK-9842', 'False Positive URL Detection', 'Model flagged internal HR portal as high-risk phishing URL.', 'Under Investigation', 'High')" style="background-color: #334155; color: #ffffff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">View</button></td>
+                                </tr>
+                                <!-- Pre-populated Sample Complaint 2 -->
+                                <tr style="border-bottom: 1px solid #1e293b; background-color: rgba(15, 23, 42, 0.3);" data-status="Resolved">
+                                    <td style="padding: 14px; font-weight: 700; color: #38bdf8;">#TK-9710</td>
+                                    <td style="padding: 14px;">
+                                        <div style="font-weight: 600; color: #ffffff;">Quiz 3 Score Logging Error</div>
+                                        <div style="font-size: 11px; color: #64748b;">LMS Course Content or Quiz Issue</div>
+                                    </td>
+                                    <td style="padding: 14px;"><span style="background-color: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Medium</span></td>
+                                    <td style="padding: 14px; color: #94a3b8;">2026-03-24</td>
+                                    <td style="padding: 14px;"><span style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Resolved</span></td>
+                                    <td style="padding: 14px; text-align: right;"><button onclick="viewTicketDetails('#TK-9710', 'Quiz 3 Score Logging Error', 'Quiz completed but certificate was not updated.', 'Resolved', 'Medium')" style="background-color: #334155; color: #ffffff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">View</button></td>
+                                </tr>
+                                <!-- Pre-populated Sample Complaint 3 -->
+                                <tr style="border-bottom: 1px solid #1e293b; background-color: rgba(15, 23, 42, 0.5);" data-status="Pending Review">
+                                    <td style="padding: 14px; font-weight: 700; color: #38bdf8;">#TK-9905</td>
+                                    <td style="padding: 14px;">
+                                        <div style="font-weight: 600; color: #ffffff;">Suspicious SMS Smishing Attempt</div>
+                                        <div style="font-size: 11px; color: #64748b;">Urgent Threat Escalation Request</div>
+                                    </td>
+                                    <td style="padding: 14px;"><span style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Urgent</span></td>
+                                    <td style="padding: 14px; color: #94a3b8;">2026-03-29</td>
+                                    <td style="padding: 14px;"><span style="background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Pending Review</span></td>
+                                    <td style="padding: 14px; text-align: right;"><button onclick="viewTicketDetails('#TK-9905', 'Suspicious SMS Smishing Attempt', 'Received targeted executive impersonation SMS with shortened link.', 'Pending Review', 'Urgent')" style="background-color: #334155; color: #ffffff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Ticket Detail Modal Container -->
+            <div id="ticketModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+                <div style="background-color: #1e293b; border: 1px solid #334155; width: 90%; max-width: 550px; border-radius: 12px; padding: 30px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); position: relative;">
+                    <button onclick="closeModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;">✕</button>
+                    
+                    <span id="modalTicketId" style="font-size: 13px; font-weight: 700; color: #38bdf8; background-color: rgba(56, 189, 248, 0.1); padding: 4px 10px; border-radius: 4px;">#TK-0000</span>
+                    <h3 id="modalSubject" style="font-size: 20px; margin: 12px 0 6px 0; color: #ffffff;">Ticket Subject</h3>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <span id="modalPriority" style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px;">Priority</span>
+                        <span id="modalStatus" style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px;">Status</span>
+                    </div>
+
+                    <div style="background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                        <label style="display: block; font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Description</label>
+                        <p id="modalDetails" style="font-size: 13px; color: #cbd5e1; margin: 0; line-height: 1.5;"></p>
+                    </div>
+
+                    <div style="background-color: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 12px;">
+                        <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 2px;">⚡ Analyst Operations Note</div>
+                        <p style="font-size: 12px; color: #94a3b8; margin: 0;">Automated notification will be dispatched to your registered email when status updates occur.</p>
+                    </div>
+
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button onclick="closeModal()" style="background-color: #0284c7; color: #ffffff; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;">Close Window</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background-color: #0b1120; border-top: 1px solid #1e293b; padding: 40px 20px; font-size: 13px; color: #64748b;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px;">
+            <div style="max-width: 350px;">
+                <h4 style="color: #ffffff; font-size: 16px; margin: 0 0 10px 0;">AI PhishShield LMS</h4>
+                <p style="margin: 0; color: #94a3b8;">An AI-driven Phishing Detection & Prevention System utilizing Machine Learning and NLP for unified cybersecurity learning and real-time threat detection.</p>
+            </div>
+            <div>
+                <h5 style="color: #ffffff; font-size: 14px; margin: 0 0 10px 0;">Detection Vectors</h5>
+                <p style="margin: 3px 0; color: #94a3b8;">Websites & URLs Analysis</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Email NLP Content Scans</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Mobile APK Risk Analysis</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Phone Pattern Detection</p>
+            </div>
+            <div>
+                <h5 style="color: #ffffff; font-size: 14px; margin: 0 0 10px 0;">System Specs</h5>
+                <p style="margin: 3px 0; color: #94a3b8;">Backend: Python-Django REST Framework</p>
+                <p style="margin: 3px 0; color: #94a3b8;">ML: Scikit-learn / TensorFlow / NLTK</p>
+                <p style="margin: 3px 0; color: #94a3b8;">Database: MySQL</p>
+            </div>
+        </div>
+        <div style="max-width: 1200px; margin: 30px auto 0 auto; border-top: 1px solid #1e293b; padding-top: 20px; text-align: center; color: #64748b;">
+            <p style="margin: 0;">&copy; 2026 AI Phishing Detection & Prevention System. Built for Cybersecurity LMS Education.</p>
+        </div>
+    </footer>
+
+    <!-- Interactive JavaScript Handlers -->
+    <script>
+        let attachedFiles = [];
+
+        // Tab Switch Logic
+        function switchTab(tabName) {
+            const formSection = document.getElementById('sectionForm');
+            const historySection = document.getElementById('sectionHistory');
+            const btnForm = document.getElementById('tabBtnForm');
+            const btnHistory = document.getElementById('tabBtnHistory');
+
+            if (tabName === 'form') {
+                formSection.style.display = 'block';
+                historySection.style.display = 'none';
+                btnForm.style.backgroundColor = '#0284c7';
+                btnForm.style.color = '#ffffff';
+                btnForm.style.borderColor = '#0284c7';
+
+                btnHistory.style.backgroundColor = '#1e293b';
+                btnHistory.style.color = '#cbd5e1';
+                btnHistory.style.borderColor = '#334155';
+            } else {
+                formSection.style.display = 'none';
+                historySection.style.display = 'block';
+                btnHistory.style.backgroundColor = '#0284c7';
+                btnHistory.style.color = '#ffffff';
+                btnHistory.style.borderColor = '#0284c7';
+
+                btnForm.style.backgroundColor = '#1e293b';
+                btnForm.style.color = '#cbd5e1';
+                btnForm.style.borderColor = '#334155';
+            }
+        }
+
+        // Textarea Character Counter
+        function updateCharCount() {
+            const textarea = document.getElementById('complaintDetails');
+            const charCount = document.getElementById('charCount');
+            charCount.textContent = `${textarea.value.length} / 1000 characters`;
+        }
+
+        // Drag & Drop / File Upload Handler
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            const fileListContainer = document.getElementById('fileList');
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                attachedFiles.push(file.name);
+                
+                const item = document.createElement('div');
+                item.style.cssText = "background-color: #0f172a; border: 1px solid #334155; padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #cbd5e1;";
+                item.innerHTML = `
+                    <span>📎 ${file.name} <span style="color:#64748b;">(${(file.size / 1024).toFixed(1)} KB)</span></span>
+                    <span style="color:#ef4444; cursor:pointer; font-weight:bold;" onclick="this.parentElement.remove()">✕</span>
+                `;
+                fileListContainer.appendChild(item);
+            }
+        }
+
+        // Drag and Drop Effects
+        const dropZone = document.getElementById('dropZone');
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#38bdf8';
+                dropZone.style.backgroundColor = 'rgba(56, 189, 248, 0.05)';
+            }, false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#334155';
+                dropZone.style.backgroundColor = '#0f172a';
+            }, false);
+        });
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            document.getElementById('fileInput').files = files;
+            handleFileSelect({ target: { files: files } });
+        });
+
+        // Form Submit Handler
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const category = document.getElementById('complaintCategory').value;
+            const priority = document.getElementById('priorityLevel').value;
+            const subject = document.getElementById('complaintSubject').value;
+            const details = document.getElementById('complaintDetails').value;
+            
+            // Generate Random Ticket ID
+            const newTicketId = '#TK-' + Math.floor(1000 + Math.random() * 9000);
+            const today = new Date().toISOString().split('T')[0];
+
+            // Priority Badge Colors
+            let priorityBadge = '';
+            if (priority === 'Urgent') {
+                priorityBadge = `<span style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Urgent</span>`;
+            } else if (priority === 'High') {
+                priorityBadge = `<span style="background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">High</span>`;
+            } else {
+                priorityBadge = `<span style="background-color: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">${priority}</span>`;
+            }
+
+            // Status Badge
+            const statusBadge = `<span style="background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Pending Review</span>`;
+
+            // Append to table
+            const tbody = document.getElementById('ticketTableBody');
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-status', 'Pending Review');
+            tr.style.cssText = "border-bottom: 1px solid #1e293b; background-color: rgba(15, 23, 42, 0.5);";
+            tr.innerHTML = `
+                <td style="padding: 14px; font-weight: 700; color: #38bdf8;">${newTicketId}</td>
+                <td style="padding: 14px;">
+                    <div style="font-weight: 600; color: #ffffff;">${subject}</div>
+                    <div style="font-size: 11px; color: #64748b;">${category}</div>
+                </td>
+                <td style="padding: 14px;">${priorityBadge}</td>
+                <td style="padding: 14px; color: #94a3b8;">${today}</td>
+                <td style="padding: 14px;">${statusBadge}</td>
+                <td style="padding: 14px; text-align: right;"><button onclick="viewTicketDetails('${newTicketId}', '${subject.replace(/'/g, "\\'")}', '${details.replace(/'/g, "\\'")}', 'Pending Review', '${priority}')" style="background-color: #334155; color: #ffffff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">View</button></td>
+            `;
+            tbody.insertBefore(tr, tbody.firstChild);
+
+            // Update badge counter
+            const currentBadge = document.getElementById('ticketCountBadge');
+            currentBadge.textContent = parseInt(currentBadge.textContent) + 1;
+
+            // Reset Form and Switch Tab
+            resetForm();
+            switchTab('history');
+
+            // Open Detail Modal automatically
+            viewTicketDetails(newTicketId, subject, details, 'Pending Review', priority);
+        }
+
+        // Reset Form
+        function resetForm() {
+            document.getElementById('complaintForm').reset();
+            document.getElementById('fileList').innerHTML = '';
+            document.getElementById('charCount').textContent = '0 / 1000 characters';
+            attachedFiles = [];
+        }
+
+        // Ticket Filter Logic
+        function filterTickets() {
+            const filterValue = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('#ticketTableBody tr');
+
+            rows.forEach(row => {
+                const status = row.getAttribute('data-status');
+                if (filterValue === 'ALL' || status === filterValue) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // View Modal Details
+        function viewTicketDetails(id, subject, details, status, priority) {
+            document.getElementById('modalTicketId').textContent = id;
+            document.getElementById('modalSubject').textContent = subject;
+            document.getElementById('modalDetails').textContent = details;
+            
+            const pElem = document.getElementById('modalPriority');
+            pElem.textContent = 'Priority: ' + priority;
+            pElem.style.backgroundColor = priority === 'Urgent' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(56, 189, 248, 0.2)';
+            pElem.style.color = priority === 'Urgent' ? '#ef4444' : '#38bdf8';
+
+            const sElem = document.getElementById('modalStatus');
+            sElem.textContent = 'Status: ' + status;
+            sElem.style.backgroundColor = status === 'Resolved' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)';
+            sElem.style.color = status === 'Resolved' ? '#10b981' : '#f59e0b';
+
+            document.getElementById('ticketModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('ticketModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
