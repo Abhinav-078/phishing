@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Detection History & Intelligence Console</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b0f19; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column;">
+
+    <!-- TOP HEADER -->
+    <header style="background-color: #111827; border-bottom: 1px solid #1f2937; padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="background-color: #ef4444; color: #ffffff; padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 13px; letter-spacing: 0.5px;">SOC DETECT</span>
+            <div>
+                <h1 style="margin: 0; font-size: 18px; font-weight: 700; color: #ffffff;">Threat Detection History</h1>
+                <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">ML Detection Logs, Confidence Scores, & Threat Indicators</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="exportDetections()" style="background-color: #1f2937; color: #f8fafc; border: 1px solid #374151; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">📥 Export Log CSV</button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main style="flex-grow: 1; padding: 25px; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px;">
+
+        <!-- FILTER CONTROLS -->
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; background-color: #111827; padding: 15px; border-radius: 10px; border: 1px solid #1f2937;">
+            <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search IOC, sender, subject, URL, or Event ID..." style="flex: 2; min-width: 250px; padding: 10px 14px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+            
+            <select id="vectorFilter" onchange="applyFilters()" style="flex: 1; min-width: 150px; padding: 10px 14px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                <option value="ALL">All Vectors</option>
+                <option value="Email">Email</option>
+                <option value="URL / Domain">URL / Domain</option>
+                <option value="Mobile App">Mobile App</option>
+                <option value="SMS / Smishing">SMS / Smishing</option>
+            </select>
+
+            <select id="severityFilter" onchange="applyFilters()" style="flex: 1; min-width: 150px; padding: 10px 14px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                <option value="ALL">All Severities</option>
+                <option value="CRITICAL">Critical</option>
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+            </select>
+        </div>
+
+        <!-- MAIN TWO-COLUMN DASHBOARD (TABLE + IOC DETAIL DRAWER) -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+
+            <!-- DETECTION LOG TABLE -->
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #1f2937; background-color: #0b0f19; color: #9ca3af;">
+                            <th style="padding: 12px 16px;">Detection ID / Time</th>
+                            <th style="padding: 12px 16px;">Vector</th>
+                            <th style="padding: 12px 16px;">Threat Indicator / Source</th>
+                            <th style="padding: 12px 16px;">ML Confidence</th>
+                            <th style="padding: 12px 16px;">Severity</th>
+                            <th style="padding: 12px 16px; text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detectionTableBody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- DETAILED INSPECTION DRAWER -->
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+                <h3 style="margin: 0; font-size: 16px; color: #ffffff; border-bottom: 1px solid #1f2937; padding-bottom: 10px;">Threat Intelligence Details</h3>
+
+                <div id="inspectorContent" style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+                    <div style="color: #9ca3af; text-align: center; padding: 40px 0;">Select a detection entry from the table to inspect ML features, IOC artifacts, and recommended SOC responses.</div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const detections = [
+            {
+                id: "DET-98104",
+                time: "2026-09-20 14:18:02",
+                vector: "Email",
+                target: "finance-team@company.com",
+                indicator: "paypal-verify-secure-update.com",
+                mlScore: 98.4,
+                severity: "CRITICAL",
+                status: "Quarantined",
+                mlFeatures: ["Typosquatting (+0.42)", "Suspicious Envelope Sender (+0.31)", "Urgent Language Heuristics (+0.25)"]
+            },
+            {
+                id: "DET-98099",
+                time: "2026-09-20 13:45:12",
+                vector: "URL / Domain",
+                target: "Endpoint: Workstation-042",
+                indicator: "http://198.51.100.88/login/auth.php",
+                mlScore: 92.1,
+                severity: "HIGH",
+                status: "Blocked by WAF",
+                mlFeatures: ["IP Host without Domain (+0.55)", "Credential Harvesting Layout Match (+0.37)"]
+            },
+            {
+                id: "DET-98085",
+                time: "2026-09-20 11:20:44",
+                vector: "SMS / Smishing",
+                target: "+1 (555) 019-2831",
+                indicator: "Your bank account is frozen. Click: bit.ly/3x8kL",
+                mlScore: 89.0,
+                severity: "HIGH",
+                status: "Alert Sent to User",
+                mlFeatures: ["Shortened URL Vector (+0.48)", "Financial Threat Keywords (+0.41)"]
+            },
+            {
+                id: "DET-98072",
+                time: "2026-09-20 09:12:00",
+                vector: "Mobile App",
+                target: "Android Fleet Pack",
+                indicator: "com.fake.authenticator.apk",
+                mlScore: 74.5,
+                severity: "MEDIUM",
+                status: "Flagged for Review",
+                mlFeatures: ["Unsigned Certificate (+0.40)", "Excessive SMS Permissions (+0.34.5)"]
+            }
+        ];
+
+        let selectedId = null;
+
+        function renderTable(data) {
+            const tbody = document.getElementById("detectionTableBody");
+            tbody.innerHTML = "";
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 30px; color: #9ca3af;">No detection logs match the selected filters.</td></tr>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const tr = document.createElement("tr");
+                tr.style.borderBottom = "1px solid #1f2937";
+                tr.style.cursor = "pointer";
+                tr.style.backgroundColor = item.id === selectedId ? "#1e293b" : "transparent";
+                tr.onclick = () => selectDetection(item.id);
+
+                let sevBg = "rgba(239, 68, 68, 0.2)";
+                let sevColor = "#ef4444";
+                if (item.severity === "HIGH") { sevBg = "rgba(245, 158, 11, 0.2)"; sevColor = "#f59e0b"; }
+                else if (item.severity === "MEDIUM") { sevBg = "rgba(56, 189, 248, 0.2)"; sevColor = "#38bdf8"; }
+
+                tr.innerHTML = `
+                    <td style="padding: 12px 16px;">
+                        <div style="font-weight: 700; color: #ffffff; font-family: monospace;">${item.id}</div>
+                        <div style="font-size: 11px; color: #9ca3af;">${item.time}</div>
+                    </td>
+                    <td style="padding: 12px 16px; color: #cbd5e1; font-weight: 600;">${item.vector}</td>
+                    <td style="padding: 12px 16px;">
+                        <div style="font-family: monospace; color: #38bdf8; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(item.indicator)}</div>
+                        <div style="font-size: 11px; color: #9ca3af;">${escapeHtml(item.target)}</div>
+                    </td>
+                    <td style="padding: 12px 16px;">
+                        <strong style="color: ${item.mlScore > 90 ? '#ef4444' : '#f59e0b'}">${item.mlScore}%</strong>
+                    </td>
+                    <td style="padding: 12px 16px;">
+                        <span style="background-color: ${sevBg}; color: ${sevColor}; padding: 3px 8px; border-radius: 4px; font-weight: 800; font-size: 10px;">${item.severity}</span>
+                    </td>
+                    <td style="padding: 12px 16px; text-align: right;">
+                        <button onclick="event.stopPropagation(); selectDetection('${item.id}')" style="background: transparent; border: 1px solid #374151; color: #cbd5e1; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">Inspect</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function selectDetection(id) {
+            selectedId = id;
+            const item = detections.find(d => d.id === id);
+            const drawer = document.getElementById("inspectorContent");
+
+            if (!item) return;
+
+            let featuresList = item.mlFeatures.map(f => `<li style="margin-bottom: 4px;">${escapeHtml(f)}</li>`).join("");
+
+            drawer.innerHTML = `
+                <div style="background-color: #0b0f19; padding: 12px; border-radius: 6px; border: 1px solid #1f2937;">
+                    <div style="font-size: 11px; color: #9ca3af;">EVENT ID</div>
+                    <div style="font-size: 16px; font-weight: 700; color: #38bdf8; font-family: monospace;">${item.id}</div>
+                </div>
+
+                <div>
+                    <label style="font-size: 11px; color: #9ca3af; font-weight: 700;">INDICATOR OF COMPROMISE (IOC)</label>
+                    <div style="font-family: monospace; color: #ef4444; background: #0b0f19; padding: 8px; border-radius: 4px; word-break: break-all; margin-top: 4px;">${escapeHtml(item.indicator)}</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label style="font-size: 11px; color: #9ca3af; font-weight: 700;">VECTOR</label>
+                        <div style="color: #ffffff; margin-top: 2px;">${item.vector}</div>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: #9ca3af; font-weight: 700;">STATUS</label>
+                        <div style="color: #10b981; font-weight: 600; margin-top: 2px;">${item.status}</div>
+                    </div>
+                </div>
+
+                <div>
+                    <label style="font-size: 11px; color: #9ca3af; font-weight: 700;">ML DETECTOR FEATURE WEIGHTS</label>
+                    <ul style="margin: 6px 0 0 0; padding-left: 18px; color: #cbd5e1; font-size: 12px;">
+                        ${featuresList}
+                    </ul>
+                </div>
+
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #1f2937; display: flex; flex-direction: column; gap: 8px;">
+                    <button onclick="alert('IOC added to global blocklist!')" style="background-color: #ef4444; color: white; border: none; padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">🚫 Add IOC to Global Firewall Blocklist</button>
+                    <button onclick="alert('Ticket escalated to Incident Response team.')" style="background-color: #1f2937; color: #f8fafc; border: 1px solid #374151; padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Escalate Incident</button>
+                </div>
+            `;
+
+            renderTable(detections);
+        }
+
+        function applyFilters() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const vector = document.getElementById("vectorFilter").value;
+            const severity = document.getElementById("severityFilter").value;
+
+            const filtered = detections.filter(d => {
+                const matchesQuery = d.id.toLowerCase().includes(query) ||
+                                     d.indicator.toLowerCase().includes(query) ||
+                                     d.target.toLowerCase().includes(query);
+                const matchesVector = (vector === "ALL" || d.vector === vector);
+                const matchesSeverity = (severity === "ALL" || d.severity === severity);
+
+                return matchesQuery && matchesVector && matchesSeverity;
+            });
+
+            renderTable(filtered);
+        }
+
+        function exportDetections() {
+            alert("Exporting detection logs to CSV format...");
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Initialize table
+        renderTable(detections);
+        selectDetection(detections[0].id);
+    </script>
+</body>
+</html>

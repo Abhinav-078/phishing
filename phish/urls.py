@@ -29,5 +29,7 @@ urlpatterns = [
     path('phishing/',include('phishing.urls')),
     path('user/',include('user.urls')),
     path('website/',include('website.urls')),
-    path('main_template/',include('main_template.urls'))
-]
+    path('main_template/',include('main_template.urls')),
+    path('adm/',include('adm.urls'))
+    ]
+

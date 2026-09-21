@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard - PhishShield LMS</title>
+    <title>PhishShield LMS - User Dashboard</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; display: flex; min-height: 100vh;">
 
@@ -33,32 +33,29 @@
         <!-- Dashboard Navigation Menu -->
         <nav style="padding: 15px 10px; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
             
-            <a href="#dashboard" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background-color: #0284c7; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600;">
+            <a href="#dashboard" onclick="showSection('dashboard')" class="nav-btn active" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background-color: #0284c7; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600;">
                 📊 Dashboard
             </a>
 
             <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Account Management</div>
-            <a href="#profile" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">⚙️ View & Update Profile</a>
+            <a href="#profile" onclick="showSection('profile')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">⚙️ View & Update Profile</a>
 
             <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">AI Phishing Checking</div>
-            <a href="#check-url" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🌐 Check URL / Website</a>
-            <a href="#check-phno" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📞 Check Phone Number</a>
-            <a href="#check-application" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📱 Check Application</a>
-            <a href="#check-email" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">✉️ Check Email</a>
+            <a href="#scanner" onclick="showSection('scanner')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🛡️ AI Scanner (URL/Ph/App/Mail)</a>
 
             <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Threat Logs & Learning</div>
-            <a href="#detection-history" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📜 Previous Detection History</a>
-            <a href="#doubts-replies" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">💬 Ask Doubt & Replies</a>
+            <a href="#detection-history" onclick="showSection('detection-history')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📜 Detection History</a>
+            <a href="#sec-reports" onclick="showSection('sec-reports')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📄 Security Reports</a>
+            <a href="#doubts" onclick="showSection('doubts')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">💬 Ask Doubt & Replies</a>
 
             <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Support & Feedback</div>
-            <a href="#complaints" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🚨 Complaints</a>
-            <a href="#feedbacks" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">⭐ Feedbacks</a>
+            <a href="#support" onclick="showSection('support')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🚨 Complaints & Feedback</a>
 
         </nav>
 
         <!-- Sidebar Footer / Logout -->
         <div style="padding: 15px; border-top: 1px solid #334155;">
-            <a href="#" style="display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; padding: 10px 0; background-color: #ef4444; color: #ffffff; border: none; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600;">
+            <a href="#" onclick="alert('Logged out successfully.')" style="display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; padding: 10px 0; background-color: #ef4444; color: #ffffff; border: none; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600;">
                 🚪 Logout
             </a>
         </div>
@@ -70,8 +67,8 @@
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid #334155; padding-bottom: 20px;">
             <div>
-                <h1 style="font-size: 26px; margin: 0; color: #ffffff;">User Dashboard</h1>
-                <p style="font-size: 14px; color: #94a3b8; margin: 4px 0 0 0;">Detect threats, manage queries, and submit feedback on phishing detection[cite: 1].</p>
+                <h1 style="font-size: 26px; margin: 0; color: #ffffff;" id="page-title">User Dashboard</h1>
+                <p style="font-size: 14px; color: #94a3b8; margin: 4px 0 0 0;" id="page-desc">Detect threats, manage queries, and view security intelligence in one place[cite: 1].</p>
             </div>
             <div>
                 <span style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 12px; padding: 6px 14px; border-radius: 20px; font-weight: 600;">
@@ -80,91 +77,140 @@
             </div>
         </div>
 
-        <!-- 1. Checking Module Section (URL, Phone, App, Email) -->
-        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
-            <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">AI Phishing Scanner</h2>
-            
-            <form style="display: flex; flex-direction: column; gap: 15px;" onsubmit="event.preventDefault();">
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <select style="padding: 12px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none; flex: 1; min-width: 180px;">
-                        <option value="url">Check URL / Website[cite: 1]</option>
-                        <option value="phno">Check Phone Number[cite: 1]</option>
-                        <option value="application">Check Application[cite: 1]</option>
-                        <option value="email">Check Email Content[cite: 1]</option>
-                    </select>
-
-                    <input type="text" placeholder="Enter target data (URL, phone number, app details, or email message)..." required style="flex: 3; min-width: 280px; padding: 12px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
-                    
-                    <button type="submit" style="background-color: #0284c7; color: #ffffff; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer;">Perform Check</button>
+        <!-- SECTION 1: DASHBOARD OVERVIEW -->
+        <div id="section-dashboard" class="content-section" style="display: block;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                <div style="background-color: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 10px;">
+                    <div style="font-size: 12px; color: #94a3b8;">Total Scans Performed</div>
+                    <div style="font-size: 26px; font-weight: 700; color: #38bdf8; margin-top: 5px;">128</div>
                 </div>
-            </form>
-        </div>
-
-        <!-- 2. Previous Detection History -->
-        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 style="font-size: 18px; margin: 0; color: #ffffff;">Previous Detection History[cite: 1]</h2>
-            </div>
-
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
-                    <thead>
-                        <tr style="border-bottom: 1px solid #334155; color: #94a3b8;">
-                            <th style="padding: 12px 10px;">Check Type[cite: 1]</th>
-                            <th style="padding: 12px 10px;">Input Data[cite: 1]</th>
-                            <th style="padding: 12px 10px;">Risk Score[cite: 1]</th>
-                            <th style="padding: 12px 10px;">Status[cite: 1]</th>
-                            <th style="padding: 12px 10px;">Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
-                            <td style="padding: 12px 10px; color: #cbd5e1;">URL[cite: 1]</td>
-                            <td style="padding: 12px 10px; color: #38bdf8;">http://verify-account-update.xyz[cite: 1]</td>
-                            <td style="padding: 12px 10px; font-weight: 700; color: #ef4444;">85 / 100[cite: 1]</td>
-                            <td style="padding: 12px 10px;"><span style="background-color: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-size: 12px;">Phishing[cite: 1]</span></td>
-                            <td style="padding: 12px 10px; color: #94a3b8;">Today</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
-                            <td style="padding: 12px 10px; color: #cbd5e1;">Phone Number[cite: 1]</td>
-                            <td style="padding: 12px 10px; color: #cbd5e1;">+1 (800) 555-0199[cite: 1]</td>
-                            <td style="padding: 12px 10px; font-weight: 700; color: #f59e0b;">55 / 100[cite: 1]</td>
-                            <td style="padding: 12px 10px;"><span style="background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-size: 12px;">Suspicious[cite: 1]</span></td>
-                            <td style="padding: 12px 10px; color: #94a3b8;">Yesterday</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 12px 10px; color: #cbd5e1;">Application[cite: 1]</td>
-                            <td style="padding: 12px 10px; color: #cbd5e1;">com.banking.mobile.app[cite: 1]</td>
-                            <td style="padding: 12px 10px; font-weight: 700; color: #10b981;">05 / 100[cite: 1]</td>
-                            <td style="padding: 12px 10px;"><span style="background-color: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-size: 12px;">Safe[cite: 1]</span></td>
-                            <td style="padding: 12px 10px; color: #94a3b8;">Sep 18, 2026</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div style="background-color: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 10px;">
+                    <div style="font-size: 12px; color: #94a3b8;">Phishing Threats Blocked</div>
+                    <div style="font-size: 26px; font-weight: 700; color: #ef4444; margin-top: 5px;">14</div>
+                </div>
+                <div style="background-color: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 10px;">
+                    <div style="font-size: 12px; color: #94a3b8;">Security Reports Received</div>
+                    <div style="font-size: 26px; font-weight: 700; color: #10b981; margin-top: 5px;">6</div>
+                </div>
             </div>
         </div>
 
-        <!-- 3. Doubts, Complaints & Feedbacks Grid -->
-        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-            
-            <!-- Ask Doubt & Replies -->
-            <div style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+        <!-- SECTION 2: VIEW & UPDATE PROFILE -->
+        <div id="section-profile" class="content-section" style="display: none;">
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px; max-width: 600px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">User Profile Details</h2>
+                <form onsubmit="event.preventDefault(); alert('Profile Updated Successfully!');">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px;">Full Name</label>
+                        <input type="text" value="John Doe" style="width: 100%; padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px;">Email Address</label>
+                        <input type="email" value="john.doe@example.com" style="width: 100%; padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" style="background-color: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer;">Save Profile Changes</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- SECTION 3: AI SCANNER -->
+        <div id="section-scanner" class="content-section" style="display: none;">
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">AI Phishing Scanner</h2>
+                <form style="display: flex; flex-direction: column; gap: 15px;" onsubmit="event.preventDefault(); alert('Scan completed.');">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <select style="padding: 12px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none; flex: 1; min-width: 180px;">
+                            <option value="url">Check URL / Website[cite: 1]</option>
+                            <option value="phno">Check Phone Number[cite: 1]</option>
+                            <option value="application">Check Application[cite: 1]</option>
+                            <option value="email">Check Email Content[cite: 1]</option>
+                        </select>
+                        <input type="text" placeholder="Enter target data to inspect..." required style="flex: 3; min-width: 280px; padding: 12px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                        <button type="submit" style="background-color: #0284c7; color: #ffffff; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer;">Perform Scan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- SECTION 4: DETECTION HISTORY (SEPARATED) -->
+        <div id="section-detection-history" class="content-section" style="display: none;">
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">Previous Detection History[cite: 1]</h2>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #334155; color: #94a3b8;">
+                                <th style="padding: 12px 10px;">Check Type[cite: 1]</th>
+                                <th style="padding: 12px 10px;">Input Data[cite: 1]</th>
+                                <th style="padding: 12px 10px;">Risk Score[cite: 1]</th>
+                                <th style="padding: 12px 10px;">Status[cite: 1]</th>
+                                <th style="padding: 12px 10px;">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
+                                <td style="padding: 12px 10px; color: #cbd5e1;">URL[cite: 1]</td>
+                                <td style="padding: 12px 10px; color: #38bdf8;">http://verify-account-update.xyz[cite: 1]</td>
+                                <td style="padding: 12px 10px; font-weight: 700; color: #ef4444;">85 / 100[cite: 1]</td>
+                                <td style="padding: 12px 10px;"><span style="background-color: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-size: 12px;">Phishing[cite: 1]</span></td>
+                                <td style="padding: 12px 10px; color: #94a3b8;">Today</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
+                                <td style="padding: 12px 10px; color: #cbd5e1;">Phone Number[cite: 1]</td>
+                                <td style="padding: 12px 10px; color: #cbd5e1;">+1 (800) 555-0199[cite: 1]</td>
+                                <td style="padding: 12px 10px; font-weight: 700; color: #f59e0b;">55 / 100[cite: 1]</td>
+                                <td style="padding: 12px 10px;"><span style="background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-size: 12px;">Suspicious[cite: 1]</span></td>
+                                <td style="padding: 12px 10px; color: #94a3b8;">Yesterday</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: SECURITY REPORTS (SEPARATED) -->
+        <div id="section-sec-reports" class="content-section" style="display: none;">
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">Generated Security Reports</h2>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background-color: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155;">
+                        <div>
+                            <div style="font-weight: 600; color: #ffffff; font-size: 14px;">Weekly Threat Analysis Report</div>
+                            <div style="font-size: 11px; color: #94a3b8;">Generated: Sep 20, 2026</div>
+                        </div>
+                        <button onclick="alert('Downloading Weekly Threat Analysis Report...')" style="background-color: transparent; border: 1px solid #38bdf8; color: #38bdf8; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Download PDF</button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background-color: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155;">
+                        <div>
+                            <div style="font-weight: 600; color: #ffffff; font-size: 14px;">Monthly Security Audit Summary</div>
+                            <div style="font-size: 11px; color: #94a3b8;">Generated: Sep 01, 2026</div>
+                        </div>
+                        <button onclick="alert('Downloading Security Audit...')" style="background-color: transparent; border: 1px solid #38bdf8; color: #38bdf8; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Download PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 6: ASK DOUBT & REPLIES -->
+        <div id="section-doubts" class="content-section" style="display: none;">
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
                 <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">Ask Doubt & Replies[cite: 1]</h2>
-                <form style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;" onsubmit="event.preventDefault();">
+                <form style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;" onsubmit="event.preventDefault(); alert('Question submitted!');">
                     <textarea placeholder="Ask security analyst a question..." required style="width: 100%; height: 70px; padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 13px; box-sizing: border-box; resize: none; outline: none;"></textarea>
                     <button type="submit" style="background-color: #0284c7; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; align-self: flex-end;">Submit Doubt[cite: 1]</button>
                 </form>
-                
                 <div style="border-top: 1px solid #334155; padding-top: 15px;">
                     <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">Latest Reply[cite: 1]:</div>
                     <p style="font-size: 13px; color: #cbd5e1; margin: 5px 0;"><strong>Analyst Reply:</strong> "The URL you queried uses domain masking to bypass standard blacklists[cite: 1]."</p>
                 </div>
             </div>
+        </div>
 
-            <!-- Complaints & Feedbacks Module -->
-            <div style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+        <!-- SECTION 7: COMPLAINTS & FEEDBACK -->
+        <div id="section-support" class="content-section" style="display: none;">
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px; max-width: 600px;">
                 <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">Complaints & Feedbacks[cite: 1]</h2>
-                <form style="display: flex; flex-direction: column; gap: 12px;" onsubmit="event.preventDefault();">
+                <form style="display: flex; flex-direction: column; gap: 12px;" onsubmit="event.preventDefault(); alert('Message Sent!');">
                     <div>
                         <label style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px;">Submission Type</label>
                         <select style="width: 100%; padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
@@ -173,15 +219,38 @@
                         </select>
                     </div>
                     <div>
-                        <textarea placeholder="Enter details..." required style="width: 100%; height: 70px; padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 13px; box-sizing: border-box; resize: none; outline: none;"></textarea>
+                        <textarea placeholder="Enter details..." required style="width: 100%; height: 80px; padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 13px; box-sizing: border-box; resize: none; outline: none;"></textarea>
                     </div>
                     <button type="submit" style="background-color: #10b981; color: white; border: none; padding: 9px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;">Send Message[cite: 1]</button>
                 </form>
             </div>
-
         </div>
 
     </main>
 
+    <!-- SINGLE PAGE VIEW TOGGLER SCRIPT -->
+    <script>
+        function showSection(sectionId) {
+            // Hide all content sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(sec => sec.style.display = 'none');
+
+            // Show selected section
+            const targetSection = document.getElementById('section-' + sectionId);
+            if(targetSection) {
+                targetSection.style.display = 'block';
+            }
+
+            // Active button highlight logic
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.style.backgroundColor = 'transparent';
+                btn.style.color = '#cbd5e1';
+            });
+
+            event.currentTarget.style.backgroundColor = '#0284c7';
+            event.currentTarget.style.color = '#ffffff';
+        }
+    </script>
 </body>
 </html>

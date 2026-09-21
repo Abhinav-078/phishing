@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Service - Complaint Response Portal</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column;">
+
+    <!-- TOP HEADER -->
+    <header style="background-color: #1e293b; border-bottom: 1px solid #334155; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="background-color: #0284c7; color: #ffffff; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 14px;">CS</span>
+            <h1 style="margin: 0; font-size: 20px; font-weight: 700;">Complaint Resolution Desk</h1>
+        </div>
+        <div style="font-size: 13px; color: #94a3b8;">
+            Active Agent: <strong style="color: #f8fafc;">Support Lead</strong>
+        </div>
+    </header>
+
+    <!-- MAIN TWO-COLUMN LAYOUT -->
+    <main style="flex-grow: 1; padding: 25px; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box; display: grid; grid-template-columns: 380px 1fr; gap: 20px;">
+        
+        <!-- LEFT COLUMN: COMPLAINT LIST -->
+        <section style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; display: flex; flex-direction: column; overflow: hidden;">
+            <div style="padding: 15px; border-bottom: 1px solid #334155; background-color: #0f172a;">
+                <input type="text" id="searchBox" onkeyup="filterComplaints()" placeholder="Search by customer, ticket ID, subject..." style="width: 100%; padding: 10px; background-color: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none; box-sizing: border-box;">
+            </div>
+
+            <div id="complaintList" style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column;">
+                <!-- Complaint Cards dynamic load -->
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN: COMPLAINT DETAILS & REPLY PANEL -->
+        <section style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px; display: flex; flex-direction: column; gap: 20px;">
+            
+            <!-- Complaint Summary Card -->
+            <div style="background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                    <div>
+                        <span id="displayTicket" style="font-family: monospace; font-size: 12px; color: #38bdf8; font-weight: 700;">TICKET #---</span>
+                        <h2 id="displaySubject" style="margin: 4px 0 0 0; font-size: 18px; color: #ffffff;">Select a complaint to respond</h2>
+                    </div>
+                    <span id="displayBadge" style="background-color: #334155; color: #cbd5e1; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700;">--</span>
+                </div>
+
+                <div style="font-size: 13px; color: #94a3b8; display: flex; gap: 20px; border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 12px;">
+                    <div>From: <strong id="displayName" style="color: #f8fafc;">-</strong> (<span id="displayEmail">-</span>)</div>
+                    <div>Date: <span id="displayDate" style="color: #cbd5e1;">-</span></div>
+                </div>
+
+                <div id="displayMessage" style="font-size: 14px; color: #e2e8f0; line-height: 1.6; white-space: pre-line;">
+                    Please select a customer complaint ticket from the left sidebar to view details and issue a response.
+                </div>
+            </div>
+
+            <!-- Reply Form Section -->
+            <div style="display: flex; flex-direction: column; gap: 12px; flex-grow: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <label style="font-size: 14px; font-weight: 700; color: #ffffff;">Draft Response Email</label>
+                    
+                    <!-- Quick Response Templates -->
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 12px; color: #94a3b8;">Insert Template:</span>
+                        <select id="templateSelect" onchange="applyTemplate()" style="padding: 6px 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #38bdf8; font-size: 12px; outline: none; cursor: pointer;">
+                            <option value="">-- Choose Macro --</option>
+                            <option value="apology">Standard Formal Apology & Investigation</option>
+                            <option value="refund">Refund / Credit Processing Notice</option>
+                            <option value="escalated">Escalated to Technical / Senior Management</option>
+                        </select>
+                    </div>
+                </div>
+
+                <textarea id="replyMessage" placeholder="Type your official reply to the customer here..." style="width: 100%; height: 180px; padding: 15px; background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 13px; outline: none; font-family: inherit; resize: vertical; box-sizing: border-box; line-height: 1.5;"></textarea>
+
+                <!-- Status Update and Send Actions -->
+                <div style="display: flex; justify-content: space-between; align-items: center; background-color: #0f172a; padding: 12px 18px; border-radius: 8px; border: 1px solid #334155; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label style="font-size: 12px; color: #94a3b8; font-weight: 600;">Update Ticket Status:</label>
+                        <select id="statusSelect" style="padding: 6px 10px; background-color: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 12px; outline: none;">
+                            <option value="RESOLVED">Mark as Resolved</option>
+                            <option value="IN_PROGRESS">In Progress / Pending Customer Reply</option>
+                            <option value="OPEN">Keep Open</option>
+                        </select>
+                    </div>
+
+                    <button onclick="sendReply()" style="background-color: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        ✉️ Send Official Reply
+                    </button>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Sample Complaint Records Data
+        const complaints = [
+            {
+                id: "CMP-9041",
+                name: "Sarah Jenkins",
+                email: "s.jenkins@example.com",
+                date: "Sept 20, 2026",
+                subject: "Delayed Shipment & Missing Tracking Updates",
+                status: "OPEN",
+                priority: "HIGH",
+                message: "Hello,\nI placed order #88492 four days ago with express 2-day delivery guaranteed. The tracking number provided has shown no movement for 48 hours, and I urgently need these items for an upcoming event. Please advise immediately on where my package is or issue a full shipping refund."
+            },
+            {
+                id: "CMP-8922",
+                name: "Mark Thompson",
+                email: "m.thompson@example.com",
+                date: "Sept 19, 2026",
+                subject: "Incorrect Billing Amount on Monthly Subscription",
+                status: "OPEN",
+                priority: "MEDIUM",
+                message: "To Customer Care,\nI was charged $49.99 on my credit card this morning instead of my agreed promotional rate of $29.99 per month. Please correct this error on my account and credit back the difference."
+            },
+            {
+                id: "CMP-8815",
+                name: "Elena Rostova",
+                email: "elena.r@example.com",
+                date: "Sept 18, 2026",
+                subject: "App Login Error and Account Access Blocked",
+                status: "RESOLVED",
+                priority: "LOW",
+                message: "Hi,\nEvery time I attempt to sign into my dashboard using two-factor authentication, I receive an error 'Session Timed Out'. I have tried resetting my password twice."
+            }
+        ];
+
+        let selectedComplaintId = null;
+
+        function renderComplaintList(data) {
+            const container = document.getElementById('complaintList');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; text-align: center; color: #94a3b8; font-size: 13px;">No complaints match search.</div>';
+                return;
+            }
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.onclick = () => loadComplaintDetails(item.id);
+                card.style.padding = '15px';
+                card.style.borderBottom = '1px solid #334155';
+                card.style.cursor = 'pointer';
+                card.style.backgroundColor = (item.id === selectedComplaintId) ? '#0f172a' : 'transparent';
+                
+                let badgeColor = item.status === 'RESOLVED' ? '#10b981' : (item.priority === 'HIGH' ? '#ef4444' : '#f59e0b');
+
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-family: monospace; font-size: 11px; color: #38bdf8;">${item.id}</span>
+                        <span style="font-size: 10px; font-weight: 700; color: ${badgeColor}; border: 1px solid ${badgeColor}; padding: 2px 6px; border-radius: 4px;">${item.status}</span>
+                    </div>
+                    <div style="font-weight: 600; font-size: 13px; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(item.subject)}</div>
+                    <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">${escapeHtml(item.name)} • ${item.date}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function loadComplaintDetails(id) {
+            selectedComplaintId = id;
+            const item = complaints.find(c => c.id === id);
+            if (!item) return;
+
+            document.getElementById('displayTicket').innerText = `TICKET #${item.id}`;
+            document.getElementById('displaySubject').innerText = item.subject;
+            document.getElementById('displayName').innerText = item.name;
+            document.getElementById('displayEmail').innerText = item.email;
+            document.getElementById('displayDate').innerText = item.date;
+            document.getElementById('displayMessage').innerText = item.message;
+
+            const badge = document.getElementById('displayBadge');
+            badge.innerText = item.status;
+            badge.style.backgroundColor = item.status === 'RESOLVED' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)';
+            badge.style.color = item.status === 'RESOLVED' ? '#10b981' : '#ef4444';
+
+            // Clear draft and select box
+            document.getElementById('replyMessage').value = '';
+            document.getElementById('templateSelect').value = '';
+
+            renderComplaintList(complaints);
+        }
+
+        function applyTemplate() {
+            if (!selectedComplaintId) {
+                alert('Please select a complaint ticket first.');
+                document.getElementById('templateSelect').value = '';
+                return;
+            }
+
+            const item = complaints.find(c => c.id === selectedComplaintId);
+            const templateType = document.getElementById('templateSelect').value;
+            const textarea = document.getElementById('replyMessage');
+
+            const templates = {
+                apology: `Dear ${item.name},\n\nThank you for reaching out to us. We sincerely apologize for the inconvenience regarding your issue: "${item.subject}".\n\nOur team is actively investigating this matter to ensure it is resolved immediately. We value your business and will keep you updated on the progress.\n\nBest regards,\nCustomer Care Team`,
+                refund: `Dear ${item.name},\n\nThank you for bringing this matter to our attention. We have reviewed your request for ticket ${item.id} and approved a refund/credit adjustments to your original payment method.\n\nPlease allow 3-5 business days for this reflection on your statement.\n\nBest regards,\nCustomer Care Team`,
+                escalated: `Dear ${item.name},\n\nWe have received your request regarding "${item.subject}" and have escalated ticket #${item.id} directly to our senior specialist team.\n\nA senior team member will review your details and reach out within 24 hours.\n\nBest regards,\nCustomer Care Team`
+            };
+
+            if (templates[templateType]) {
+                textarea.value = templates[templateType];
+            }
+        }
+
+        function filterComplaints() {
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            const filtered = complaints.filter(c => 
+                c.name.toLowerCase().includes(query) || 
+                c.subject.toLowerCase().includes(query) || 
+                c.id.toLowerCase().includes(query)
+            );
+            renderComplaintList(filtered);
+        }
+
+        function sendReply() {
+            if (!selectedComplaintId) {
+                alert('Please select a complaint ticket to reply to.');
+                return;
+            }
+
+            const replyText = document.getElementById('replyMessage').value.trim();
+            if (!replyText) {
+                alert('Please type a response before sending.');
+                return;
+            }
+
+            const newStatus = document.getElementById('statusSelect').value;
+            const item = complaints.find(c => c.id === selectedComplaintId);
+            item.status = newStatus;
+
+            alert(`Official reply successfully dispatched to ${item.email}!\n\nTicket Status updated to: ${newStatus}`);
+            
+            document.getElementById('replyMessage').value = '';
+            loadComplaintDetails(selectedComplaintId);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Initialize with first complaint
+        loadComplaintDetails(complaints[0].id);
+    </script>
+</body>
+</html>

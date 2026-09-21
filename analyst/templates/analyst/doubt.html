@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Inquiry Response Hub - Security Operations</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b0f19; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column;">
+
+    <!-- TOP HEADER -->
+    <header style="background-color: #111827; border-bottom: 1px solid #1f2937; padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="background-color: #f59e0b; color: #000000; padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 13px; letter-spacing: 0.5px;">SOC TRIAGE</span>
+            <div>
+                <h1 style="margin: 0; font-size: 18px; font-weight: 700; color: #ffffff;">User Inquiry & Security Assistance</h1>
+                <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">Review user reports, provide security guidance, and issue advisory responses</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN TWO-COLUMN DASHBOARD -->
+    <main style="flex-grow: 1; padding: 25px; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box; display: grid; grid-template-columns: 1fr 1.6fr; gap: 20px;">
+
+        <!-- LEFT COLUMN: USER TICKETS LIST -->
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            
+            <!-- SEARCH AND FILTER BAR -->
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="ticketSearch" onkeyup="filterTickets()" placeholder="Search tickets by user, subject, or ID..." style="flex: 1; padding: 10px; background-color: #111827; border: 1px solid #1f2937; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                <select id="statusFilter" onchange="filterTickets()" style="padding: 10px; background-color: #111827; border: 1px solid #1f2937; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                    <option value="ALL">All Statuses</option>
+                    <option value="OPEN">Open / Pending Analyst</option>
+                    <option value="RESOLVED">Resolved</option>
+                </select>
+            </div>
+
+            <!-- TICKET CARDS -->
+            <div id="ticketContainer" style="display: flex; flex-direction: column; gap: 10px; max-height: 75vh; overflow-y: auto;">
+                <!-- Dynamically Rendered -->
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: INTERACTIVE RESPONSE WORKSPACE -->
+        <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 24px; display: flex; flex-direction: column; gap: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #1f2937; padding-bottom: 15px;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <h2 id="viewTicketId" style="margin: 0; font-size: 18px; color: #ffffff; font-family: monospace;">SEC-0000</h2>
+                        <span id="viewStatusBadge" style="padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">OPEN</span>
+                    </div>
+                    <h3 id="viewSubject" style="margin: 6px 0 0 0; font-size: 15px; color: #38bdf8;">Select a ticket to inspect</h3>
+                </div>
+                <div style="text-align: right; font-size: 12px; color: #9ca3af;">
+                    <div>User: <strong id="viewUserEmail" style="color: #ffffff;">-</strong></div>
+                    <div>Department: <span id="viewUserDept" style="color: #cbd5e1;">-</span></div>
+                </div>
+            </div>
+
+            <!-- ORIGINAL USER INQUIRY DETAILS -->
+            <div style="background-color: #0b0f19; border: 1px solid #1f2937; border-radius: 8px; padding: 16px;">
+                <label style="display: block; font-size: 11px; font-weight: 700; color: #9ca3af; margin-bottom: 6px; letter-spacing: 0.5px;">USER INQUIRY / REPORTED THREAT</label>
+                <div id="viewUserMessage" style="font-size: 13px; color: #e2e8f0; line-height: 1.5; white-space: pre-wrap;">Select a inquiry from the left panel to begin analysis and draft a response.</div>
+            </div>
+
+            <!-- QUICK RESPONSE TEMPLATE SELECTOR -->
+            <div>
+                <label style="display: block; font-size: 11px; font-weight: 700; color: #9ca3af; margin-bottom: 6px; letter-spacing: 0.5px;">PRESET ANALYST RESPONSE TEMPLATES</label>
+                <select id="templateSelect" onchange="applyTemplate()" style="width: 100%; padding: 10px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                    <option value="">-- Choose a standard SOC template --</option>
+                    <option value="phish_confirm">Confirm Phishing & Thank User</option>
+                    <option value="safe_confirm">Confirm Safe / Legitimate Communication</option>
+                    <option value="reset_cred">Advise Password Reset & MFA Re-authentication</option>
+                    <option value="escalate_ir">Escalate to Incident Response Team</option>
+                </select>
+            </div>
+
+            <!-- ANALYST RESPONSE EDITOR -->
+            <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                <label style="display: block; font-size: 11px; font-weight: 700; color: #9ca3af; margin-bottom: 6px; letter-spacing: 0.5px;">ANALYST RESPONSE TO USER</label>
+                <textarea id="responseText" rows="6" placeholder="Type your customized response or guidance here..." style="width: 100%; padding: 12px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: #ffffff; font-size: 13px; line-height: 1.4; box-sizing: border-box; outline: none; resize: vertical;"></textarea>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid #1f2937; padding-top: 15px;">
+                <button onclick="markResolved()" style="background-color: #1f2937; color: #f8fafc; border: 1px solid #374151; padding: 10px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">Mark Resolved without Email</button>
+                <button onclick="sendResponse()" style="background-color: #0284c7; color: #ffffff; border: none; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer;">✉️ Send Response to User</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const tickets = [
+            {
+                id: "SEC-1042",
+                user: "alex.morgan@corp.com",
+                dept: "Finance",
+                subject: "Is this email from HR regarding quarterly bonuses real?",
+                message: "I received an email asking me to click a link and re-enter my domain credentials to view my performance bonus document. The domain is 'bonus-portal-update.com'. Is this legitimate?",
+                status: "OPEN"
+            },
+            {
+                id: "SEC-1039",
+                user: "david.p@corp.com",
+                dept: "Engineering",
+                subject: "MFA Push Prompt received while I was sleeping",
+                message: "At 3:00 AM last night I received two Duo push notifications on my phone. I didn't approve them. Do I need to take action?",
+                status: "OPEN"
+            },
+            {
+                id: "SEC-1028",
+                user: "clara.s@corp.com",
+                dept: "Marketing",
+                subject: "Unexpected Microsoft Password Reset Email",
+                message: "I received a password reset request email for my Microsoft 365 account, but I didn't request one. Should I click 'Cancel Request' in the email?",
+                status: "RESOLVED"
+            }
+        ];
+
+        const templates = {
+            phish_confirm: "Hello,\n\nThank you for reporting this email to the Security Operations Center (SOC). We have analyzed the message and confirmed that it is a phishing attempt aimed at stealing credentials. \n\nOur automated systems have purged this email from all company inboxes. Please do not click any links or open any attachments. Good catch!\n\nBest regards,\nSecurity Operations Center",
+            safe_confirm: "Hello,\n\nThank you for checking with us. We have reviewed the email in question and verified that it is a legitimate internal communication. You may proceed safely.\n\nBest regards,\nSecurity Operations Center",
+            reset_cred: "Hello,\n\nBased on your report of unauthorized login attempts/MFA prompts, your account may have been targeted in a password spray attack. \n\nPlease navigate directly to identity.corp.com immediately to reset your corporate password. We have also terminated all active sessions as a precaution.\n\nBest regards,\nSecurity Operations Center",
+            escalate_ir: "Hello,\n\nThank you for bringing this to our attention. Our SOC team is actively investigating this behavior on your system. Please keep your workstation connected to the network but refrain from logging into sensitive accounts until further notice.\n\nBest regards,\nSecurity Operations Center"
+        };
+
+        let activeTicketId = null;
+
+        function renderTickets(data) {
+            const container = document.getElementById("ticketContainer");
+            container.innerHTML = "";
+
+            if (data.length === 0) {
+                container.innerHTML = `<div style="text-align: center; color: #9ca3af; padding: 20px;">No user inquiries matched your filters.</div>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const card = document.createElement("div");
+                card.style.backgroundColor = item.id === activeTicketId ? "#1e293b" : "#111827";
+                card.style.border = "1px solid #1f2937";
+                card.style.borderRadius = "8px";
+                card.style.padding = "14px";
+                card.style.cursor = "pointer";
+                card.onclick = () => selectTicket(item.id);
+
+                let statusColor = item.status === "OPEN" ? "#f59e0b" : "#10b981";
+
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-family: monospace; font-size: 12px; font-weight: 700; color: #38bdf8;">${item.id}</span>
+                        <span style="font-size: 10px; font-weight: 800; color: ${statusColor}; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">${item.status}</span>
+                    </div>
+                    <div style="font-size: 13px; font-weight: 600; color: #ffffff; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(item.subject)}</div>
+                    <div style="font-size: 11px; color: #9ca3af;">${escapeHtml(item.user)}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectTicket(id) {
+            activeTicketId = id;
+            const ticket = tickets.find(t => t.id === id);
+            if (!ticket) return;
+
+            document.getElementById("viewTicketId").innerText = ticket.id;
+            document.getElementById("viewSubject").innerText = ticket.subject;
+            document.getElementById("viewUserEmail").innerText = ticket.user;
+            document.getElementById("viewUserDept").innerText = ticket.dept;
+            document.getElementById("viewUserMessage").innerText = ticket.message;
+
+            const badge = document.getElementById("viewStatusBadge");
+            badge.innerText = ticket.status;
+            badge.style.backgroundColor = ticket.status === "OPEN" ? "rgba(245, 158, 11, 0.2)" : "rgba(16, 185, 129, 0.2)";
+            badge.style.color = ticket.status === "OPEN" ? "#f59e0b" : "#10b981";
+
+            document.getElementById("responseText").value = "";
+            document.getElementById("templateSelect").value = "";
+
+            renderTickets(tickets);
+        }
+
+        function applyTemplate() {
+            const key = document.getElementById("templateSelect").value;
+            if (key && templates[key]) {
+                document.getElementById("responseText").value = templates[key];
+            }
+        }
+
+        function sendResponse() {
+            if (!activeTicketId) {
+                alert("Please select a ticket first.");
+                return;
+            }
+            const text = document.getElementById("responseText").value.trim();
+            if (!text) {
+                alert("Please draft a response before sending.");
+                return;
+            }
+
+            const ticket = tickets.find(t => t.id === activeTicketId);
+            if (ticket) {
+                ticket.status = "RESOLVED";
+                alert(`Response successfully sent to ${ticket.user}. Ticket marked as RESOLVED.`);
+                selectTicket(activeTicketId);
+            }
+        }
+
+        function markResolved() {
+            if (!activeTicketId) return;
+            const ticket = tickets.find(t => t.id === activeTicketId);
+            if (ticket) {
+                ticket.status = "RESOLVED";
+                selectTicket(activeTicketId);
+            }
+        }
+
+        function filterTickets() {
+            const query = document.getElementById("ticketSearch").value.toLowerCase();
+            const status = document.getElementById("statusFilter").value;
+
+            const filtered = tickets.filter(t => {
+                const matchesQuery = t.id.toLowerCase().includes(query) ||
+                                     t.user.toLowerCase().includes(query) ||
+                                     t.subject.toLowerCase().includes(query);
+                const matchesStatus = (status === "ALL" || t.status === status);
+                return matchesQuery && matchesStatus;
+            });
+
+            renderTickets(filtered);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Initialize
+        selectTicket(tickets[0].id);
+    </script>
+</body>
+</html>

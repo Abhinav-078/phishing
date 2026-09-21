@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reported Threat Indicators - Admin Dashboard</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column;">
+
+    <!-- TOP HEADER -->
+    <header style="background-color: #1e293b; border-bottom: 1px solid #334155; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="background-color: #ef4444; color: #ffffff; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 14px;">SOC</span>
+            <h1 style="margin: 0; font-size: 20px; font-weight: 700;">Reported Threat Indicators Vault</h1>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="exportData('csv')" style="background-color: #334155; color: #f8fafc; border: 1px solid #475569; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">📥 Export CSV</button>
+            <button onclick="openAddModal()" style="background-color: #0284c7; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">➕ Add New Indicator</button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main style="flex-grow: 1; padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box;">
+        
+        <!-- SEARCH & CATEGORY TABS -->
+        <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="searchInput" onkeyup="filterThreats()" placeholder="Search indicators, risk reasons, or tags..." style="flex: 1; min-width: 280px; padding: 12px 16px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 14px; outline: none;">
+                <select id="riskFilter" onchange="filterThreats()" style="padding: 12px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 14px; outline: none;">
+                    <option value="ALL">All Risk Levels</option>
+                    <option value="CRITICAL">Critical</option>
+                    <option value="HIGH">High</option>
+                    <option value="MEDIUM">Medium</option>
+                </select>
+            </div>
+
+            <!-- FILTER TABS -->
+            <div style="display: flex; gap: 8px; border-bottom: 1px solid #334155; padding-bottom: 10px; flex-wrap: wrap;">
+                <button onclick="selectCategory('ALL', this)" class="tab-btn active-tab" style="padding: 8px 16px; border-radius: 6px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; background-color: #0284c7; color: #ffffff;">All Indicators (<span id="count-all">10</span>)</button>
+                <button onclick="selectCategory('URL', this)" class="tab-btn" style="padding: 8px 16px; border-radius: 6px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; background-color: #1e293b; color: #94a3b8;">🔗 Reported URLs (4)</button>
+                <button onclick="selectCategory('APP', this)" class="tab-btn" style="padding: 8px 16px; border-radius: 6px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; background-color: #1e293b; color: #94a3b8;">📱 Malicious Apps (1)</button>
+                <button onclick="selectCategory('PHNO', this)" class="tab-btn" style="padding: 8px 16px; border-radius: 6px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; background-color: #1e293b; color: #94a3b8;">📞 Phone Numbers (2)</button>
+                <button onclick="selectCategory('EMAIL', this)" class="tab-btn" style="padding: 8px 16px; border-radius: 6px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; background-color: #1e293b; color: #94a3b8;">✉️ Email Addresses (3)</button>
+            </div>
+        </div>
+
+        <!-- THREAT DATA TABLE -->
+        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; overflow-x: auto; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #334155; background-color: #0f172a; color: #94a3b8;">
+                        <th style="padding: 14px 18px;">Type</th>
+                        <th style="padding: 14px 18px;">Indicator Target</th>
+                        <th style="padding: 14px 18px;">Threat Vectors / Reason</th>
+                        <th style="padding: 14px 18px;">Risk Severity</th>
+                        <th style="padding: 14px 18px;">Enforcement Action</th>
+                        <th style="padding: 14px 18px; text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="threatTableBody">
+                    <!-- Dynamic rendering via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- ADD INDICATOR MODAL -->
+    <div id="addModal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.75); justify-content: center; align-items: center; z-index: 1000;">
+        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px; width: 450px; max-width: 90%;">
+            <h3 style="margin-top:0; color: #ffffff;">Report New Threat Indicator</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+                <label style="font-size: 12px; color: #94a3b8;">Indicator Type</label>
+                <select id="newType" style="padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff;">
+                    <option value="URL">URL / Web Domain</option>
+                    <option value="APP">App Package Name</option>
+                    <option value="PHNO">Phone Number</option>
+                    <option value="EMAIL">Email Address</option>
+                </select>
+
+                <label style="font-size: 12px; color: #94a3b8;">Indicator Value</label>
+                <input type="text" id="newValue" placeholder="e.g. malicious-site.com or +1 800..." style="padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff;">
+
+                <label style="font-size: 12px; color: #94a3b8;">Threat Vector Description</label>
+                <input type="text" id="newReason" placeholder="e.g. Credential Harvester, Vishing..." style="padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff;">
+
+                <label style="font-size: 12px; color: #94a3b8;">Severity Level</label>
+                <select id="newRisk" style="padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #fff;">
+                    <option value="CRITICAL">Critical</option>
+                    <option value="HIGH">High</option>
+                    <option value="MEDIUM">Medium</option>
+                </select>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button onclick="closeAddModal()" style="background: transparent; border: 1px solid #64748b; color: #cbd5e1; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Cancel</button>
+                <button onclick="addThreat()" style="background: #0284c7; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">Save Indicator</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Initial reported threats dataset
+        const threats = [
+            { id: 1, type: "URL", value: "http://verify-account-update.xyz", reason: "Fake account credential harvester portal", risk: "CRITICAL", action: "Perimeter Blocked" },
+            { id: 2, type: "URL", value: "http://login-verify-account-security.com", reason: "Malicious login redirect page", risk: "HIGH", action: "Perimeter Blocked" },
+            { id: 3, type: "URL", value: "http://update-secure-bank.xyz", reason: "Banking portal phishing domain", risk: "CRITICAL", action: "Perimeter Blocked" },
+            { id: 4, type: "URL", value: "login-verify-m365-security.com", reason: "Microsoft 365 spear-phishing campaign target", risk: "CRITICAL", action: "DNS Sinkholed" },
+            { id: 5, type: "APP", value: "com.banking.mobile.app", reason: "Spoofed mobile banking APK package", risk: "HIGH", action: "Blacklisted in EMM" },
+            { id: 6, type: "PHNO", value: "+1 (800) 555-0199", reason: "Voice phishing / vishing callback number", risk: "MEDIUM", action: "Flagged in Call Filter" },
+            { id: 7, type: "PHNO", value: "+1 (800) 443-8821", reason: "SMS phishing / smishing spoofing contact line", risk: "MEDIUM", action: "Flagged in Call Filter" },
+            { id: 8, type: "EMAIL", value: "billing-update@intuit-secure-pay.com", reason: "Fake invoice scam (DKIM/SPF Failure)", risk: "CRITICAL", action: "Quarantined & Purged" },
+            { id: 9, type: "EMAIL", value: "security@microsoft-support-team.org", reason: "Password expiration harvest attempt", risk: "HIGH", action: "Quarantined & Purged" },
+            { id: 10, type: "EMAIL", value: "hr-notice@internal-portal-verify.net", reason: "Suspicious PDF macro attachment", risk: "HIGH", action: "Quarantined" }
+        ];
+
+        let selectedCat = "ALL";
+
+        function renderTable(data) {
+            const tbody = document.getElementById("threatTableBody");
+            tbody.innerHTML = "";
+
+            if(data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 30px; color: #94a3b8;">No matching threat indicators found.</td></tr>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const tr = document.createElement("tr");
+                tr.style.borderBottom = "1px solid rgba(51, 65, 85, 0.5)";
+
+                // Badge styling logic
+                let typeBadgeBg = "#334155";
+                let typeText = item.type;
+                if(item.type === 'URL') typeBadgeBg = '#0284c7';
+                else if(item.type === 'APP') typeBadgeBg = '#a855f7';
+                else if(item.type === 'PHNO') typeBadgeBg = '#f59e0b';
+                else if(item.type === 'EMAIL') typeBadgeBg = '#10b981';
+
+                let riskColor = "#f59e0b";
+                let riskBg = "rgba(245, 158, 11, 0.2)";
+                if(item.risk === 'CRITICAL') { riskColor = '#ef4444'; riskBg = 'rgba(239, 68, 68, 0.2)'; }
+                else if(item.risk === 'MEDIUM') { riskColor = '#38bdf8'; riskBg = 'rgba(56, 189, 248, 0.2)'; }
+
+                tr.innerHTML = `
+                    <td style="padding: 14px 18px;">
+                        <span style="background-color: ${typeBadgeBg}; color: white; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">${typeText}</span>
+                    </td>
+                    <td style="padding: 14px 18px; font-family: monospace; font-size: 13px; font-weight: 600; color: #ffffff;">${escapeHtml(item.value)}</td>
+                    <td style="padding: 14px 18px; color: #cbd5e1;">${escapeHtml(item.reason)}</td>
+                    <td style="padding: 14px 18px;">
+                        <span style="background-color: ${riskBg}; color: ${riskColor}; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">${item.risk}</span>
+                    </td>
+                    <td style="padding: 14px 18px; color: #94a3b8; font-weight: 600;">${item.action}</td>
+                    <td style="padding: 14px 18px; text-align: right;">
+                        <button onclick="deleteThreat(${item.id})" style="background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">Remove</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterThreats() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const riskLevel = document.getElementById("riskFilter").value;
+
+            const filtered = threats.filter(t => {
+                const matchesCat = (selectedCat === "ALL" || t.type === selectedCat);
+                const matchesSearch = t.value.toLowerCase().includes(query) || t.reason.toLowerCase().includes(query);
+                const matchesRisk = (riskLevel === "ALL" || t.risk === riskLevel);
+                return matchesCat && matchesSearch && matchesRisk;
+            });
+
+            renderTable(filtered);
+        }
+
+        function selectCategory(cat, btn) {
+            selectedCat = cat;
+            document.querySelectorAll(".tab-btn").forEach(b => {
+                b.style.backgroundColor = "#1e293b";
+                b.style.color = "#94a3b8";
+            });
+            btn.style.backgroundColor = "#0284c7";
+            btn.style.color = "#ffffff";
+            filterThreats();
+        }
+
+        function deleteThreat(id) {
+            const index = threats.findIndex(t => t.id === id);
+            if(index !== -1) {
+                threats.splice(index, 1);
+                filterThreats();
+            }
+        }
+
+        function openAddModal() {
+            document.getElementById("addModal").style.display = "flex";
+        }
+
+        function closeAddModal() {
+            document.getElementById("addModal").style.display = "none";
+        }
+
+        function addThreat() {
+            const type = document.getElementById("newType").value;
+            const value = document.getElementById("newValue").value.trim();
+            const reason = document.getElementById("newReason").value.trim();
+            const risk = document.getElementById("newRisk").value;
+
+            if(!value || !reason) {
+                alert("Please fill in all required fields.");
+                return;
+            }
+
+            threats.unshift({
+                id: Date.now(),
+                type: type,
+                value: value,
+                reason: reason,
+                risk: risk,
+                action: "Enforced / Flagged"
+            });
+
+            closeAddModal();
+            filterThreats();
+        }
+
+        function exportData(format) {
+            alert(`Exporting ${threats.length} indicators as ${format.toUpperCase()}...`);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Initial Load
+        renderTable(threats);
+    </script>
+</body>
+</html>

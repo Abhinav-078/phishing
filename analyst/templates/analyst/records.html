@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verified Phishing Records Governance Console</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b0f19; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column;">
+
+    <!-- TOP HEADER -->
+    <header style="background-color: #111827; border-bottom: 1px solid #1f2937; padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="background-color: #10b981; color: #0b0f19; padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 13px; letter-spacing: 0.5px;">VERIFIED DB</span>
+            <div>
+                <h1 style="margin: 0; font-size: 18px; font-weight: 700; color: #ffffff;">Verified Phishing Records Management</h1>
+                <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">Governed Threat Repository, Blocklist Sync Status, & Lifecycle Retention Controls</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="syncBlocklist()" style="background-color: #1f2937; color: #10b981; border: 1px solid #10b981; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">🔄 Sync Firewall / EDR Blocklist</button>
+            <button onclick="openAddModal()" style="background-color: #0284c7; color: #ffffff; border: none; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer;">➕ Add Verified IOC Record</button>
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main style="flex-grow: 1; padding: 25px; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px;">
+
+        <!-- TOP STAT METRICS -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 18px;">
+                <div style="font-size: 11px; color: #9ca3af; font-weight: 700; letter-spacing: 0.5px;">TOTAL VERIFIED RECORDS</div>
+                <div style="font-size: 30px; font-weight: 800; color: #10b981; margin-top: 4px;" id="statTotal">1,842</div>
+                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">100% Vetted by SOC Analysts</div>
+            </div>
+
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 18px;">
+                <div style="font-size: 11px; color: #9ca3af; font-weight: 700; letter-spacing: 0.5px;">ACTIVE IN FIREWALL RULESET</div>
+                <div style="font-size: 30px; font-weight: 800; color: #38bdf8; margin-top: 4px;">1,790</div>
+                <div style="font-size: 11px; color: #10b981; margin-top: 4px;">● Synchronized Live</div>
+            </div>
+
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 18px;">
+                <div style="font-size: 11px; color: #9ca3af; font-weight: 700; letter-spacing: 0.5px;">EXPIRING / RETENTION DUE (30D)</div>
+                <div style="font-size: 30px; font-weight: 800; color: #f59e0b; margin-top: 4px;">24</div>
+                <div style="font-size: 11px; color: #f59e0b; margin-top: 4px;">Auto-archiving scheduled</div>
+            </div>
+
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 18px;">
+                <div style="font-size: 11px; color: #9ca3af; font-weight: 700; letter-spacing: 0.5px;">STRIKE MATCHES PREVENTED</div>
+                <div style="font-size: 30px; font-weight: 800; color: #a855f7; margin-top: 4px;">58,410</div>
+                <div style="font-size: 11px; color: #10b981; margin-top: 4px;">Protected User Encounters</div>
+            </div>
+        </div>
+
+        <!-- FILTER CONTROLS -->
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; background-color: #111827; padding: 15px; border-radius: 10px; border: 1px solid #1f2937;">
+            <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Search Record ID, Verified IOC, Target Brand, or Verifying Analyst..." style="flex: 2; min-width: 250px; padding: 10px 14px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+            
+            <select id="typeFilter" onchange="applyFilters()" style="flex: 1; min-width: 150px; padding: 10px 14px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                <option value="ALL">All IOC Types</option>
+                <option value="Domain / URL">Domain / URL</option>
+                <option value="Sender Email">Sender Email</option>
+                <option value="IP Address">IP Address</option>
+                <option value="File SHA256">File SHA256</option>
+            </select>
+
+            <select id="statusFilter" onchange="applyFilters()" style="flex: 1; min-width: 150px; padding: 10px 14px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                <option value="ALL">All Statuses</option>
+                <option value="Active Block">Active Block</option>
+                <option value="Monitoring">Monitoring Only</option>
+                <option value="Archived">Archived / Expired</option>
+            </select>
+        </div>
+
+        <!-- MAIN TABLE + DETAIL VIEW CONTAINER -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+
+            <!-- RECORDS TABLE -->
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #1f2937; background-color: #0b0f19; color: #9ca3af;">
+                            <th style="padding: 12px 16px;">Record ID / Date Verified</th>
+                            <th style="padding: 12px 16px;">IOC Type & Indicator</th>
+                            <th style="padding: 12px 16px;">Impersonated Brand</th>
+                            <th style="padding: 12px 16px;">Verified By</th>
+                            <th style="padding: 12px 16px;">Status</th>
+                            <th style="padding: 12px 16px; text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsTableBody">
+                        <!-- Rendered dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- RECORD DETAIL & GOVERNANCE DRAWER -->
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+                <h3 style="margin: 0; font-size: 16px; color: #ffffff; border-bottom: 1px solid #1f2937; padding-bottom: 10px;">Record Governance Details</h3>
+
+                <div id="drawerContent" style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+                    <div style="color: #9ca3af; text-align: center; padding: 40px 0;">Select a verified record from the table to view audit history, blocklist status, or adjust retention rules.</div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- ADD IOC MODAL -->
+    <div id="addModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center;">
+        <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; width: 480px; max-width: 90%; padding: 24px; display: flex; flex-direction: column; gap: 15px;">
+            <h3 style="margin: 0; font-size: 18px; color: #ffffff;">Add Verified Phishing IOC Record</h3>
+            
+            <div>
+                <label style="display: block; font-size: 11px; color: #9ca3af; font-weight: 700; margin-bottom: 4px;">IOC TYPE</label>
+                <select id="modalIocType" style="width: 100%; padding: 10px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                    <option value="Domain / URL">Domain / URL</option>
+                    <option value="Sender Email">Sender Email</option>
+                    <option value="IP Address">IP Address</option>
+                    <option value="File SHA256">File SHA256 Hash</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 11px; color: #9ca3af; font-weight: 700; margin-bottom: 4px;">INDICATOR VALUE (IOC)</label>
+                <input type="text" id="modalIocVal" placeholder="e.g. login-update-paypal-verify.com" style="width: 100%; padding: 10px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: #ffffff; font-size: 13px; box-sizing: border-box; outline: none;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 11px; color: #9ca3af; font-weight: 700; margin-bottom: 4px;">SPOOFED / IMPERSONATED BRAND</label>
+                <input type="text" id="modalBrand" placeholder="e.g. Microsoft 365, PayPal, Internal HR" style="width: 100%; padding: 10px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: #ffffff; font-size: 13px; box-sizing: border-box; outline: none;">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                <button onclick="closeAddModal()" style="background-color: #1f2937; color: #cbd5e1; border: 1px solid #374151; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">Cancel</button>
+                <button onclick="saveNewRecord()" style="background-color: #10b981; color: #0b0f19; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 800; cursor: pointer;">Verify & Save Record</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const records = [
+            {
+                id: "VREC-8841",
+                verifiedDate: "2026-09-18",
+                type: "Domain / URL",
+                ioc: "secure-auth-update-microsoft.net",
+                brand: "Microsoft 365",
+                analyst: "Analyst J. Miller (SOC L2)",
+                status: "Active Block",
+                notes: "Credential harvesting page posing as Office 365 login portal. Confirmed via HTTP header analysis.",
+                retention: "180 Days (Auto-expiring 2027-03-17)"
+            },
+            {
+                id: "VREC-8835",
+                verifiedDate: "2026-09-15",
+                type: "Sender Email",
+                ioc: "payroll-notifications@corp-hr-update.org",
+                brand: "Internal HR / Payroll",
+                analyst: "Analyst S. Chen (SOC L1)",
+                status: "Active Block",
+                notes: "Used in direct spearphishing campaign targeting HR and Finance team members.",
+                retention: "365 Days (Auto-expiring 2027-09-15)"
+            },
+            {
+                id: "VREC-8790",
+                verifiedDate: "2026-08-22",
+                type: "IP Address",
+                ioc: "198.51.100.142",
+                brand: "Generic Credential Harvester",
+                analyst: "Analyst M. Vance (Lead)",
+                status: "Monitoring",
+                notes: "Hosting server associated with automated phishing kit infrastructure.",
+                retention: "90 Days (Auto-expiring 2026-11-20)"
+            },
+            {
+                id: "VREC-8512",
+                verifiedDate: "2026-05-10",
+                type: "File SHA256",
+                ioc: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                brand: "Adobe Acrobat PDF Lure",
+                analyst: "Analyst J. Miller (SOC L2)",
+                status: "Archived",
+                notes: "Malicious PDF drop loader containing embedded macro redirecting to malicious domain.",
+                retention: "Archived (Expired)"
+            }
+        ];
+
+        let selectedId = null;
+
+        function renderTable(data) {
+            const tbody = document.getElementById("recordsTableBody");
+            tbody.innerHTML = "";
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 30px; color: #9ca3af;">No verified records found matching criteria.</td></tr>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const tr = document.createElement("tr");
+                tr.style.borderBottom = "1px solid #1f2937";
+                tr.style.cursor = "pointer";
+                tr.style.backgroundColor = item.id === selectedId ? "#1e293b" : "transparent";
+                tr.onclick = () => selectRecord(item.id);
+
+                let statusColor = "#10b981";
+                let statusBg = "rgba(16, 185, 129, 0.2)";
+                if (item.status === "Monitoring") { statusColor = "#f59e0b"; statusBg = "rgba(245, 158, 11, 0.2)"; }
+                else if (item.status === "Archived") { statusColor = "#9ca3af"; statusBg = "rgba(156, 163, 175, 0.2)"; }
+
+                tr.innerHTML = `
+                    <td style="padding: 12px 16px;">
+                        <div style="font-weight: 700; color: #ffffff; font-family: monospace;">${item.id}</div>
+                        <div style="font-size: 11px; color: #9ca3af;">${item.verifiedDate}</div>
+                    </td>
+                    <td style="padding: 12px 16px;">
+                        <div style="font-family: monospace; color: #38bdf8; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(item.ioc)}</div>
+                        <div style="font-size: 11px; color: #9ca3af;">${item.type}</div>
+                    </td>
+                    <td style="padding: 12px 16px; color: #ffffff; font-weight: 600;">${escapeHtml(item.brand)}</td>
+                    <td style="padding: 12px 16px; color: #cbd5e1; font-size: 12px;">${escapeHtml(item.analyst)}</td>
+                    <td style="padding: 12px 16px;">
+                        <span style="background-color: ${statusBg}; color: ${statusColor}; padding: 3px 8px; border-radius: 4px; font-weight: 800; font-size: 10px;">${item.status}</span>
+                    </td>
+                    <td style="padding: 12px 16px; text-align: right;">
+                        <button onclick="event.stopPropagation(); selectRecord('${item.id}')" style="background: transparent; border: 1px solid #374151; color: #cbd5e1; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">Audit</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function selectRecord(id) {
+            selectedId = id;
+            const item = records.find(r => r.id === id);
+            const drawer = document.getElementById("drawerContent");
+
+            if (!item) return;
+
+            drawer.innerHTML = `
+                <div style="background-color: #0b0f19; padding: 12px; border-radius: 6px; border: 1px solid #1f2937;">
+                    <div style="font-size: 11px; color: #9ca3af;">RECORD IDENTIFIER</div>
+                    <div style="font-size: 16px; font-weight: 700; color: #10b981; font-family: monospace;">${item.id}</div>
+                </div>
+
+                <div>
+                    <label style="font-size: 11px; color: #9ca3af; font-weight: 700;">VERIFIED IOC VALUE</label>
+                    <div style="font-family: monospace; color: #ef4444; background: #0b0f19; padding: 8px; border-radius: 4px; word-break: break-all; margin-top: 4px;">${escapeHtml(item.ioc)}</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label style="font-size: 11px; color: #9ca3af; font-weight: 700;">IOC TYPE</label>
+                        <div style="color: #ffffff; margin-top: 2px;">${item.type}</div>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: #9ca3af; font-weight: 700;">SPOOFED BRAND</label>
+                        <div style="color: #ffffff; margin-top: 2px;">${escapeHtml(item.brand)}</div>
+                    </div>
+                </div>
+
+                <div>
+                    <label style="font-size: 11px; color: #9ca3af; font-weight: 700;">VERIFICATION ANALYST</label>
+                    <div style="color: #cbd5e1; margin-top: 2px;">${escapeHtml(item.analyst)}</div>
+                </div>
+
+                <div>
+                    <label style="font-size: 11px; color: #9ca3af; font-weight: 700;">ANALYST INVESTIGATION NOTES</label>
+                    <div style="background-color: #0b0f19; border: 1px solid #1f2937; padding: 8px; border-radius: 4px; color: #cbd5e1; font-size: 12px; margin-top: 4px;">${escapeHtml(item.notes)}</div>
+                </div>
+
+                <div>
+                    <label style="font-size: 11px; color: #9ca3af; font-weight: 700;">RETENTION LIFECYCLE</label>
+                    <div style="color: #f59e0b; font-weight: 600; font-size: 12px; margin-top: 2px;">${item.retention}</div>
+                </div>
+
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #1f2937; display: flex; flex-direction: column; gap: 8px;">
+                    <button onclick="toggleBlockStatus('${item.id}')" style="background-color: #1f2937; color: #f8fafc; border: 1px solid #374151; padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Toggle Active / Monitor Status</button>
+                    <button onclick="deleteRecord('${item.id}')" style="background-color: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Delete / Revoke Verification</button>
+                </div>
+            `;
+
+            renderTable(records);
+        }
+
+        function applyFilters() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const type = document.getElementById("typeFilter").value;
+            const status = document.getElementById("statusFilter").value;
+
+            const filtered = records.filter(r => {
+                const matchesQuery = r.id.toLowerCase().includes(query) ||
+                                     r.ioc.toLowerCase().includes(query) ||
+                                     r.brand.toLowerCase().includes(query) ||
+                                     r.analyst.toLowerCase().includes(query);
+                const matchesType = (type === "ALL" || r.type === type);
+                const matchesStatus = (status === "ALL" || r.status === status);
+
+                return matchesQuery && matchesType && matchesStatus;
+            });
+
+            renderTable(filtered);
+        }
+
+        function syncBlocklist() {
+            alert("Syncing verified IOC list with perimeter Palo Alto Firewalls, Cloudflare WAF, and CrowdStrike EDR endpoints...");
+        }
+
+        function toggleBlockStatus(id) {
+            const item = records.find(r => r.id === id);
+            if (item) {
+                item.status = item.status === "Active Block" ? "Monitoring" : "Active Block";
+                selectRecord(id);
+            }
+        }
+
+        function deleteRecord(id) {
+            const index = records.findIndex(r => r.id === id);
+            if (index !== -1 && confirm("Are you sure you want to revoke verification and delete this record?")) {
+                records.splice(index, 1);
+                document.getElementById("drawerContent").innerHTML = `<div style="color: #9ca3af; text-align: center; padding: 40px 0;">Record removed. Select another entry.</div>`;
+                renderTable(records);
+            }
+        }
+
+        function openAddModal() {
+            document.getElementById("addModal").style.display = "flex";
+        }
+
+        function closeAddModal() {
+            document.getElementById("addModal").style.display = "none";
+        }
+
+        function saveNewRecord() {
+            const type = document.getElementById("modalIocType").value;
+            const ioc = document.getElementById("modalIocVal").value.trim();
+            const brand = document.getElementById("modalBrand").value.trim();
+
+            if (!ioc || !brand) {
+                alert("Please fill in both the indicator value and spoofed brand.");
+                return;
+            }
+
+            const newRec = {
+                id: "VREC-" + Math.floor(1000 + Math.random() * 9000),
+                verifiedDate: new Date().toISOString().split('T')[0],
+                type: type,
+                ioc: ioc,
+                brand: brand,
+                analyst: "Current Analyst (SOC Session)",
+                status: "Active Block",
+                notes: "Manually verified record created from Governance Console.",
+                retention: "180 Days (Standard Policy)"
+            };
+
+            records.unshift(newRec);
+            closeAddModal();
+            document.getElementById("modalIocVal").value = "";
+            document.getElementById("modalBrand").value = "";
+            
+            // Update total stat count
+            document.getElementById("statTotal").innerText = records.length;
+
+            selectRecord(newRec.id);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Initialize table
+        renderTable(records);
+        selectRecord(records[0].id);
+    </script>
+</body>
+</html>

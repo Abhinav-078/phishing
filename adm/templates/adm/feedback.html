@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Feedback & Reviews Dashboard</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column;">
+
+    <!-- HEADER -->
+    <header style="background-color: #1e293b; border-bottom: 1px solid #334155; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="background-color: #0284c7; color: #ffffff; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 14px;">CS</span>
+            <h1 style="margin: 0; font-size: 20px; font-weight: 700;">Customer Feedback Insights</h1>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="exportFeedback()" style="background-color: #334155; color: #f8fafc; border: 1px solid #475569; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">📥 Export CSV</button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main style="flex-grow: 1; padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box;">
+        
+        <!-- TOP ANALYTICS STATS -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px;">
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 18px;">
+                <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">AVERAGE RATING</div>
+                <div style="font-size: 28px; font-weight: 700; color: #f59e0b; margin-top: 4px;">4.2 ★</div>
+                <div style="font-size: 11px; color: #10b981; margin-top: 4px;">Based on 1,240 reviews</div>
+            </div>
+
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 18px;">
+                <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">NET PROMOTER SCORE (NPS)</div>
+                <div style="font-size: 28px; font-weight: 700; color: #38bdf8; margin-top: 4px;">+48</div>
+                <div style="font-size: 11px; color: #10b981; margin-top: 4px;">↑ +4 points this month</div>
+            </div>
+
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 18px;">
+                <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">POSITIVE SENTIMENT</div>
+                <div style="font-size: 28px; font-weight: 700; color: #10b981; margin-top: 4px;">78%</div>
+                <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Feature requests & Praise</div>
+            </div>
+
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 18px;">
+                <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">PENDING FEEDBACK REVIEWS</div>
+                <div style="font-size: 28px; font-weight: 700; color: #ef4444; margin-top: 4px;">12</div>
+                <div style="font-size: 11px; color: #ef4444; margin-top: 4px;">Requires Agent Follow-up</div>
+            </div>
+        </div>
+
+        <!-- FILTERS & CONTROLS -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <input type="text" id="searchFeedback" onkeyup="applyFilters()" placeholder="Search comments, user names, or email addresses..." style="flex: 1; min-width: 250px; padding: 12px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 13px; outline: none;">
+            
+            <select id="ratingFilter" onchange="applyFilters()" style="padding: 12px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 13px; outline: none;">
+                <option value="ALL">All Ratings</option>
+                <option value="5">5 Stars ★★★★★</option>
+                <option value="4">4 Stars ★★★★☆</option>
+                <option value="3">3 Stars ★★★☆☆</option>
+                <option value="2">2 Stars ★★☆☆☆</option>
+                <option value="1">1 Star ★☆☆☆☆</option>
+            </select>
+
+            <select id="categoryFilter" onchange="applyFilters()" style="padding: 12px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 13px; outline: none;">
+                <option value="ALL">All Categories</option>
+                <option value="UI/UX">UI / UX Experience</option>
+                <option value="Feature Request">Feature Requests</option>
+                <option value="Bug Report">Bug Reports</option>
+                <option value="Customer Care">Customer Support</option>
+            </select>
+        </div>
+
+        <!-- FEEDBACK CARDS LIST -->
+        <div id="feedbackContainer" style="display: flex; flex-direction: column; gap: 15px;">
+            <!-- Rendered dynamically -->
+        </div>
+
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Sample Feedback Data
+        const feedbackList = [
+            {
+                id: 101,
+                name: "Alex Morgan",
+                email: "alex.m@example.com",
+                date: "Sept 18, 2026",
+                rating: 5,
+                category: "UI/UX",
+                comment: "The new dashboard update is super clean and fast. Searching through logs takes half the time now. Great job team!",
+                status: "Acknowledged"
+            },
+            {
+                id: 102,
+                name: "David Vance",
+                email: "d.vance@company.io",
+                date: "Sept 17, 2026",
+                rating: 2,
+                category: "Bug Report",
+                comment: "I ran into a minor glitch while exporting PDF reports on Safari browser. Page loads blank until refreshed twice.",
+                status: "Pending Action"
+            },
+            {
+                id: 103,
+                name: "Elena Rostova",
+                email: "e.rostova@tech.org",
+                date: "Sept 15, 2026",
+                rating: 4,
+                category: "Feature Request",
+                comment: "Would love to see dark/light theme toggles added for daytime operations. Otherwise very happy with performance.",
+                status: "In Roadmap"
+            },
+            {
+                id: 104,
+                name: "Michael Chang",
+                email: "m.chang@enterprise.com",
+                date: "Sept 12, 2026",
+                rating: 1,
+                category: "Customer Care",
+                comment: "Response time for my critical support ticket took over 24 hours. Service SLA needs to be improved.",
+                status: "Escalated"
+            }
+        ];
+
+        function renderFeedback(data) {
+            const container = document.getElementById("feedbackContainer");
+            container.innerHTML = "";
+
+            if (data.length === 0) {
+                container.innerHTML = `<div style="text-align: center; padding: 40px; color: #94a3b8; background-color: #1e293b; border-radius: 10px; border: 1px dashed #334155;">No feedback records match your filters.</div>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const card = document.createElement("div");
+                card.style.backgroundColor = "#1e293b";
+                card.style.border = "1px solid #334155";
+                card.style.borderRadius = "10px";
+                card.style.padding = "20px";
+                card.style.display = "flex";
+                card.style.flexDirection = "column";
+                card.style.gap = "12px";
+
+                // Star rendering
+                let stars = "★".repeat(item.rating) + "☆".repeat(5 - item.rating);
+
+                // Category badge color
+                let categoryBg = "rgba(2, 132, 199, 0.2)";
+                let categoryColor = "#38bdf8";
+                if (item.category === "Bug Report") { categoryBg = "rgba(239, 68, 68, 0.2)"; categoryColor = "#ef4444"; }
+                else if (item.category === "Feature Request") { categoryBg = "rgba(168, 85, 247, 0.2)"; categoryColor = "#a855f7"; }
+
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <strong style="font-size: 15px; color: #ffffff;">${escapeHtml(item.name)}</strong>
+                                <span style="font-size: 12px; color: #94a3b8;">(${escapeHtml(item.email)})</span>
+                            </div>
+                            <div style="font-size: 12px; color: #f59e0b; margin-top: 4px; font-weight: 700;">${stars} <span style="color: #94a3b8; font-weight: 400; margin-left: 8px;">${item.date}</span></div>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="background-color: ${categoryBg}; color: ${categoryColor}; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;">${item.category}</span>
+                            <span style="border: 1px solid #334155; color: #cbd5e1; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;">Status: ${item.status}</span>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 14px; color: #e2e8f0; line-height: 1.5; background-color: #0f172a; padding: 12px 15px; border-radius: 6px; border: 1px solid #334155;">
+                        "${escapeHtml(item.comment)}"
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button onclick="flagFeedback(${item.id})" style="background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">Flag Issue</button>
+                        <button onclick="acknowledgeFeedback(${item.id})" style="background: #0284c7; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Mark Acknowledged</button>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function applyFilters() {
+            const query = document.getElementById("searchFeedback").value.toLowerCase();
+            const ratingVal = document.getElementById("ratingFilter").value;
+            const categoryVal = document.getElementById("categoryFilter").value;
+
+            const filtered = feedbackList.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(query) || 
+                                      item.email.toLowerCase().includes(query) || 
+                                      item.comment.toLowerCase().includes(query);
+                const matchesRating = (ratingVal === "ALL" || item.rating === parseInt(ratingVal));
+                const matchesCategory = (categoryVal === "ALL" || item.category === categoryVal);
+
+                return matchesSearch && matchesRating && matchesCategory;
+            });
+
+            renderFeedback(filtered);
+        }
+
+        function acknowledgeFeedback(id) {
+            const item = feedbackList.find(f => f.id === id);
+            if (item) {
+                item.status = "Acknowledged";
+                applyFilters();
+            }
+        }
+
+        function flagFeedback(id) {
+            const item = feedbackList.find(f => f.id === id);
+            if (item) {
+                item.status = "Escalated";
+                applyFilters();
+            }
+        }
+
+        function exportFeedback() {
+            alert(`Exporting ${feedbackList.length} feedback records to CSV...`);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Initial Load
+        renderFeedback(feedbackList);
+    </script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Threat Intelligence & Trend Analytics</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b0f19; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column;">
+
+    <!-- HEADER -->
+    <header style="background-color: #111827; border-bottom: 1px solid #1f2937; padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="background-color: #38bdf8; color: #0b0f19; padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 13px; letter-spacing: 0.5px;">ANALYTICS</span>
+            <div>
+                <h1 style="margin: 0; font-size: 18px; font-weight: 700; color: #ffffff;">Phishing Attack Trend Intelligence</h1>
+                <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">Real-time telemetry, campaign metrics, brand spoofing & vector analysis</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <select id="timeRange" onchange="updateDashboard()" style="padding: 8px 12px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                <option value="7d">Last 7 Days</option>
+                <option value="30d" selected>Last 30 Days</option>
+                <option value="90d">Last 90 Days</option>
+            </select>
+            <button onclick="refreshData()" style="background-color: #1f2937; color: #38bdf8; border: 1px solid #0284c7; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">🔄 Refresh Telemetry</button>
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main style="flex-grow: 1; padding: 25px; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px;">
+
+        <!-- TOP STAT METRICS -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 18px;">
+                <div style="font-size: 11px; color: #9ca3af; font-weight: 700; letter-spacing: 0.5px;">TOTAL BLOCKED PHISHING ENCOUNTERS</div>
+                <div style="font-size: 30px; font-weight: 800; color: #38bdf8; margin-top: 4px;" id="statTotal">14,892</div>
+                <div style="font-size: 11px; color: #ef4444; margin-top: 4px;">▲ +12.4% vs previous period</div>
+            </div>
+
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 18px;">
+                <div style="font-size: 11px; color: #9ca3af; font-weight: 700; letter-spacing: 0.5px;">MOST ACTIVE ATTACK VECTOR</div>
+                <div style="font-size: 26px; font-weight: 800; color: #f59e0b; margin-top: 4px;">Email / Spearphish</div>
+                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Accounts for 64% of volume</div>
+            </div>
+
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 18px;">
+                <div style="font-size: 11px; color: #9ca3af; font-weight: 700; letter-spacing: 0.5px;">MOST SPOOFED BRAND</div>
+                <div style="font-size: 26px; font-weight: 800; color: #a855f7; margin-top: 4px;">Microsoft 365</div>
+                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">4,320 detected URL domains</div>
+            </div>
+
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 18px;">
+                <div style="font-size: 11px; color: #9ca3af; font-weight: 700; letter-spacing: 0.5px;">USER REPORT CLICK-THROUGH RATE</div>
+                <div style="font-size: 30px; font-weight: 800; color: #10b981; margin-top: 4px;">1.8%</div>
+                <div style="font-size: 11px; color: #10b981; margin-top: 4px;">▼ -0.6% improvement in SOC response</div>
+            </div>
+        </div>
+
+        <!-- BREAKDOWN & TREND CHARTS SECTION -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+
+            <!-- VECTOR DISTRIBUTION -->
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 20px;">
+                <h3 style="margin: 0 0 15px 0; font-size: 15px; color: #ffffff;">Threat Volume by Attack Vector</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                            <span style="color: #cbd5e1;">Email (Spearphishing & Bulk)</span>
+                            <span style="color: #38bdf8; font-weight: 700;">64% (9,530)</span>
+                        </div>
+                        <div style="width: 100%; background: #1f2937; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div style="width: 64%; background: #0284c7; height: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                            <span style="color: #cbd5e1;">Smishing (SMS / Mobile Messaging)</span>
+                            <span style="color: #f59e0b; font-weight: 700;">21% (3,127)</span>
+                        </div>
+                        <div style="width: 100%; background: #1f2937; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div style="width: 21%; background: #f59e0b; height: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                            <span style="color: #cbd5e1;">Malicious Web Ads / Drive-by URLs</span>
+                            <span style="color: #a855f7; font-weight: 700;">10% (1,489)</span>
+                        </div>
+                        <div style="width: 100%; background: #1f2937; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div style="width: 10%; background: #a855f7; height: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                            <span style="color: #cbd5e1;">Vishing (Voice / AI Impersonation)</span>
+                            <span style="color: #ef4444; font-weight: 700;">5% (746)</span>
+                        </div>
+                        <div style="width: 100%; background: #1f2937; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div style="width: 5%; background: #ef4444; height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MOST TARGETED DEPARTMENTS -->
+            <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 20px;">
+                <h3 style="margin: 0 0 15px 0; font-size: 15px; color: #ffffff;">Top Targeted Internal Departments</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                            <span style="color: #cbd5e1;">Finance & Accounting</span>
+                            <span style="color: #ef4444; font-weight: 700;">38% (High Risk)</span>
+                        </div>
+                        <div style="width: 100%; background: #1f2937; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div style="width: 38%; background: #ef4444; height: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                            <span style="color: #cbd5e1;">Human Resources (Payroll / HRIS)</span>
+                            <span style="color: #f59e0b; font-weight: 700;">29%</span>
+                        </div>
+                        <div style="width: 100%; background: #1f2937; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div style="width: 29%; background: #f59e0b; height: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                            <span style="color: #cbd5e1;">Executive Leadership / VIPs</span>
+                            <span style="color: #a855f7; font-weight: 700;">18%</span>
+                        </div>
+                        <div style="width: 100%; background: #1f2937; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div style="width: 18%; background: #a855f7; height: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                            <span style="color: #cbd5e1;">IT & Systems Engineering</span>
+                            <span style="color: #38bdf8; font-weight: 700;">15%</span>
+                        </div>
+                        <div style="width: 100%; background: #1f2937; height: 10px; border-radius: 5px; overflow: hidden;">
+                            <div style="width: 15%; background: #38bdf8; height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- EMERGING CAMPAIGNS TABLE -->
+        <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 10px; overflow-x: auto;">
+            <div style="padding: 16px 20px; border-bottom: 1px solid #1f2937;">
+                <h3 style="margin: 0; font-size: 15px; color: #ffffff;">Active Threat Campaigns & Lure Archetypes</h3>
+            </div>
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #1f2937; background-color: #0b0f19; color: #9ca3af;">
+                        <th style="padding: 12px 18px;">Campaign Name</th>
+                        <th style="padding: 12px 18px;">Lure Archetype</th>
+                        <th style="padding: 12px 18px;">Top Spoofed Domain</th>
+                        <th style="padding: 12px 18px;">Detection Trend</th>
+                        <th style="padding: 12px 18px; text-align: right;">Action Required</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #1f2937;">
+                        <td style="padding: 14px 18px; font-weight: 700; color: #ffffff;">Operation Fake-HR-Bonus</td>
+                        <td style="padding: 14px 18px; color: #cbd5e1;">Quarterly Incentive PDF Lure</td>
+                        <td style="padding: 14px 18px; font-family: monospace; color: #ef4444;">hr-portal-secure-update.com</td>
+                        <td style="padding: 14px 18px;"><span style="color: #ef4444; font-weight: 700;">▲ +45% Spike</span></td>
+                        <td style="padding: 14px 18px; text-align: right;">
+                            <button onclick="alert('Block rule dispatched to DNS & Gateway Filters!')" style="background-color: #ef4444; color: #ffffff; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer;">Push Global Block</button>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #1f2937;">
+                        <td style="padding: 14px 18px; font-weight: 700; color: #ffffff;">O365 Password Expiration Spray</td>
+                        <td style="padding: 14px 18px; color: #cbd5e1;">Fake Admin Password Reset</td>
+                        <td style="padding: 14px 18px; font-family: monospace; color: #f59e0b;">login-microsoftonline-auth.net</td>
+                        <td style="padding: 14px 18px;"><span style="color: #f59e0b; font-weight: 700;">► Steady High</span></td>
+                        <td style="padding: 14px 18px; text-align: right;">
+                            <button onclick="alert('Block rule dispatched to DNS & Gateway Filters!')" style="background-color: #1f2937; color: #38bdf8; border: 1px solid #38bdf8; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer;">Push Global Block</button>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #1f2937;">
+                        <td style="padding: 14px 18px; font-weight: 700; color: #ffffff;">SMS Package Delivery Smish</td>
+                        <td style="padding: 14px 18px; color: #cbd5e1;">Unclaimed Postal Parcel Link</td>
+                        <td style="padding: 14px 18px; font-family: monospace; color: #38bdf8;">track-parcel-express.info</td>
+                        <td style="padding: 14px 18px;"><span style="color: #10b981; font-weight: 700;">▼ -18% Declining</span></td>
+                        <td style="padding: 14px 18px; text-align: right;">
+                            <button onclick="alert('Block rule dispatched to DNS & Gateway Filters!')" style="background-color: #1f2937; color: #38bdf8; border: 1px solid #38bdf8; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer;">Push Global Block</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        function updateDashboard() {
+            const range = document.getElementById("timeRange").value;
+            const statTotal = document.getElementById("statTotal");
+
+            if (range === "7d") {
+                statTotal.innerText = "3,412";
+            } else if (range === "30d") {
+                statTotal.innerText = "14,892";
+            } else {
+                statTotal.innerText = "42,105";
+            }
+        }
+
+        function refreshData() {
+            alert("Threat intelligence telemetry updated successfully with latest feeds.");
+        }
+    </script>
+</body>
+</html>

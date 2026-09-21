@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'analyst','application','complaints','doubt','email_phno',
-    'feedbacks','login','phishing','user','website','main_template'
+    'feedbacks','login','phishing','user','website','main_template','adm'
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Phishing Threat Intelligence & Detection Report</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; display: flex; min-height: 100vh;">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside style="width: 260px; background-color: #1e293b; border-right: 1px solid #334155; display: flex; flex-direction: column; flex-shrink: 0;">
+        <div style="padding: 20px; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 10px;">
+            <span style="background-color: #ef4444; color: #ffffff; padding: 6px 10px; border-radius: 6px; font-weight: 700; font-size: 14px;">SOC</span>
+            <span style="font-size: 16px; font-weight: 700; color: #f8fafc;">Threat Intel</span>
+        </div>
+
+        <nav style="padding: 15px 10px; flex-grow: 1; display: flex; flex-direction: column; gap: 4px;">
+            <a href="#overview" onclick="switchTab('overview')" id="nav-overview" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background-color: #0284c7; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600;">
+                📊 Executive Summary
+            </a>
+            <a href="#incidents" onclick="switchTab('incidents')" id="nav-incidents" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">
+                🚨 Flagged Incidents
+                <span style="background-color: #ef4444; color: #ffffff; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 10px; margin-left: auto;">4 New</span>
+            </a>
+            <a href="#indicators" onclick="switchTab('indicators')" id="nav-indicators" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">
+                🔍 Malicious Domain IOCs
+            </a>
+            <a href="#analytics" onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">
+                📈 Department Vulnerability
+            </a>
+        </nav>
+
+        <div style="padding: 15px; border-top: 1px solid #334155;">
+            <button onclick="exportPDF()" style="width: 100%; padding: 10px; background-color: #38bdf8; color: #0f172a; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                📥 Export Report (PDF)
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main style="flex-grow: 1; padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto;">
+        
+        <!-- Header Controls -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <h1 id="page-title" style="margin: 0; font-size: 24px;">Phishing Incident Report Dashboard</h1>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #94a3b8;">Automated threat vector analysis, detected payloads, and risk metrics.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <select style="padding: 8px 12px; background-color: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                    <option>Last 24 Hours</option>
+                    <option selected>Last 7 Days</option>
+                    <option>Last 30 Days</option>
+                </select>
+                <button onclick="triggerThreatScan()" style="background-color: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">
+                    ⚡ Run Active Threat Scan
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 1: EXECUTIVE SUMMARY -->
+        <div id="tab-overview" class="tab-content" style="display: block;">
+            
+            <!-- High-Level Metric Cards -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <div style="background-color: #1e293b; padding: 18px; border-radius: 8px; border: 1px solid #334155;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">TOTAL EMAILS SCANNED</div>
+                    <div style="font-size: 26px; font-weight: 700; color: #38bdf8; margin-top: 6px;">148,290</div>
+                    <div style="font-size: 11px; color: #10b981; margin-top: 4px;">↑ 12% vs last week</div>
+                </div>
+
+                <div style="background-color: #1e293b; padding: 18px; border-radius: 8px; border: 1px solid #ef4444;">
+                    <div style="font-size: 12px; color: #ef4444; font-weight: 600;">CONFIRMED PHISHING THREATS</div>
+                    <div style="font-size: 26px; font-weight: 700; color: #ef4444; margin-top: 6px;">342</div>
+                    <div style="font-size: 11px; color: #ef4444; margin-top: 4px;">⚠ 18 Critical Escalations</div>
+                </div>
+
+                <div style="background-color: #1e293b; padding: 18px; border-radius: 8px; border: 1px solid #334155;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">USER REPORTED SUSPICIOUS</div>
+                    <div style="font-size: 26px; font-weight: 700; color: #f59e0b; margin-top: 6px;">89</div>
+                    <div style="font-size: 11px; color: #10b981; margin-top: 4px;">92% Accuracy Rate</div>
+                </div>
+
+                <div style="background-color: #1e293b; padding: 18px; border-radius: 8px; border: 1px solid #334155;">
+                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">BLOCKED MALICIOUS DOMAINS</div>
+                    <div style="font-size: 26px; font-weight: 700; color: #10b981; margin-top: 6px;">114</div>
+                    <div style="font-size: 11px; color: #cbd5e1; margin-top: 4px;">Auto-synced to Firewall</div>
+                </div>
+            </div>
+
+            <!-- Attack Vector Breakdown & Critical Alert Box -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;">
+                
+                <!-- Main Threat Summary -->
+                <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #ffffff;">Primary Attack Vector Analysis</h3>
+                    <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Distribution of detected phishing strategies across incoming organization traffic.</p>
+
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                                <span>Credential Harvesting (Fake Portal Links)</span>
+                                <span style="font-weight: 700; color: #ef4444;">54%</span>
+                            </div>
+                            <div style="background-color: #0f172a; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="background-color: #ef4444; width: 54%; height: 100%;"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                                <span>Malicious Attachments (ZIP / Executables / PDF Scripting)</span>
+                                <span style="font-weight: 700; color: #f59e0b;">28%</span>
+                            </div>
+                            <div style="background-color: #0f172a; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="background-color: #f59e0b; width: 28%; height: 100%;"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                                <span>CEO Fraud / Executive Business Email Compromise (BEC)</span>
+                                <span style="font-weight: 700; color: #38bdf8;">12%</span>
+                            </div>
+                            <div style="background-color: #0f172a; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="background-color: #38bdf8; width: 12%; height: 100%;"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                                <span>QR Code Phishing (Quishing)</span>
+                                <span style="font-weight: 700; color: #a855f7;">6%</span>
+                            </div>
+                            <div style="background-color: #0f172a; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="background-color: #a855f7; width: 6%; height: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Risk Advisory Sidebar -->
+                <div style="background-color: #1e293b; border: 1px solid #ef4444; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                            <span style="font-size: 18px;">🚨</span>
+                            <h3 style="margin: 0; font-size: 15px; color: #ef4444;">Active Campaign Detected</h3>
+                        </div>
+                        <p style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
+                            An active spear-phishing campaign impersonating <strong>Microsoft 365 Re-Authentication</strong> is currently targeting the <em>Finance & Accounting</em> division.
+                        </p>
+                        <div style="background-color: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid #334155; font-family: monospace; font-size: 11px; color: #f59e0b; margin-top: 10px; word-break: break-all;">
+                            Indicator: login-verify-m365-security.com
+                        </div>
+                    </div>
+                    <button onclick="blockCampaignDomain()" style="margin-top: 15px; background-color: #ef4444; color: white; border: none; padding: 10px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; width: 100%;">
+                        Global Block Target Domain
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Flagged Incidents Table -->
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; overflow-x: auto;">
+                <div style="padding: 15px 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; font-size: 15px; color: #ffffff;">Recent Flagged Email Incidents</h3>
+                    <a href="#incidents" onclick="switchTab('incidents')" style="color: #38bdf8; font-size: 12px; text-decoration: none;">View All Incidents →</a>
+                </div>
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #334155; background-color: #0f172a; color: #94a3b8;">
+                            <th style="padding: 12px 15px;">Sender Details</th>
+                            <th style="padding: 12px 15px;">Subject Line</th>
+                            <th style="padding: 12px 15px;">Target User</th>
+                            <th style="padding: 12px 15px;">Risk Score</th>
+                            <th style="padding: 12px 15px;">Status</th>
+                            <th style="padding: 12px 15px; text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
+                            <td style="padding: 12px 15px;">
+                                <div style="font-weight: 600; color: #ffffff;">billing-update@intuit-secure-pay.com</div>
+                                <div style="font-size: 11px; color: #ef4444;">DKIM: Failed | SPF: Fail</div>
+                            </td>
+                            <td style="padding: 12px 15px; color: #cbd5e1;">URGENT: Overdue Invoice Payment Required</td>
+                            <td style="padding: 12px 15px; color: #94a3b8;">cfo@company.com</td>
+                            <td style="padding: 12px 15px;"><span style="background-color: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">98 / 100</span></td>
+                            <td style="padding: 12px 15px;"><span style="color: #ef4444; font-weight: 600;">Quarantined</span></td>
+                            <td style="padding: 12px 15px; text-align: right;">
+                                <button onclick="viewIncidentDetails('billing-update@intuit-secure-pay.com', '98/100', 'Fake Invoice Portal')" style="background-color: transparent; border: 1px solid #38bdf8; color: #38bdf8; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">Inspect</button>
+                            </td>
+                        </tr>
+
+                        <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
+                            <td style="padding: 12px 15px;">
+                                <div style="font-weight: 600; color: #ffffff;">security@microsoft-support-team.org</div>
+                                <div style="font-size: 11px; color: #ef4444;">DKIM: SoftFail | SPF: Pass</div>
+                            </td>
+                            <td style="padding: 12px 15px; color: #cbd5e1;">Your Password Expires in 2 Hours</td>
+                            <td style="padding: 12px 15px; color: #94a3b8;">dev.team@company.com</td>
+                            <td style="padding: 12px 15px;"><span style="background-color: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">92 / 100</span></td>
+                            <td style="padding: 12px 15px;"><span style="color: #ef4444; font-weight: 600;">Quarantined</span></td>
+                            <td style="padding: 12px 15px; text-align: right;">
+                                <button onclick="viewIncidentDetails('security@microsoft-support-team.org', '92/100', 'Password Harvest')" style="background-color: transparent; border: 1px solid #38bdf8; color: #38bdf8; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">Inspect</button>
+                            </td>
+                        </tr>
+
+                        <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
+                            <td style="padding: 12px 15px;">
+                                <div style="font-weight: 600; color: #ffffff;">hr-notice@internal-portal-verify.net</div>
+                                <div style="font-size: 11px; color: #f59e0b;">DKIM: Pass | SPF: Pass</div>
+                            </td>
+                            <td style="padding: 12px 15px; color: #cbd5e1;">Updated Employee Benefits Document (PDF)</td>
+                            <td style="padding: 12px 15px; color: #94a3b8;">all-employees@company.com</td>
+                            <td style="padding: 12px 15px;"><span style="background-color: rgba(245, 158, 11, 0.2); color: #f59e0b; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px;">74 / 100</span></td>
+                            <td style="padding: 12px 15px;"><span style="color: #f59e0b; font-weight: 600;">Pending Review</span></td>
+                            <td style="padding: 12px 15px; text-align: right;">
+                                <button onclick="viewIncidentDetails('hr-notice@internal-portal-verify.net', '74/100', 'Suspicious PDF Macro')" style="background-color: transparent; border: 1px solid #38bdf8; color: #38bdf8; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">Inspect</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 2: FLAGGED INCIDENTS -->
+        <div id="tab-incidents" class="tab-content" style="display: none;">
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
+                <h3 style="margin: 0 0 10px 0; color: #ffffff;">Full Incident Investigation Queue</h3>
+                <p style="color: #94a3b8; font-size: 13px; margin-bottom: 15px;">Filter through flagged user reports and system-quarantined messages.</p>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" placeholder="Search by sender, keyword, or payload URL..." style="flex: 1; padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                    <button style="background-color: #0284c7; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;">Filter Results</button>
+                </div>
+
+                <div style="font-size: 13px; color: #94a3b8; text-align: center; padding: 40px; background-color: #0f172a; border-radius: 6px; border: 1px dashed #334155;">
+                    Select an incident from the table above or run a custom query to view detailed raw message headers, sandbox execution logs, and DOM snapshots.
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: MALICIOUS DOMAIN IOCS -->
+        <div id="tab-indicators" class="tab-content" style="display: none;">
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
+                <h3 style="margin: 0 0 10px 0; color: #ffffff;">Indicators of Compromise (IOC) Blacklist</h3>
+                <p style="color: #94a3b8; font-size: 13px; margin-bottom: 15px;">Domains and IP addresses flagged during payload detonation.</p>
+                
+                <ul style="list-style-type: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-family: monospace; font-size: 12px;">
+                    <li style="padding: 12px; background-color: #0f172a; border-radius: 6px; border-left: 3px solid #ef4444; display: flex; justify-content: space-between; align-items: center;">
+                        <span>login-verify-m365-security.com (IP: 185.220.101.5)</span>
+                        <span style="color: #ef4444; font-weight: 700;">BLOCKED AT FIREWALL</span>
+                    </li>
+                    <li style="padding: 12px; background-color: #0f172a; border-radius: 6px; border-left: 3px solid #ef4444; display: flex; justify-content: space-between; align-items: center;">
+                        <span>intuit-secure-pay.com (IP: 192.241.202.11)</span>
+                        <span style="color: #ef4444; font-weight: 700;">BLOCKED AT FIREWALL</span>
+                    </li>
+                    <li style="padding: 12px; background-color: #0f172a; border-radius: 6px; border-left: 3px solid #f59e0b; display: flex; justify-content: space-between; align-items: center;">
+                        <span>internal-portal-verify.net (IP: 45.33.32.156)</span>
+                        <span style="color: #f59e0b; font-weight: 700;">DNS SINKHOLED</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- TAB 4: DEPARTMENT VULNERABILITY -->
+        <div id="tab-analytics" class="tab-content" style="display: none;">
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
+                <h3 style="margin: 0 0 10px 0; color: #ffffff;">Targeted Department Breakdown</h3>
+                <p style="color: #94a3b8; font-size: 13px; margin-bottom: 20px;">Departments experiencing the highest volume of spear-phishing attempts this month.</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+                    <div style="background-color: #0f172a; padding: 15px; border-radius: 6px; border: 1px solid #334155;">
+                        <div style="font-weight: 700; color: #ef4444;">Finance &amp; Accounting</div>
+                        <div style="font-size: 22px; font-weight: 700; margin-top: 5px;">142 Targets</div>
+                        <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Top Vector: Fake Invoices</div>
+                    </div>
+                    <div style="background-color: #0f172a; padding: 15px; border-radius: 6px; border: 1px solid #334155;">
+                        <div style="font-weight: 700; color: #f59e0b;">Executive Office</div>
+                        <div style="font-size: 22px; font-weight: 700; margin-top: 5px;">88 Targets</div>
+                        <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Top Vector: Gift Card BEC</div>
+                    </div>
+                    <div style="background-color: #0f172a; padding: 15px; border-radius: 6px; border: 1px solid #334155;">
+                        <div style="font-weight: 700; color: #38bdf8;">Human Resources</div>
+                        <div style="font-size: 22px; font-weight: 700; margin-top: 5px;">64 Targets</div>
+                        <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Top Vector: Malicious Resume PDF</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- INCIDENT INSPECTION MODAL -->
+    <div id="incident-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000;">
+        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px; width: 480px; max-width: 90%;">
+            <h3 style="margin-top: 0; color: #ffffff;">Incident Sandbox Forensic Summary</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px; color: #cbd5e1; margin-top: 15px;">
+                <div><strong>Sender:</strong> <span id="modal-sender" style="color: #ef4444;"></span></div>
+                <div><strong>Phishing Risk Rating:</strong> <span id="modal-risk" style="color: #ef4444; font-weight: 700;"></span></div>
+                <div><strong>Detected Attack Vector:</strong> <span id="modal-vector"></span></div>
+                
+                <div style="background-color: #0f172a; padding: 12px; border-radius: 6px; border: 1px solid #334155; margin-top: 5px;">
+                    <div style="font-size: 11px; color: #94a3b8; font-weight: 700; margin-bottom: 5px;">DETONATION LOGS:</div>
+                    <div style="font-family: monospace; font-size: 11px; color: #f59e0b;">
+                        [+] Redirect chain: bit.ly/3x8A -> login-verify-m365.com<br>
+                        [+] Script detected: Password harvester (Credential Stealer v4)<br>
+                        [+] SSL Cert Issuer: Let's Encrypt (Issued 1 day ago)
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button onclick="closeModal()" style="background-color: transparent; border: 1px solid #64748b; color: #cbd5e1; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Close</button>
+                <button onclick="confirmPurge()" style="background-color: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">Purge Email Globally</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT CONTROLS -->
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.style.backgroundColor = 'transparent';
+                btn.style.color = '#cbd5e1';
+            });
+
+            document.getElementById('tab-' + tabId).style.display = 'block';
+            
+            const activeNav = document.getElementById('nav-' + tabId);
+            activeNav.style.backgroundColor = '#0284c7';
+            activeNav.style.color = '#ffffff';
+
+            const titles = {
+                'overview': 'Executive Summary',
+                'incidents': 'Full Incident Investigation Queue',
+                'indicators': 'Indicators of Compromise (IOC) Blacklist',
+                'analytics': 'Department Vulnerability Breakdown'
+            };
+            document.getElementById('page-title').innerText = titles[tabId];
+        }
+
+        function triggerThreatScan() {
+            alert('Initiating active heuristic threat scan across incoming mail queues...');
+        }
+
+        function blockCampaignDomain() {
+            alert('Domain "login-verify-m365-security.com" added to enterprise perimeter blocklist and DNS sinkhole.');
+        }
+
+        function viewIncidentDetails(sender, risk, vector) {
+            document.getElementById('modal-sender').innerText = sender;
+            document.getElementById('modal-risk').innerText = risk;
+            document.getElementById('modal-vector').innerText = vector;
+            document.getElementById('incident-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('incident-modal').style.display = 'none';
+        }
+
+        function confirmPurge() {
+            alert('Purge command dispatched! All matching instances removed from user inboxes.');
+            closeModal();
+        }
+
+        function exportPDF() {
+            alert('Generating PDF Threat Intelligence Report for Executive Leadership...');
+        }
+    </script>
+</body>
+</html>

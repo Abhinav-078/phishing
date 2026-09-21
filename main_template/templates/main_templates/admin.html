@@ -1,229 +1,582 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portal - PhishShield LMS</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishShield LMS - Admin Portal</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #0d1117;
+      color: #c9d1d9;
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar Styling */
+    aside {
+      width: 280px;
+      background-color: #161b22;
+      border-right: 1px solid #30363d;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .brand-section {
+      margin-bottom: 25px;
+    }
+    .brand-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #58a6ff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .role-badge {
+      font-size: 0.75rem;
+      background-color: #238636;
+      color: #ffffff;
+      padding: 2px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .user-profile-card {
+      background-color: #21262d;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      border: 1px solid #30363d;
+    }
+    .profile-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #f0f6fc;
+    }
+    .profile-email {
+      font-size: 0.75rem;
+      color: #8b949e;
+    }
+
+    .nav-section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #8b949e;
+      font-weight: bold;
+      margin: 15px 0 8px 0;
+      letter-spacing: 0.5px;
+    }
+    .nav-list {
+      list-style: none;
+    }
+    .nav-item {
+      margin-bottom: 4px;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      color: #c9d1d9;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .nav-link:hover, .nav-link.active {
+      background-color: #1f6feb;
+      color: #ffffff;
+    }
+
+    .logout-button {
+      margin-top: 20px;
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #da3633;
+      color: #ffffff;
+      text-align: center;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+    .logout-button:hover {
+      background-color: #f85149;
+    }
+
+    /* Main Content Styling */
+    main {
+      margin-left: 280px;
+      flex: 1;
+      padding: 30px;
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #30363d;
+      margin-bottom: 25px;
+    }
+    .page-title {
+      font-size: 1.5rem;
+      color: #f0f6fc;
+    }
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #3fb950;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #3fb950;
+      border-radius: 50%;
+    }
+
+    /* Section Cards & Tables */
+    .section-block {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    .section-header {
+      font-size: 1.1rem;
+      color: #f0f6fc;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #21262d;
+    }
+
+    /* Grid Analytics */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    .metric-card {
+      background-color: #21262d;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+    }
+    .metric-title {
+      font-size: 0.75rem;
+      color: #8b949e;
+      text-transform: uppercase;
+    }
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #58a6ff;
+      margin-top: 5px;
+    }
+
+    /* Data Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #21262d;
+    }
+    th {
+      background-color: #21262d;
+      color: #8b949e;
+      font-weight: 600;
+    }
+    tr:hover {
+      background-color: #1c2128;
+    }
+    
+    .status-tag {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+    .status-pending { background-color: #9e6a03; color: #fff; }
+    .status-verified { background-color: #238636; color: #fff; }
+    .status-flagged { background-color: #da3633; color: #fff; }
+
+    .btn-action {
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    .btn-verify { background-color: #238636; color: white; }
+    .btn-reject { background-color: #da3633; color: white; }
+    .btn-view { background-color: #1f6feb; color: white; }
+
+    /* Feed Items */
+    .feed-item {
+      background-color: #21262d;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      border: 1px solid #30363d;
+    }
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: #8b949e;
+      margin-bottom: 5px;
+    }
+    .feed-body {
+      font-size: 0.85rem;
+      color: #c9d1d9;
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; display: flex; min-height: 100vh;">
+<body>
 
-    <!-- LEFT SIDEBAR / ADMIN MENU -->
-    <aside style="width: 280px; background-color: #1e293b; border-right: 1px solid #334155; display: flex; flex-direction: column; flex-shrink: 0;">
-        
-        <!-- App Header / Logo -->
-        <div style="padding: 20px; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 10px;">
-            <span style="background-color: #dc2626; color: #ffffff; padding: 6px 10px; border-radius: 6px; font-weight: 700; font-size: 16px;">ADM</span>
-            <div>
-                <div style="font-size: 16px; font-weight: 700; color: #f8fafc;">PhishShield LMS</div>
-                <div style="font-size: 11px; color: #ef4444; font-weight: 600;">System Administrator</div>
-            </div>
+  <!-- Sidebar -->
+  <aside>
+    <div>
+      <div class="brand-section">
+        <div class="brand-title">
+          <span>ADM PhishShield LMS</span>
         </div>
+        <span class="role-badge">System Administrator</span>
+      </div>
 
-        <!-- Admin Profile Credentials -->
-        <div style="padding: 15px 20px; background-color: rgba(15, 23, 42, 0.4); border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 12px;">
-            <div style="width: 38px; height: 38px; background-color: #dc2626; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
-                AD
-            </div>
-            <div style="overflow: hidden;">
-                <div style="font-size: 13px; font-weight: 600; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Admin Root</div>
-                <div style="font-size: 11px; color: #ef4444; font-weight: 500;">● Super Administrator</div>
-            </div>
+      <div class="user-profile-card">
+        <div class="profile-name">Admin Root</div>
+        <div class="profile-email">admin@phishshield.internal</div>
+      </div>
+
+      <nav aria-label="Main Navigation">
+        <!-- Section 1: Analytics -->
+        <div class="nav-section-title">Analytics</div>
+        <ul class="nav-list">
+          <li class="nav-item"><a href="#overall-security-analytics" class="nav-link active">Overall Security Analytics</a></li>
+        </ul>
+
+        <!-- Section 2: User & Staff Verification -->
+        <div class="nav-section-title">User & Staff Verification</div>
+        <ul class="nav-list">
+          <li class="nav-item"><a href="#manage-users" class="nav-link">Manage Users</a></li>
+          <li class="nav-item"><a href="#security-analysts" class="nav-link">Security Analysts</a></li>
+        </ul>
+
+        <!-- Section 3: Threat Inspection Logs -->
+        <div class="nav-section-title">Threat Inspection Logs</div>
+        <ul class="nav-list">
+          <li class="nav-item"><a href="#phishing-detection-reports" class="nav-link">Phishing Detection Reports</a></li>
+          <li class="nav-item"><a href="#suspicious-urls" class="nav-link">Suspicious URLs</a></li>
+          <li class="nav-item"><a href="#suspicious-emails" class="nav-link">Suspicious Emails</a></li>
+          <li class="nav-item"><a href="#suspicious-phone-numbers" class="nav-link">Suspicious Phone Numbers</a></li>
+          <li class="nav-item"><a href="#suspicious-applications" class="nav-link">Suspicious Applications</a></li>
+        </ul>
+
+        <!-- Section 4: Communication & Feedback -->
+        <div class="nav-section-title">Communication & Feedback</div>
+        <ul class="nav-list">
+          <li class="nav-item"><a href="#view-complaints" class="nav-link">View Complaints</a></li>
+          <li class="nav-item"><a href="#view-feedback" class="nav-link">View Feedback</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div>
+      <button class="logout-button" type="button">Admin Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <div class="header-bar">
+      <div>
+        <h1 class="page-title">Admin System Console</h1>
+      </div>
+      <div class="system-status">
+        <span class="status-dot"></span>
+        <span>System Status: Secure</span>
+      </div>
+    </div>
+
+    <!-- 1. Analytics -->
+    <section id="overall-security-analytics" class="section-block">
+      <h2 class="section-header">Overall Security Analytics</h2>
+      <div class="analytics-grid">
+        <div class="metric-card">
+          <div class="metric-title">Total Scanned Threats</div>
+          <div class="metric-value">124,592</div>
         </div>
-
-        <!-- Dashboard Navigation Menu -->
-        <nav style="padding: 15px 10px; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-            
-            <a href="#analytics" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background-color: #dc2626; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600;">
-                📊 Overall Security Analytics
-            </a>
-
-            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">User & Staff Verification</div>
-            <a href="#manage-users" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">👥 Manage & Verify Users</a>
-            <a href="#manage-analysts" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🔍 Manage & Verify Security Analysts</a>
-
-            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Threat Inspection Logs</div>
-            <a href="#detection-reports" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📜 Phishing Detection Reports</a>
-            <a href="#suspicious-url" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🌐 Suspicious URLs</a>
-            <a href="#suspicious-email" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">✉️ Suspicious Emails</a>
-            <a href="#suspicious-phno" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📞 Suspicious Phone Numbers</a>
-            <a href="#suspicious-app" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📱 Suspicious Applications</a>
-
-            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Communication & Feedback</div>
-            <a href="#view-complaints" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🚨 View Complaints</a>
-            <a href="#view-feedback" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">⭐ View Feedback</a>
-
-        </nav>
-
-        <!-- Sidebar Logout -->
-        <div style="padding: 15px; border-top: 1px solid #334155;">
-            <a href="#" style="display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; padding: 10px 0; background-color: #334155; color: #ffffff; border: none; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600;">
-                🚪 Admin Logout
-            </a>
+        <div class="metric-card">
+          <div class="metric-title">Pending Analyst Verifications</div>
+          <div class="metric-value">48</div>
         </div>
-    </aside>
-
-    <!-- MAIN CONTENT AREA -->
-    <main style="flex-grow: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 25px;">
-        
-        <!-- Page Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid #334155; padding-bottom: 20px;">
-            <div>
-                <h1 style="font-size: 26px; margin: 0; color: #ffffff;">Admin System Console</h1>
-                <p style="font-size: 14px; color: #94a3b8; margin: 4px 0 0 0;">Manage security analysts, verify users, inspect threat reports, and monitor security analytics[cite: 1].</p>
-            </div>
-            <div>
-                <span style="background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 12px; padding: 6px 14px; border-radius: 20px; font-weight: 600;">
-                    System Status: Secure
-                </span>
-            </div>
+        <div class="metric-card">
+          <div class="metric-title">Active Complaints</div>
+          <div class="metric-value">12</div>
         </div>
-
-        <!-- 1. Overall Security Analytics -->
-        <div id="analytics">
-            <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">Overall Security Analytics[cite: 1]</h2>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 200px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
-                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">Total Phishing Threats Scanned[cite: 1]</div>
-                    <div style="font-size: 28px; font-weight: 700; color: #38bdf8; margin: 5px 0;">12,480</div>
-                    <div style="font-size: 11px; color: #10b981;">↑ Across Web, Email, Apps & Phone[cite: 1]</div>
-                </div>
-                <div style="flex: 1; min-width: 200px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
-                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">Pending Analyst Verifications[cite: 1]</div>
-                    <div style="font-size: 28px; font-weight: 700; color: #f59e0b; margin: 5px 0;">5</div>
-                    <div style="font-size: 11px; color: #f59e0b;">Action Required</div>
-                </div>
-                <div style="flex: 1; min-width: 200px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
-                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">Active System Complaints[cite: 1]</div>
-                    <div style="font-size: 28px; font-weight: 700; color: #ef4444; margin: 5px 0;">2</div>
-                    <div style="font-size: 11px; color: #ef4444;">Unresolved user complaints[cite: 1]</div>
-                </div>
-                <div style="flex: 1; min-width: 200px; background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px;">
-                    <div style="font-size: 12px; color: #94a3b8; font-weight: 600;">Verified Phishing Records[cite: 1]</div>
-                    <div style="font-size: 28px; font-weight: 700; color: #10b981; margin: 5px 0;">3,891</div>
-                    <div style="font-size: 11px; color: #10b981;">Added to AI Dataset[cite: 1]</div>
-                </div>
-            </div>
+        <div class="metric-card">
+          <div class="metric-title">Dataset Additions</div>
+          <div class="metric-value">+1,204</div>
         </div>
+      </div>
+    </section>
 
-        <!-- 2. Manage & Verify (Security Analyst & Users) -->
-        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 style="font-size: 18px; margin: 0; color: #ffffff;">Manage & Verify Security Analysts[cite: 1]</h2>
-            </div>
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
-                    <thead>
-                        <tr style="border-bottom: 1px solid #334155; color: #94a3b8;">
-                            <th style="padding: 12px 10px;">Analyst Name</th>
-                            <th style="padding: 12px 10px;">Email</th>
-                            <th style="padding: 12px 10px;">Experience</th>
-                            <th style="padding: 12px 10px;">Status</th>
-                            <th style="padding: 12px 10px;">Verification Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
-                            <td style="padding: 12px 10px; color: #cbd5e1; font-weight: 600;">Dr. Sarah Jenkins</td>
-                            <td style="padding: 12px 10px; color: #94a3b8;">s.jenkins@cybersec.org</td>
-                            <td style="padding: 12px 10px; color: #cbd5e1;">6 Years</td>
-                            <td style="padding: 12px 10px;"><span style="background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-size: 12px;">Pending</span></td>
-                            <td style="padding: 12px 10px; display: flex; gap: 8px;">
-                                <button style="background-color: #10b981; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">Approve & Verify[cite: 1]</button>
-                                <button style="background-color: #ef4444; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">Reject</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 12px 10px; color: #cbd5e1; font-weight: 600;">Mark Roberson</td>
-                            <td style="padding: 12px 10px; color: #94a3b8;">m.roberson@phishshield.com</td>
-                            <td style="padding: 12px 10px; color: #cbd5e1;">4 Years</td>
-                            <td style="padding: 12px 10px;"><span style="background-color: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-size: 12px;">Verified[cite: 1]</span></td>
-                            <td style="padding: 12px 10px;">
-                                <button style="background-color: #334155; color: #cbd5e1; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Manage User[cite: 1]</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <!-- 2. User & Staff Verification -->
+    <section id="manage-users" class="section-block">
+      <h2 class="section-header">Manage Users</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Account Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>USR-101</td>
+            <td>Jane Doe</td>
+            <td>jane.doe@company.com</td>
+            <td>Standard User</td>
+            <td><span class="status-tag status-verified">Active</span></td>
+            <td>
+              <button class="btn-action btn-view" type="button">View Activity</button>
+              <button class="btn-action btn-reject" type="button">Disable Account</button>
+            </td>
+          </tr>
+          <tr>
+            <td>USR-102</td>
+            <td>John Smith</td>
+            <td>john.smith@company.com</td>
+            <td>Standard User</td>
+            <td><span class="status-tag status-pending">Pending Review</span></td>
+            <td>
+              <button class="btn-action btn-verify" type="button">Verify User</button>
+              <button class="btn-action btn-reject" type="button">Disable Account</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="security-analysts" class="section-block">
+      <h2 class="section-header">Security Analysts Management</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Analyst ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Verification Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ANL-8821</td>
+            <td>Alex Rivera</td>
+            <td>a.rivera@phishshield.internal</td>
+            <td><span class="status-tag status-pending">Pending Verification</span></td>
+            <td>
+              <button class="btn-action btn-verify" type="button">Approve</button>
+              <button class="btn-action btn-reject" type="button">Reject</button>
+            </td>
+          </tr>
+          <tr>
+            <td>ANL-4410</td>
+            <td>Sarah Chen</td>
+            <td>s.chen@phishshield.internal</td>
+            <td><span class="status-tag status-verified">Verified</span></td>
+            <td>
+              <button class="btn-action btn-view" type="button">Manage Access</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3. Threat Inspection Logs (Divided strictly by Target Type) -->
+    <section id="phishing-detection-reports" class="section-block">
+      <h2 class="section-header">Phishing Detection Reports</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Report ID</th>
+            <th>Target Value</th>
+            <th>Type</th>
+            <th>AI Risk Score</th>
+            <th>Analyst Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>REP-9081</td>
+            <td>http://secure-login-update.com</td>
+            <td>URL</td>
+            <td>94/100</td>
+            <td><span class="status-tag status-flagged">Confirmed Threat</span></td>
+            <td><button class="btn-action btn-view" type="button">Full Breakdown</button></td>
+          </tr>
+          <tr>
+            <td>REP-9082</td>
+            <td>security-alert@verify-account-portal.net</td>
+            <td>Email</td>
+            <td>88/100</td>
+            <td><span class="status-tag status-flagged">Confirmed Threat</span></td>
+            <td><button class="btn-action btn-view" type="button">Full Breakdown</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="suspicious-urls" class="section-block">
+      <h2 class="section-header">Suspicious URLs</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Target Value</th>
+            <th>AI Risk Score</th>
+            <th>Analyst Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>http://secure-login-update.com</td>
+            <td>94/100</td>
+            <td><span class="status-tag status-flagged">Confirmed Phish</span></td>
+            <td><button class="btn-action btn-view" type="button">Inspect Payload</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="suspicious-emails" class="section-block">
+      <h2 class="section-header">Suspicious Emails</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Sender Address</th>
+            <th>AI Risk Score</th>
+            <th>Analyst Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>security-alert@verify-account-portal.net</td>
+            <td>88/100</td>
+            <td><span class="status-tag status-pending">Pending Review</span></td>
+            <td><button class="btn-action btn-view" type="button">Inspect Headers</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="suspicious-phone-numbers" class="section-block">
+      <h2 class="section-header">Suspicious Phone Numbers</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Phone Number</th>
+            <th>AI Risk Score</th>
+            <th>Analyst Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>+1 (800) 555-0199</td>
+            <td>72/100</td>
+            <td><span class="status-tag status-pending">Pending Review</span></td>
+            <td><button class="btn-action btn-view" type="button">Inspect Smishing Logs</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="suspicious-applications" class="section-block">
+      <h2 class="section-header">Suspicious Applications</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Application Signature / File Name</th>
+            <th>AI Risk Score</th>
+            <th>Analyst Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Authenticator_v2.1_installer.exe</td>
+            <td>99/100</td>
+            <td><span class="status-tag status-flagged">Malware Confirmed</span></td>
+            <td><button class="btn-action btn-view" type="button">Inspect Sandbox Analysis</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Communication & Feedback -->
+    <section id="view-complaints" class="section-block">
+      <h2 class="section-header">View Complaints</h2>
+      <div class="feed-item">
+        <div class="feed-header">
+          <span>Ticket #CMP-402 — User: mark.t@company.com</span>
+          <span>Submitted: 2 hours ago</span>
         </div>
-
-        <!-- 3. Suspicious Categories Management (URL, Email, Phone, Application) -->
-        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 style="font-size: 18px; margin: 0; color: #ffffff;">Suspicious Targets Inspection[cite: 1]</h2>
-                <div style="display: flex; gap: 8px;">
-                    <button style="background-color: #0284c7; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 600;">URLs[cite: 1]</button>
-                    <button style="background-color: #334155; color: #cbd5e1; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;">Emails[cite: 1]</button>
-                    <button style="background-color: #334155; color: #cbd5e1; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;">Phone Numbers[cite: 1]</button>
-                    <button style="background-color: #334155; color: #cbd5e1; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;">Applications[cite: 1]</button>
-                </div>
-            </div>
-
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
-                    <thead>
-                        <tr style="border-bottom: 1px solid #334155; color: #94a3b8;">
-                            <th style="padding: 12px 10px;">Target Value</th>
-                            <th style="padding: 12px 10px;">Vector Type</th>
-                            <th style="padding: 12px 10px;">AI Risk Score</th>
-                            <th style="padding: 12px 10px;">Reported By</th>
-                            <th style="padding: 12px 10px;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
-                            <td style="padding: 12px 10px; color: #ef4444; font-weight: 600;">http://update-login-credentials-bank.com</td>
-                            <td style="padding: 12px 10px; color: #cbd5e1;">URL / Website[cite: 1]</td>
-                            <td style="padding: 12px 10px; font-weight: 700; color: #ef4444;">94 / 100[cite: 1]</td>
-                            <td style="padding: 12px 10px; color: #94a3b8;">User (John Doe)[cite: 1]</td>
-                            <td style="padding: 12px 10px;"><a href="#" style="color: #38bdf8; text-decoration: none;">View Report[cite: 1]</a></td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
-                            <td style="padding: 12px 10px; color: #f59e0b; font-weight: 600;">+1-800-443-8821</td>
-                            <td style="padding: 12px 10px; color: #cbd5e1;">Phone Number[cite: 1]</td>
-                            <td style="padding: 12px 10px; font-weight: 700; color: #f59e0b;">68 / 100[cite: 1]</td>
-                            <td style="padding: 12px 10px; color: #94a3b8;">User (Alice Smith)[cite: 1]</td>
-                            <td style="padding: 12px 10px;"><a href="#" style="color: #38bdf8; text-decoration: none;">View Report[cite: 1]</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="feed-body">
+          False positive flag on company internal domain (portal.company.internal). Requires immediate whitelist adjustment.
         </div>
-
-        <!-- 4. View Complaints & View Feedback Grid -->
-        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-            
-            <!-- View Complaints Section -->
-            <div style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
-                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">View Complaints[cite: 1]</h2>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <div style="background-color: #0f172a; padding: 12px; border-radius: 6px; border-left: 3px solid #ef4444;">
-                        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 4px;">
-                            <span>From: User (ID: 402)[cite: 1]</span>
-                            <span>Sep 18, 2026</span>
-                        </div>
-                        <p style="font-size: 13px; color: #cbd5e1; margin: 0 0 8px 0;">"The AI scanner labeled a valid internal company domain as suspicious."</p>
-                        <button style="background-color: #0284c7; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer;">Send Reply to Complaint[cite: 1]</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- View Feedback Section -->
-            <div style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
-                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">View Feedback[cite: 1]</h2>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <div style="background-color: #0f172a; padding: 12px; border-radius: 6px; border-left: 3px solid #10b981;">
-                        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 4px;">
-                            <span>From: User (ID: 108)[cite: 1]</span>
-                            <span>Rating: ⭐⭐⭐⭐⭐</span>
-                        </div>
-                        <p style="font-size: 13px; color: #cbd5e1; margin: 0;">"The SMS and phone number scam detector helped me avoid a fake bank caller! Great LMS tool."[cite: 1]</p>
-                    </div>
-                </div>
-            </div>
-
+        <div style="margin-top: 10px;">
+          <button class="btn-action btn-view" type="button">Respond to Complaint</button>
         </div>
+      </div>
+    </section>
 
-    </main>
+    <section id="view-feedback" class="section-block">
+      <h2 class="section-header">View Feedback</h2>
+      <div class="feed-item">
+        <div class="feed-header">
+          <span>Feedback #FDB-109 — Rating: ★★★★★</span>
+          <span>Submitted: Yesterday</span>
+        </div>
+        <div class="feed-body">
+          The threat response verification UI speed for analyst approvals has improved dramatically in the latest update.
+        </div>
+        <div style="margin-top: 10px;">
+          <button class="btn-action btn-view" type="button">Acknowledge Feedback</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
 
 </body>
 </html>
