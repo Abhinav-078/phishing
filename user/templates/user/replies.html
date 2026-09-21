@@ -1,0 +1,199 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Inquiries & Security Analyst Replies - User Dashboard</title>
+</head>
+<body style="margin: 0; padding: 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; box-sizing: border-box;">
+
+    <!-- MAIN CONTAINER -->
+    <div style="width: 100%; max-width: 900px; background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 28px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);">
+
+        <!-- USER DASHBOARD HEADER -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <h1 style="margin: 0; font-size: 22px; color: #ffffff; display: flex; align-items: center; gap: 10px;">
+                    📩 Security Advice & Analyst Responses
+                </h1>
+                <p style="margin: 6px 0 0 0; font-size: 13px; color: #94a3b8;">
+                    View security feedback and answers from the SOC Security Team regarding your reported items.
+                </p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 12px; padding: 6px 14px; border-radius: 20px; font-weight: 600;">
+                    1 New Response
+                </span>
+            </div>
+        </div>
+
+        <!-- FILTER & SEARCH CONTROL -->
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+            <input type="text" id="user-search" onkeyup="filterUserInquiries()" placeholder="Search by ticket ID, domain, or message..." style="flex: 2; min-width: 200px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #ffffff; outline: none;">
+            
+            <select id="user-status-filter" onchange="filterUserInquiries()" style="flex: 1; min-width: 160px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #ffffff; outline: none;">
+                <option value="ALL">All Inquiries</option>
+                <option value="REPLIED" selected>Replied by Security Team</option>
+                <option value="PENDING">Awaiting Review</option>
+            </select>
+        </div>
+
+        <!-- INQUIRY & REPLY FEED -->
+        <div style="display: flex; flex-direction: column; gap: 20px;" id="inquiry-list">
+
+            <!-- INQUIRY #1 (HAS ANALYST REPLY) -->
+            <div class="inquiry-card" data-status="REPLIED" data-search="ticket #801 passkey sso email update-bank-passcode.net" style="background-color: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 20px;">
+                
+                <!-- Ticket Metadata -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px;">
+                    <div>
+                        <div style="font-size: 11px; color: #38bdf8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Ticket #801 • Phishing Suspicion</div>
+                        <h3 style="margin: 4px 0 0 0; font-size: 16px; color: #ffffff;">"Is this email asking for passkey re-verification legitimate?"</h3>
+                    </div>
+                    <span style="background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; padding: 4px 12px; border-radius: 12px; font-weight: 600;">
+                        ✓ Answered
+                    </span>
+                </div>
+
+                <!-- USER ORIGINAL QUESTION BOX -->
+                <div style="background-color: #1e293b; padding: 14px; border-radius: 8px; border-left: 3px solid #64748b; margin-bottom: 16px; font-size: 13px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">
+                        <span><strong>Your Query:</strong> John Doe</span>
+                        <span>Submitted: Sep 20, 2026 - 11:14 AM</span>
+                    </div>
+                    <p style="margin: 0; color: #cbd5e1; line-height: 1.4;">
+                        "I received an urgent email asking me to click a link (http://update-bank-passcode.net) to re-verify my single sign-on passkey within 2 hours. Is this real?"
+                    </p>
+                </div>
+
+                <!-- SECURITY ANALYST OFFICIAL RESPONSE BOX -->
+                <div style="background-color: rgba(2, 132, 199, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 32px; height: 32px; background-color: #0284c7; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;">
+                                SA
+                            </div>
+                            <div>
+                                <div style="font-size: 13px; font-weight: 700; color: #f8fafc;">Dr. Sarah Jenkins</div>
+                                <div style="font-size: 11px; color: #38bdf8;">Senior Threat Analyst (SOC Security Team)</div>
+                            </div>
+                        </div>
+                        <span style="font-size: 11px; color: #94a3b8;">Replied: Sep 20, 2026 - 11:45 AM</span>
+                    </div>
+
+                    <div style="font-size: 13px; color: #f1f5f9; line-height: 1.5; margin-bottom: 12px;">
+                        "Hello John, thank you for reporting this. <strong>This is a confirmed malicious credential harvesting attack.</strong> Do NOT click the link or enter your passkey. Our automated firewall has blocked this domain organization-wide based on your report."
+                    </div>
+
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; border-top: 1px solid rgba(56, 189, 248, 0.2); padding-top: 10px; font-size: 12px;">
+                        <span style="color: #94a3b8;">Assessment Summary:</span>
+                        <span style="background-color: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 11px;">Threat Neutralized</span>
+                        <span style="background-color: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 11px;">+50 Security Score Earned</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- INQUIRY #2 (HAS ANALYST REPLY) -->
+            <div class="inquiry-card" data-status="REPLIED" data-search="ticket #798 invoice malware extension mark" style="background-color: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 20px;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px;">
+                    <div>
+                        <div style="font-size: 11px; color: #38bdf8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Ticket #798 • Suspicious File Attachment</div>
+                        <h3 style="margin: 4px 0 0 0; font-size: 16px; color: #ffffff;">"Is invoice_october.pdf.exe safe to open?"</h3>
+                    </div>
+                    <span style="background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; padding: 4px 12px; border-radius: 12px; font-weight: 600;">
+                        ✓ Answered
+                    </span>
+                </div>
+
+                <div style="background-color: #1e293b; padding: 14px; border-radius: 8px; border-left: 3px solid #64748b; margin-bottom: 16px; font-size: 13px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">
+                        <span><strong>Your Query:</strong> John Doe</span>
+                        <span>Submitted: Sep 18, 2026 - 02:10 PM</span>
+                    </div>
+                    <p style="margin: 0; color: #cbd5e1; line-height: 1.4;">
+                        "Received an email attachment claiming to be a vendor invoice named 'invoice_october.pdf.exe'. Should I open it?"
+                    </p>
+                </div>
+
+                <div style="background-color: rgba(2, 132, 199, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 32px; height: 32px; background-color: #0284c7; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;">
+                                SA
+                            </div>
+                            <div>
+                                <div style="font-size: 13px; font-weight: 700; color: #f8fafc;">Security SOC Administrator</div>
+                                <div style="font-size: 11px; color: #38bdf8;">Threat Response Operations</div>
+                            </div>
+                        </div>
+                        <span style="font-size: 11px; color: #94a3b8;">Replied: Sep 18, 2026 - 02:30 PM</span>
+                    </div>
+
+                    <div style="font-size: 13px; color: #f1f5f9; line-height: 1.5;">
+                        "Do not run or open this file. It utilizes a double extension tactic (.pdf.exe) to hide an executable malware script. The file has been remotely purged from your inbox."
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- INQUIRY #3 (PENDING ANALYST RESPONSE) -->
+            <div class="inquiry-card" data-status="PENDING" data-search="ticket #805 sms smishing link" style="background-color: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 20px;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px;">
+                    <div>
+                        <div style="font-size: 11px; color: #f59e0b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Ticket #805 • SMS Smishing Triage</div>
+                        <h3 style="margin: 4px 0 0 0; font-size: 16px; color: #ffffff;">"Received SMS regarding urgent e-KYC update"</h3>
+                    </div>
+                    <span style="background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 11px; padding: 4px 12px; border-radius: 12px; font-weight: 600;">
+                        ⏳ Awaiting Analyst Review
+                    </span>
+                </div>
+
+                <div style="background-color: #1e293b; padding: 14px; border-radius: 8px; border-left: 3px solid #f59e0b; font-size: 13px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">
+                        <span><strong>Your Query:</strong> John Doe</span>
+                        <span>Submitted: 20 Minutes Ago</span>
+                    </div>
+                    <p style="margin: 0; color: #cbd5e1; line-height: 1.4;">
+                        "An SMS came to my phone asking to update e-KYC within 24 hours. Sender number: +91 98230-XXXXX."
+                    </p>
+                </div>
+
+                <div style="margin-top: 12px; font-size: 12px; color: #64748b; font-style: italic;">
+                    ● Our security analyst team is analyzing the reported number and shortlink. You will receive an advisory reply here shortly.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        function filterUserInquiries() {
+            const searchVal = document.getElementById('user-search').value.toLowerCase();
+            const statusVal = document.getElementById('user-status-filter').value;
+            const cards = document.querySelectorAll('.inquiry-card');
+
+            cards.forEach(card => {
+                const cardStatus = card.getAttribute('data-status');
+                const cardSearch = card.getAttribute('data-search').toLowerCase();
+
+                const matchesStatus = (statusVal === 'ALL' || cardStatus === statusVal);
+                const matchesSearch = cardSearch.includes(searchVal);
+
+                if (matchesStatus && matchesSearch) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
+```

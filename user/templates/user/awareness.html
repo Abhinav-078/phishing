@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishShield LMS - Employee Security Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .card-hover {
+            transition: all 0.2s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            border-color: #38bdf8;
+            box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col custom-scrollbar">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-[#1e293b] border-b border-[#334155] sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-[#0284c7] text-white px-3 py-1.5 rounded-lg font-extrabold text-sm tracking-wide">
+                    SEC
+                </div>
+                <div>
+                    <div class="text-base font-bold text-white flex items-center gap-2">
+                        PhishShield LMS
+                        <span class="bg-[#0369a1]/40 text-[#38bdf8] text-[10px] px-2 py-0.5 rounded-full border border-[#38bdf8]/30 font-semibold">Learner Hub</span>
+                    </div>
+                    <div class="text-xs text-slate-400">Security Awareness & Defense Center</div>
+                </div>
+            </div>
+
+            <!-- Profile & Quick Report Action -->
+            <div class="flex items-center gap-4">
+                <button onclick="openReportModal()" class="hidden sm:flex items-center gap-2 bg-[#ef4444] hover:bg-[#dc2626] text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition shadow-lg shadow-red-900/20">
+                    <span>🚨</span> Report Suspicious Message
+                </button>
+                <div class="flex items-center gap-2 bg-[#0f172a] py-1 px-3 rounded-full border border-[#334155]">
+                    <div class="w-7 h-7 bg-[#0284c7] text-white rounded-full flex items-center justify-center font-bold text-xs border border-[#38bdf8]">
+                        AW
+                    </div>
+                    <div class="text-left hidden md:block">
+                        <div class="text-xs font-semibold text-white leading-tight">Alex Wong</div>
+                        <div class="text-[10px] text-emerald-400 font-medium">● Employee (Finance)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+
+        <!-- WELCOME BANNER & USER STATS -->
+        <div class="bg-gradient-to-r from-[#1e293b] via-[#1e293b] to-[#0f2e4a] border border-[#334155] rounded-2xl p-6 relative overflow-hidden shadow-xl">
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div>
+                    <div class="flex items-center gap-2 text-[#38bdf8] text-xs font-bold uppercase tracking-wider mb-1">
+                        <span>🛡️</span> Personal Cyber Hygiene Portal
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white">
+                        Welcome, Alex — Stay Safe Online 👋
+                    </h1>
+                    <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+                        Learn how to recognize modern social engineering, phishing attacks, and malicious links. Keep your security shield active!
+                    </p>
+                </div>
+
+                <!-- Stats Badges Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="bg-[#0f172a]/80 border border-[#334155] p-3 rounded-xl text-center min-w-[100px]">
+                        <div class="text-[11px] text-slate-400 font-medium">Security Score</div>
+                        <div id="stat-score" class="text-xl font-black text-emerald-400 mt-0.5">92 / 100</div>
+                    </div>
+                    <div class="bg-[#0f172a]/80 border border-[#334155] p-3 rounded-xl text-center min-w-[100px]">
+                        <div class="text-[11px] text-slate-400 font-medium">Tips Learned</div>
+                        <div id="stat-learned" class="text-xl font-black text-[#38bdf8] mt-0.5">4 / 6</div>
+                    </div>
+                    <div class="bg-[#0f172a]/80 border border-[#334155] p-3 rounded-xl text-center min-w-[100px]">
+                        <div class="text-[11px] text-slate-400 font-medium">Simulations</div>
+                        <div class="text-xl font-black text-purple-400 mt-0.5">100% Passed</div>
+                    </div>
+                    <div class="bg-[#0f172a]/80 border border-[#334155] p-3 rounded-xl text-center min-w-[100px]">
+                        <div class="text-[11px] text-slate-400 font-medium">Threats Reported</div>
+                        <div id="stat-reported" class="text-xl font-black text-amber-400 mt-0.5">3</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUICK REPORT BANNER MOBILE ONLY -->
+        <div class="sm:hidden bg-[#1e293b] border border-[#334155] p-4 rounded-xl flex items-center justify-between gap-3">
+            <div>
+                <div class="text-xs font-bold text-white">Spotted something suspicious?</div>
+                <div class="text-[11px] text-slate-400">Send directly to SOC for immediate review.</div>
+            </div>
+            <button onclick="openReportModal()" class="bg-[#ef4444] text-white px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap">
+                🚨 Report Now
+            </button>
+        </div>
+
+        <!-- INTERACTIVE PHISHING SPOTTING QUIZ / CHALLENGE MODULE -->
+        <section class="bg-[#1e293b] border border-[#334155] rounded-xl p-5 shadow-lg">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-[#334155]">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-amber-400 text-lg">🎯</span>
+                        <h2 class="text-lg font-bold text-white">Daily Threat Spotting Challenge</h2>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-0.5">Test your eye! Can you tell if this incoming message is safe or phishing?</p>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-400">
+                    <span>Challenge Score:</span>
+                    <span id="quiz-score" class="font-bold text-[#38bdf8] bg-[#0f172a] px-2.5 py-1 rounded-md border border-[#334155]">1 / 1 Correct</span>
+                </div>
+            </div>
+
+            <!-- Quiz Box Container -->
+            <div id="quiz-container" class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 sm:p-5">
+                <!-- Dynamically Populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- SEARCH AND CATEGORY FILTER BAR -->
+        <section class="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between bg-[#1e293b] border border-[#334155] rounded-xl p-4">
+            <!-- Search Field -->
+            <div class="relative flex-1">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">🔍</span>
+                <input type="text" id="search-input" oninput="filterTips()" placeholder="Search security tips, scam tactics, keywords..." class="w-full bg-[#0f172a] border border-[#334155] rounded-lg pl-9 pr-4 py-2 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#38bdf8]">
+            </div>
+
+            <!-- Category Pills -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 custom-scrollbar text-xs font-semibold">
+                <button onclick="setCategory('ALL')" id="cat-ALL" class="cat-btn bg-[#0284c7] text-white px-3 py-2 rounded-lg whitespace-nowrap transition">
+                    All Categories
+                </button>
+                <button onclick="setCategory('Email')" id="cat-Email" class="cat-btn bg-[#0f172a] text-slate-300 hover:text-white border border-[#334155] px-3 py-2 rounded-lg whitespace-nowrap transition">
+                    📧 Email Phishing
+                </button>
+                <button onclick="setCategory('Smishing')" id="cat-Smishing" class="cat-btn bg-[#0f172a] text-slate-300 hover:text-white border border-[#334155] px-3 py-2 rounded-lg whitespace-nowrap transition">
+                    📱 Smishing / SMS
+                </button>
+                <button onclick="setCategory('Mobile')" id="cat-Mobile" class="cat-btn bg-[#0f172a] text-slate-300 hover:text-white border border-[#334155] px-3 py-2 rounded-lg whitespace-nowrap transition">
+                    📲 Apps & APKs
+                </button>
+                <button onclick="setCategory('Social')" id="cat-Social" class="cat-btn bg-[#0f172a] text-slate-300 hover:text-white border border-[#334155] px-3 py-2 rounded-lg whitespace-nowrap transition">
+                    🎭 Social Engineering
+                </button>
+                <button onclick="setCategory('Passwords')" id="cat-Passwords" class="cat-btn bg-[#0f172a] text-slate-300 hover:text-white border border-[#334155] px-3 py-2 rounded-lg whitespace-nowrap transition">
+                    🔑 Password Safety
+                </button>
+            </div>
+        </section>
+
+        <!-- TIPS & ADVISORIES GRID -->
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    💡 Essential Defense Tips & Urgent Advisories
+                </h3>
+                <span id="showing-tips-count" class="text-xs text-slate-400">Showing 6 tips</span>
+            </div>
+
+            <div id="tips-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Dynamically Populated by JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#1e293b] border-t border-[#334155] mt-8 py-6 text-center text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div>PhishShield Security LMS • Empowering Employees Against Cyber Threats</div>
+            <div class="text-slate-500">For urgent SOC assistance, contact <span class="text-[#38bdf8]">soc-help@company.com</span></div>
+        </div>
+    </footer>
+
+    <!-- TIP DETAIL MODAL -->
+    <div id="tip-modal" class="hidden fixed inset-0 bg-[#0f172a]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-[#1e293b] border border-[#334155] rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <!-- Modal Header -->
+            <div class="p-5 border-b border-[#334155] flex justify-between items-start bg-[#0f172a]">
+                <div class="pr-4">
+                    <div class="flex items-center gap-2 mb-1" id="modal-badges">
+                        <!-- Badges dynamically inserted -->
+                    </div>
+                    <h3 id="modal-title" class="text-lg font-bold text-white leading-snug">Tip Title</h3>
+                </div>
+                <button onclick="closeTipModal()" class="text-slate-400 hover:text-white text-xl font-bold p-1">✕</button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="p-6 overflow-y-auto custom-scrollbar flex flex-col gap-5 text-xs sm:text-sm">
+                <!-- Overview -->
+                <div>
+                    <div class="text-xs font-bold text-[#38bdf8] uppercase tracking-wider mb-1">Summary</div>
+                    <p id="modal-summary" class="text-slate-300 leading-relaxed"></p>
+                </div>
+
+                <!-- What to Look For -->
+                <div class="bg-[#0f172a] border border-[#334155] p-4 rounded-xl">
+                    <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        🔍 Key Indicators & Red Flags
+                    </div>
+                    <ul id="modal-indicators" class="list-disc list-inside text-slate-300 space-y-1.5">
+                    </ul>
+                </div>
+
+                <!-- Real World Example Box -->
+                <div class="bg-[#0f172a] border border-red-500/30 p-4 rounded-xl">
+                    <div class="text-xs font-bold text-red-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        ⚠️ Real-World Attack Scenario
+                    </div>
+                    <p id="modal-example" class="text-slate-300 italic font-mono text-xs bg-[#1e293b] p-3 rounded border border-[#334155]"></p>
+                </div>
+
+                <!-- Recommended Actions -->
+                <div>
+                    <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        🛡️ Recommended Defense Steps
+                    </div>
+                    <ol id="modal-actions" class="list-decimal list-inside text-slate-300 space-y-1.5">
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 border-t border-[#334155] bg-[#0f172a] flex items-center justify-between">
+                <span id="modal-learned-status" class="text-xs text-slate-400">Status: Not completed</span>
+                <div class="flex items-center gap-3">
+                    <button onclick="closeTipModal()" class="px-4 py-2 bg-[#334155] hover:bg-[#475569] text-white text-xs font-bold rounded-lg transition">
+                        Close
+                    </button>
+                    <button id="modal-learned-btn" onclick="toggleMarkLearned()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition flex items-center gap-2">
+                        ✓ Mark as Learned
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUSPICIOUS REPORT SUBMISSION MODAL -->
+    <div id="report-modal" class="hidden fixed inset-0 bg-[#0f172a]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-[#1e293b] border border-[#334155] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+            <div class="p-5 border-b border-[#334155] flex justify-between items-center bg-[#0f172a]">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🚨</span>
+                    <h3 class="text-base font-bold text-white">Report Suspicious Threat to SOC</h3>
+                </div>
+                <button onclick="closeReportModal()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+            </div>
+
+            <form onsubmit="submitThreatReport(event)" class="p-5 flex flex-col gap-4 text-xs sm:text-sm">
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Threat Type / Vector</label>
+                    <select id="report-type" class="w-full bg-[#0f172a] border border-[#334155] rounded-lg p-2.5 text-white focus:outline-none focus:border-[#38bdf8]">
+                        <option value="Phishing Email">Phishing Email</option>
+                        <option value="Smishing (SMS / WhatsApp)">Smishing (SMS / WhatsApp)</option>
+                        <option value="Suspicious URL / Website">Suspicious URL / Website</option>
+                        <option value="Unfamiliar App / APK">Unfamiliar App / APK Download</option>
+                        <option value="Phone Call (Vishing)">Phone Call / Vishing</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Sender Email / Phone / URL</label>
+                    <input type="text" id="report-source" required placeholder="e.g. support-update-acc@external-domain.net" class="w-full bg-[#0f172a] border border-[#334155] rounded-lg p-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-[#38bdf8]">
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Description / Suspicious Details</label>
+                    <textarea id="report-details" rows="3" required placeholder="Briefly describe what looks suspicious (e.g., requested password reset, urgent payment demand, strange link format)..." class="w-full bg-[#0f172a] border border-[#334155] rounded-lg p-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-[#38bdf8]"></textarea>
+                </div>
+
+                <div class="bg-[#0f172a] p-3 rounded-lg border border-[#334155] text-xs text-slate-400">
+                    ℹ️ <strong class="text-slate-300">Note:</strong> Your report will be immediately queued for Dr. Sarah Jenkins and the Threat Analysis Engine.
+                </div>
+
+                <div class="flex justify-end gap-3 mt-2">
+                    <button type="button" onclick="closeReportModal()" class="px-4 py-2 bg-[#334155] text-white text-xs font-bold rounded-lg hover:bg-[#475569]">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-[#0284c7] hover:bg-[#0369a1] text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5">
+                        📤 Send Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="hidden fixed bottom-6 right-6 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl font-bold text-xs z-50 flex items-center gap-2">
+        <span id="toast-icon">✓</span>
+        <span id="toast-message">Notification message</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // 1. DATA STORES
+        const tipsData = [
+            {
+                id: "tip-101",
+                title: "Spotting Spoofed Email Sender Domain Addresses",
+                category: "Email",
+                badgeType: "Urgent Advisory",
+                badgeColor: "bg-red-500/20 text-red-400 border-red-500/30",
+                summary: "Attackers often replace or manipulate subtle characters in domain names to mimic legitimate companies or internal executives.",
+                indicators: [
+                    "Slight typos in domain names (e.g., @micros0ft.com instead of @microsoft.com).",
+                    "Display name shows an executive name, but actual address is external.",
+                    "Use of lookalike letters (Cyrillic characters or visual substitutes)."
+                ],
+                example: "From: HR Security Notice <payroll-update@corp-hr-verify.com>\nSubject: Immediate Direct Deposit Re-verification Required!",
+                actions: [
+                    "Hover over the sender's full email address to expose the actual destination.",
+                    "Never reply directly to suspicious email senders.",
+                    "Use the PhishShield 'Report Suspicious Message' button to notify the SOC."
+                ],
+                learned: true
+            },
+            {
+                id: "tip-102",
+                title: "SMS Smishing: Urgent Package Delivery Links",
+                category: "Smishing",
+                badgeType: "Pro Tip",
+                badgeColor: "bg-blue-500/20 text-sky-400 border-sky-500/30",
+                summary: "Fake SMS notifications claiming a package delivery failed or requires custom fees are among the highest volume attacks.",
+                indicators: [
+                    "SMS from an unknown international or non-corporate number.",
+                    "Shortened links (e.g., bit.ly, tinyurl, or mispelled courier domains).",
+                    "Creating artificial urgency ('Item will be returned within 2 hours')."
+                ],
+                example: "SMS: 'USPS: Your package cannot be delivered due to invalid address. Update info now at http://usps-track-parcel-info.top'",
+                actions: [
+                    "Do not click links inside unsolicited text messages.",
+                    "Open a fresh browser tab and manually navigate to the official logistics provider site.",
+                    "Block the sender number on your device."
+                ],
+                learned: true
+            },
+            {
+                id: "tip-103",
+                title: "Malicious APK Sideloading & Android Permissions",
+                category: "Mobile",
+                badgeType: "Urgent Advisory",
+                badgeColor: "bg-red-500/20 text-red-400 border-red-500/30",
+                summary: "Downloading mobile application installers (.apk files) outside official app stores poses severe malware and spyware risks.",
+                indicators: [
+                    "Prompted to download a '.apk' file for 'Security Authentication Update'.",
+                    "App requests unusual permissions like SMS reading, accessibility services, or overlay.",
+                    "Prompting to enable 'Install from Unknown Sources'."
+                ],
+                example: "Website popup: 'Your 2FA Authenticator app is outdated! Tap here to download Authenticator_v2.4.apk'",
+                actions: [
+                    "Only download corporate applications through official Mobile Device Management (MDM) portals or verified app stores.",
+                    "Never enable 'Unknown Sources' installation unless explicitly instructed by IT."
+                ],
+                learned: false
+            },
+            {
+                id: "tip-104",
+                title: "CEO Fraud & Urgency-Based Social Engineering",
+                category: "Social",
+                badgeType: "Quick Check",
+                badgeColor: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+                summary: "Attackers impersonate senior executives to request urgent wire transfers, gift cards, or confidential employee data.",
+                indicators: [
+                    "Requests bypassing standard financial authorization procedures.",
+                    "Extreme confidentiality demanded ('Keep this secret until contract is signed').",
+                    "Sender claims to be in a meeting or unavailable for phone verification."
+                ],
+                example: "Email from CFO: 'Alex, I am in an urgent meeting with auditors. Need $5,000 in gift cards purchased immediately for client bonuses. Send codes asap.'",
+                actions: [
+                    "Always verify unusual payment or credential requests via a known internal voice/video channel.",
+                    "Adhere strictly to corporate financial workflow policies regardless of caller rank."
+                ],
+                learned: true
+            },
+            {
+                id: "tip-105",
+                title: "Passkey & MFA Fatigue Attack Defenses",
+                category: "Passwords",
+                badgeType: "Pro Tip",
+                badgeColor: "bg-blue-500/20 text-sky-400 border-sky-500/30",
+                summary: "Attacker repeatedly triggers 2FA push notifications hoping you tap 'Approve' out of frustration or distraction.",
+                indicators: [
+                    "Receiving unexpected MFA push notifications when you are not attempting to log in.",
+                    "Repeated push prompts late at night or during meetings.",
+                    "Calls from fake 'IT support' telling you to approve the push to 'stop the spam'."
+                ],
+                example: "Mobile Push Alert: 'Login attempt from Moscow, Russia. Tap Approve to verify.' (Repeated 20 times).",
+                actions: [
+                    "Tap 'Deny' or 'Report Fraud' on unexpected MFA prompts.",
+                    "Immediately change your password if MFA prompts flood your phone.",
+                    "Report the incident to the Security Operations Center."
+                ],
+                learned: false
+            },
+            {
+                id: "tip-106",
+                title: "Recognizing Fake Google / Microsoft OAuth Consent Prompts",
+                category: "Email",
+                badgeType: "Quick Check",
+                badgeColor: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+                summary: "Malicious websites ask users to grant permission to third-party OAuth apps that read inbox content or enterprise files.",
+                indicators: [
+                    "Prompt asks for permissions like 'Read, send, and delete all your emails'.",
+                    "Publisher name looks unverified or generic.",
+                    "Redirect link came from an unverified email invitation."
+                ],
+                example: "OAuth Window: 'Docs Viewer App wants access to your Microsoft 365 Account. Permissions requested: Read All Mail, Access Files Anytime.'",
+                actions: [
+                    "Never grant broad permissions to unapproved third-party web apps.",
+                    "Verify with IT Security before authorizing new integrations."
+                ],
+                learned: true
+            }
+        ];
+
+        // Quizzes Data
+        const quizItems = [
+            {
+                id: "q1",
+                title: "Scenario: Incoming HR Survey Email",
+                sender: "HR Rewards Dept <hr-rewards@company-employee-survey-portal.com>",
+                subject: "🎁 Action Required: Claim Your $50 Annual Wellness Card",
+                body: "Dear Alex,\n\nTo claim your annual wellness reward, please click the secure link below and log in with your corporate SSO password before 5:00 PM today:\n\nhttp://company-employee-survey-portal.com/login?ref=alex\n\nBest regards,\nHR Benefits Team",
+                isPhishing: true,
+                explanation: "THIS IS PHISHING! 🚩 Look closely at the sender domain: 'company-employee-survey-portal.com' is NOT your company's official domain. Furthermore, legitimate HR rewards will never demand your SSO password over an unencrypted external website."
+            },
+            {
+                id: "q2",
+                title: "Scenario: IT Security MFA Update",
+                sender: "PhishShield IT Team <no-reply@phishshield-lms.com>",
+                subject: "Monthly Security Training Module Assigned",
+                body: "Hello Alex,\n\nYour new monthly security awareness module is now available in your LMS dashboard. Please access your dashboard directly or review tips inside your portal.\n\nNo password or credentials are required.",
+                isPhishing: false,
+                explanation: "THIS IS SAFE! ✅ The email comes from an authorized internal system domain, does not demand urgent password entry, and encourages accessing official portals directly."
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let selectedCategory = 'ALL';
+        let activeTipId = null;
+
+        // 2. INITIALIZATION
+        window.onload = function() {
+            renderQuiz();
+            renderTips();
+            updateStatsUI();
+        };
+
+        // 3. QUIZ RENDER & LOGIC
+        function renderQuiz() {
+            const quiz = quizItems[currentQuizIndex];
+            const container = document.getElementById('quiz-container');
+
+            container.innerHTML = `
+                <div class="flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
+                        <span class="text-[#38bdf8]">${quiz.title}</span>
+                        <span>Question ${currentQuizIndex + 1} of ${quizItems.length}</span>
+                    </div>
+
+                    <!-- Email Mock Box -->
+                    <div class="bg-[#1e293b] border border-[#334155] rounded-xl p-4 text-xs font-mono">
+                        <div class="text-slate-400 border-b border-[#334155] pb-2 mb-2">
+                            <div><strong class="text-slate-200">From:</strong> ${escapeHtml(quiz.sender)}</div>
+                            <div><strong class="text-slate-200">Subject:</strong> ${escapeHtml(quiz.subject)}</div>
+                        </div>
+                        <div class="text-slate-300 whitespace-pre-wrap font-sans text-xs leading-relaxed">
+                            ${escapeHtml(quiz.body)}
+                        </div>
+                    </div>
+
+                    <!-- User Choice Buttons -->
+                    <div id="quiz-actions" class="flex flex-col sm:flex-row items-center gap-3 mt-2">
+                        <button onclick="answerQuiz(true)" class="w-full sm:w-1/2 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 py-2.5 rounded-lg font-bold text-xs transition flex items-center justify-center gap-2">
+                            <span>🚨</span> Mark as PHISHING / UNSAFE
+                        </button>
+                        <button onclick="answerQuiz(false)" class="w-full sm:w-1/2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 py-2.5 rounded-lg font-bold text-xs transition flex items-center justify-center gap-2">
+                            <span>✅</span> Mark as LEGITIMATE / SAFE
+                        </button>
+                    </div>
+
+                    <!-- Feedback Area (Initially Hidden) -->
+                    <div id="quiz-feedback" class="hidden mt-3 p-4 rounded-xl border text-xs">
+                    </div>
+                </div>
+            `;
+        }
+
+        function answerQuiz(userGuessedPhishing) {
+            const quiz = quizItems[currentQuizIndex];
+            const isCorrect = userGuessedPhishing === quiz.isPhishing;
+            const feedbackElem = document.getElementById('quiz-feedback');
+            const actionsElem = document.getElementById('quiz-actions');
+
+            actionsElem.style.display = 'none';
+
+            feedbackElem.classList.remove('hidden');
+            if (isCorrect) {
+                feedbackElem.className = "p-4 rounded-xl border bg-emerald-950/40 border-emerald-500/50 text-emerald-200";
+                feedbackElem.innerHTML = `
+                    <div class="font-bold text-emerald-400 text-sm mb-1">🎉 Excellent Eye! You answered correctly.</div>
+                    <p class="leading-relaxed">${quiz.explanation}</p>
+                    <button onclick="nextQuiz()" class="mt-3 px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold text-xs hover:bg-emerald-500">Next Question ➔</button>
+                `;
+            } else {
+                feedbackElem.className = "p-4 rounded-xl border bg-red-950/40 border-red-500/50 text-red-200";
+                feedbackElem.innerHTML = `
+                    <div class="font-bold text-red-400 text-sm mb-1">⚠️ Careful! That wasn't quite right.</div>
+                    <p class="leading-relaxed">${quiz.explanation}</p>
+                    <button onclick="nextQuiz()" class="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg font-bold text-xs hover:bg-red-500">Try Next Scenario ➔</button>
+                `;
+            }
+        }
+
+        function nextQuiz() {
+            currentQuizIndex = (currentQuizIndex + 1) % quizItems.length;
+            renderQuiz();
+        }
+
+        // 4. TIPS RENDER & FILTERING
+        function renderTips() {
+            const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+            const grid = document.getElementById('tips-grid');
+            grid.innerHTML = '';
+
+            const filtered = tipsData.filter(tip => {
+                const matchesCategory = selectedCategory === 'ALL' || tip.category === selectedCategory;
+                const matchesSearch = tip.title.toLowerCase().includes(searchVal) ||
+                                      tip.summary.toLowerCase().includes(searchVal) ||
+                                      tip.category.toLowerCase().includes(searchVal);
+                return matchesCategory && matchesSearch;
+            });
+
+            document.getElementById('showing-tips-count').innerText = `Showing ${filtered.length} of ${tipsData.length} tips`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full bg-[#1e293b] border border-[#334155] rounded-xl p-8 text-center text-slate-400 text-xs">
+                        No security tips matching your filter criteria.
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(tip => {
+                const card = document.createElement('div');
+                card.className = "bg-[#1e293b] border border-[#334155] rounded-xl p-5 flex flex-col justify-between card-hover cursor-pointer";
+                card.onclick = () => openTipModal(tip.id);
+
+                card.innerHTML = `
+                    <div>
+                        <!-- Card Header Badges -->
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${tip.badgeColor}">
+                                ${tip.badgeType}
+                            </span>
+                            <span class="text-[11px] font-semibold text-slate-400">
+                                ${tip.category}
+                            </span>
+                        </div>
+
+                        <!-- Title -->
+                        <h4 class="text-sm font-bold text-white mb-2 leading-snug">
+                            ${escapeHtml(tip.title)}
+                        </h4>
+
+                        <!-- Summary -->
+                        <p class="text-xs text-slate-300 line-clamp-3 leading-relaxed mb-4">
+                            ${escapeHtml(tip.summary)}
+                        </p>
+                    </div>
+
+                    <!-- Footer / Learned status -->
+                    <div class="pt-3 border-t border-[#334155]/60 flex items-center justify-between text-xs">
+                        <span class="${tip.learned ? 'text-emerald-400 font-bold flex items-center gap-1' : 'text-slate-400'}">
+                            ${tip.learned ? '✓ Learned' : '○ Not Read'}
+                        </span>
+                        <span class="text-[#38bdf8] font-bold group-hover:underline">
+                            Read Guide ➔
+                        </span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function setCategory(cat) {
+            selectedCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = "cat-btn bg-[#0f172a] text-slate-300 hover:text-white border border-[#334155] px-3 py-2 rounded-lg whitespace-nowrap transition";
+            });
+            const activeBtn = document.getElementById(`cat-${cat}`);
+            if (activeBtn) {
+                activeBtn.className = "cat-btn bg-[#0284c7] text-white px-3 py-2 rounded-lg whitespace-nowrap transition";
+            }
+            renderTips();
+        }
+
+        function filterTips() {
+            renderTips();
+        }
+
+        // 5. MODAL OPERATIONS
+        function openTipModal(tipId) {
+            activeTipId = tipId;
+            const tip = tipsData.find(t => t.id === tipId);
+            if (!tip) return;
+
+            document.getElementById('modal-title').innerText = tip.title;
+            document.getElementById('modal-badges').innerHTML = `
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${tip.badgeColor}">${tip.badgeType}</span>
+                <span class="text-xs text-slate-400 font-semibold">• ${tip.category} Defense</span>
+            `;
+            document.getElementById('modal-summary').innerText = tip.summary;
+
+            // Render Indicators
+            const indUl = document.getElementById('modal-indicators');
+            indUl.innerHTML = '';
+            tip.indicators.forEach(ind => {
+                const li = document.createElement('li');
+                li.innerText = ind;
+                indUl.appendChild(li);
+            });
+
+            document.getElementById('modal-example').innerText = tip.example;
+
+            // Render Actions
+            const actOl = document.getElementById('modal-actions');
+            actOl.innerHTML = '';
+            tip.actions.forEach(act => {
+                const li = document.createElement('li');
+                li.innerText = act;
+                actOl.appendChild(li);
+            });
+
+            updateModalLearnedBtn(tip.learned);
+
+            document.getElementById('tip-modal').classList.remove('hidden');
+        }
+
+        function closeTipModal() {
+            document.getElementById('tip-modal').classList.add('hidden');
+            activeTipId = null;
+        }
+
+        function toggleMarkLearned() {
+            if (!activeTipId) return;
+            const tip = tipsData.find(t => t.id === activeTipId);
+            if (tip) {
+                tip.learned = !tip.learned;
+                updateModalLearnedBtn(tip.learned);
+                renderTips();
+                updateStatsUI();
+                showToast(tip.learned ? "Marked tip as learned!" : "Marked tip as unread.");
+            }
+        }
+
+        function updateModalLearnedBtn(isLearned) {
+            const btn = document.getElementById('modal-learned-btn');
+            const statusText = document.getElementById('modal-learned-status');
+
+            if (isLearned) {
+                btn.className = "px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold rounded-lg transition flex items-center gap-2";
+                btn.innerText = "↩ Mark as Unread";
+                statusText.innerText = "Status: ✓ Completed & Learned";
+                statusText.className = "text-xs text-emerald-400 font-bold";
+            } else {
+                btn.className = "px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition flex items-center gap-2";
+                btn.innerText = "✓ Mark as Learned";
+                statusText.innerText = "Status: Not completed yet";
+                statusText.className = "text-xs text-slate-400";
+            }
+        }
+
+        // 6. REPORT THREAT MODAL
+        function openReportModal() {
+            document.getElementById('report-modal').classList.remove('hidden');
+        }
+
+        function closeReportModal() {
+            document.getElementById('report-modal').classList.add('hidden');
+        }
+
+        function submitThreatReport(e) {
+            e.preventDefault();
+            const source = document.getElementById('report-source').value;
+            closeReportModal();
+            
+            // Increment reported stats
+            const reportedElem = document.getElementById('stat-reported');
+            reportedElem.innerText = parseInt(reportedElem.innerText) + 1;
+
+            showToast(`Threat report for '${source}' submitted to SOC!`);
+
+            document.getElementById('report-source').value = '';
+            document.getElementById('report-details').value = '';
+        }
+
+        // 7. STATS & TOAST HELPERS
+        function updateStatsUI() {
+            const total = tipsData.length;
+            const learnedCount = tipsData.filter(t => t.learned).length;
+            document.getElementById('stat-learned').innerText = `${learnedCount} / ${total}`;
+
+            // Calculate dynamic security score (base 70 + learned points)
+            const score = Math.min(100, 70 + Math.round((learnedCount / total) * 30));
+            document.getElementById('stat-score').innerText = `${score} / 100`;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+    </script>
+</body>
+</html>

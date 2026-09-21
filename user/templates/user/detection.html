@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Detection Code - Security Analyst Engine</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            transition: all 0.15s ease-in-out;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animated-fade {
+            animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Highlighting syntax tokens inside code view */
+        .token-keyword { color: #f43f5e; font-weight: 600; }
+        .token-string { color: #10b981; }
+        .token-comment { color: #64748b; font-style: italic; }
+        .token-function { color: #38bdf8; font-weight: 600; }
+        .token-regex { color: #fbbf24; }
+        .token-number { color: #c084fc; }
+
+        .btn {
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background-color: #0284c7;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #0369a1;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: #ffffff;
+        }
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+        }
+        .btn-outline:hover {
+            background-color: #334155;
+            color: #ffffff;
+        }
+
+        .rule-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px 14px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .rule-card:hover {
+            border-color: #0284c7;
+            background-color: #24334d;
+        }
+
+        .rule-card.active {
+            border-color: #38bdf8;
+            background-color: rgba(56, 189, 248, 0.08);
+            box-shadow: inset 3px 0 0 #38bdf8;
+        }
+
+        .badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-active { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-testing { background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-disabled { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    </style>
+</head>
+<body>
+
+    <!-- LEFT SIDEBAR: RULE SELECTOR & FILTERS -->
+    <aside style="width: 320px; background-color: #1e293b; border-right: 1px solid #334155; display: flex; flex-direction: column; flex-shrink: 0; height: 100vh;">
+        
+        <!-- Header -->
+        <div style="padding: 20px 16px; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 10px;">
+            <span style="background-color: #0284c7; color: #ffffff; padding: 6px 10px; border-radius: 6px; font-weight: 700; font-size: 15px;">SOC</span>
+            <div>
+                <div style="font-size: 15px; font-weight: 700; color: #f8fafc;">Detection Rules Code</div>
+                <div style="font-size: 11px; color: #38bdf8; font-weight: 600;">Engine Rules & Heuristics</div>
+            </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div style="padding: 14px; border-bottom: 1px solid #334155; display: flex; flex-direction: column; gap: 10px; background-color: #182234;">
+            
+            <!-- Category Dropdown Filter -->
+            <div>
+                <label style="display: block; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">Vector Category</label>
+                <select id="category-filter" onchange="renderRulesList()" style="width: 100%; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #f8fafc; padding: 8px 10px; font-size: 12px; outline: none;">
+                    <option value="ALL">All Categories (4)</option>
+                    <option value="URL">URL Scanner & Domains</option>
+                    <option value="EMAIL">Email Header & Body</option>
+                    <option value="APK">APK Malware Heuristics</option>
+                    <option value="SMS">Smishing Regex & Keywords</option>
+                </select>
+            </div>
+
+            <!-- Search Input -->
+            <div>
+                <label style="display: block; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">Search Rules / Snippets</label>
+                <input type="text" id="rule-search" oninput="renderRulesList()" placeholder="Search keywords, syntax, ID..." style="width: 100%; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #f8fafc; padding: 8px 10px; font-size: 12px; outline: none;">
+            </div>
+        </div>
+
+        <!-- Rules List Container -->
+        <div id="rules-list" style="flex-grow: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <!-- Rendered by JS -->
+        </div>
+
+        <!-- Rule Meta Footer -->
+        <div style="padding: 12px 16px; border-top: 1px solid #334155; font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between; align-items: center; background-color: #0f172a;">
+            <span>Engine Status: <strong style="color: #10b981;">Online v4.2</strong></span>
+            <span id="rules-count">4 Rules</span>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT: CODE VIEWER & SANDBOX WORKBENCH -->
+    <main style="flex-grow: 1; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; background-color: #0f172a;">
+        
+        <!-- TOP TOOLBAR -->
+        <div style="padding: 16px 24px; border-bottom: 1px solid #334155; background-color: #1e293b; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <h2 id="view-rule-title" style="margin: 0; font-size: 18px; color: #ffffff;">Select a Detection Rule</h2>
+                    <span id="view-rule-status" class="badge badge-active">Active</span>
+                </div>
+                <div id="view-rule-meta" style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Language: JS / Regex | ID: SEC-DET-000</div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button class="btn btn-outline" onclick="copyCodeToClipboard()">
+                    📋 Copy Code
+                </button>
+                <button id="toggle-edit-btn" class="btn btn-outline" onclick="toggleEditMode()">
+                    ✏️ Edit Rule
+                </button>
+                <button class="btn btn-primary" onclick="scrollToSandbox()">
+                    🧪 Test in Sandbox
+                </button>
+            </div>
+        </div>
+
+        <!-- CODE INSPECTOR & EDITOR CONTAINER -->
+        <div style="padding: 24px; display: flex; flex-direction: column; gap: 20px; flex-grow: 1;">
+            
+            <!-- Description & Configuration Bar -->
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div style="flex: 1; min-width: 280px;">
+                    <div style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase;">Rule Synopsis</div>
+                    <p id="view-rule-desc" style="margin: 4px 0 0 0; font-size: 13px; color: #cbd5e1;">Rule description details will appear here.</p>
+                </div>
+                
+                <!-- Status Switcher Control (For Edit Mode) -->
+                <div id="status-switcher" style="display: none; align-items: center; gap: 8px; background-color: #0f172a; padding: 6px 12px; border-radius: 6px; border: 1px solid #334155;">
+                    <label style="font-size: 12px; color: #cbd5e1; font-weight: 600;">Status Level:</label>
+                    <select id="edit-status-select" onchange="updateRuleStatus(this.value)" style="background-color: #1e293b; border: 1px solid #334155; border-radius: 4px; color: #ffffff; padding: 4px 8px; font-size: 12px; outline: none;">
+                        <option value="Active">Active</option>
+                        <option value="Testing">Testing</option>
+                        <option value="Disabled">Disabled</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- CODE VIEWER PANEL -->
+            <div class="animated-fade" style="background-color: #0d1322; border: 1px solid #334155; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
+                <!-- Code Window Header -->
+                <div style="background-color: #161f30; padding: 8px 16px; border-bottom: 1px solid #233148; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; gap: 6px;">
+                        <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ef4444; display: inline-block;"></span>
+                        <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #f59e0b; display: inline-block;"></span>
+                        <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #10b981; display: inline-block;"></span>
+                    </div>
+                    <span id="code-filename" style="font-size: 11px; font-family: monospace; color: #64748b;">rule_detector.js</span>
+                </div>
+
+                <!-- Read-Only Formatted Code Container -->
+                <pre id="code-display" style="margin: 0; padding: 20px; font-family: 'Consolas', 'Courier New', monospace; font-size: 13px; line-height: 1.6; overflow-x: auto; color: #e2e8f0; white-space: pre-wrap; word-break: break-all; min-height: 240px;"></pre>
+
+                <!-- Editable Code Textarea (Hidden by default) -->
+                <textarea id="code-editor" style="display: none; margin: 0; padding: 20px; font-family: 'Consolas', 'Courier New', monospace; font-size: 13px; line-height: 1.6; background-color: #090d16; color: #38bdf8; border: none; min-height: 240px; resize: vertical; outline: none;" oninput="syncEditorChanges()"></textarea>
+            </div>
+
+            <!-- TEST DETECTION ENGINE SANDBOX -->
+            <div id="sandbox-section" style="background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; font-size: 16px; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+                        🧪 Test Detection Engine Sandbox
+                    </h3>
+                    <span style="font-size: 11px; color: #94a3b8;">Simulate real payload evaluation against active code</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <label style="font-size: 12px; font-weight: 600; color: #cbd5e1;">Input Test Payload (URL, Email Body Header, SMS Text, Package Payload):</label>
+                    <textarea id="sandbox-payload" rows="3" placeholder="Paste suspicious URL, raw email headers, or SMS text here to run rule test..." style="width: 100%; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 12px; font-size: 13px; color: #ffffff; outline: none; font-family: monospace; resize: vertical;"></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button class="btn btn-outline" onclick="loadSamplePayload()">Load Sample Threat Payload</button>
+                    <button class="btn btn-success" onclick="executeSandboxTest()">⚡ Execute Rule Test</button>
+                </div>
+
+                <!-- Sandbox Evaluation Results Output -->
+                <div id="sandbox-output" style="display: none; margin-top: 10px; padding: 14px; background-color: #0f172a; border-radius: 6px; border-left: 4px solid #38bdf8; font-size: 13px;">
+                    <!-- Evaluated dynamically by JS -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" style="position: fixed; bottom: 24px; right: 24px; background-color: #10b981; color: #ffffff; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 20px rgba(0,0,0,0.4); display: none; z-index: 1000; align-items: center; gap: 8px;">
+        <span>✅</span> <span id="toast-message">Notification text</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC & ENGINE CODE REPOSITORY -->
+    <script>
+        // Comprehensive Detection Rules Repository
+        const detectionRules = [
+            {
+                id: "SEC-DET-101",
+                title: "Typosquatting & Punycode URL Scanner",
+                category: "URL",
+                language: "JavaScript / Regex",
+                filename: "url_typosquat_detector.js",
+                status: "Active",
+                description: "Detects domain impersonation, IDN Punycode obfuscation, and suspicious top-level domains targeting corporate login portals.",
+                samplePayload: "http://xn--pypal-4ve.com-verify-account.security-update.tk/login",
+                code: `// Rule ID: SEC-DET-101 (URL Typosquatting & IDN Punycode Scanner)
+function analyzeUrlPayload(targetUrl) {
+    const riskThreshold = 75;
+    let riskScore = 0;
+    let matches = [];
+
+    // 1. Detect IDN Punycode Homograph Attacks
+    if (targetUrl.includes("xn--")) {
+        riskScore += 45;
+        matches.push("Punycode (IDN Homograph) obfuscation detected");
+    }
+
+    // 2. High-Risk TLDs Check
+    const suspiciousTlds = /\\.(tk|ml|ga|cf|gq|xyz|top|work|kim|cn)\\//i;
+    if (suspiciousTlds.test(targetUrl)) {
+        riskScore += 30;
+        matches.push("High-risk phishing TLD detected");
+    }
+
+    // 3. Multi-Subdomain Credential Harvesting Pattern
+    const subdomainCount = (targetUrl.match(/\\./g) || []).length;
+    if (subdomainCount >= 4) {
+        riskScore += 25;
+        matches.push(\`Excessive subdomain depth (\${subdomainCount} levels)\`);
+    }
+
+    return {
+        isThreat: riskScore >= riskThreshold,
+        calculatedScore: Math.min(riskScore, 100),
+        detectedIndicators: matches
+    };
+}`,
+                evaluator: function(payload) {
+                    let score = 0;
+                    let matches = [];
+                    if (payload.includes("xn--")) { score += 45; matches.push("IDN Punycode Homograph obfuscation"); }
+                    if (/\.(tk|ml|ga|cf|gq|xyz|top|work|kim|cn)(\/|$)/i.test(payload)) { score += 35; matches.push("High-risk TLD indicator"); }
+                    if ((payload.match(/\./g) || []).length >= 3) { score += 25; matches.push("Excessive subdomain depth"); }
+                    if (/login|verify|bank|secure|account|update/i.test(payload)) { score += 20; matches.push("Credential harvesting keywords"); }
+                    return { score: Math.min(score, 100), matches };
+                }
+            },
+            {
+                id: "SEC-DET-102",
+                title: "Urgency & Spoofing Email Header Rule",
+                category: "EMAIL",
+                language: "YARA / JS",
+                filename: "email_header_rules.yara",
+                status: "Active",
+                description: "Inspects email headers for SPF/DKIM failures, reply-to mismatches, and high-pressure financial coercion phrases.",
+                samplePayload: "From: CEO <ceo@company.com>\nReply-To: attacker@mail-burner.com\nSubject: URGENT: Wire Transfer Required Immediately\nAuthentication-Results: spf=fail dkim=fail",
+                code: `/* Rule ID: SEC-DET-102: Email Header & Coercion Rules */
+rule Email_SpearPhish_Coercion {
+    meta:
+        author = "SOC Threat Intelligence Team"
+        severity = "High"
+        category = "Spear Phishing"
+
+    strings:
+        $auth_fail1 = "spf=fail" case insensitive
+        $auth_fail2 = "dkim=fail" case insensitive
+        $urgent_1 = "URGENT: Wire Transfer" case insensitive
+        $urgent_2 = "Immediate Action Required" case insensitive
+        $mismatch = "Reply-To:" case insensitive
+
+    condition:
+        ($auth_fail1 or $auth_fail2) and 
+        (any of ($urgent_*) or $mismatch)
+}`,
+                evaluator: function(payload) {
+                    let score = 0;
+                    let matches = [];
+                    if (/spf=fail|dkim=fail/i.test(payload)) { score += 40; matches.push("SPF/DKIM Authentication Failure"); }
+                    if (/urgent|immediate|wire transfer|gift card|payroll/i.test(payload)) { score += 35; matches.push("High-pressure coercion language"); }
+                    if (/reply-to:/i.test(payload) && !payload.includes("Reply-To: ceo@company.com")) { score += 30; matches.push("Sender address / Reply-To mismatch"); }
+                    return { score: Math.min(score, 100), matches };
+                }
+            },
+            {
+                id: "SEC-DET-103",
+                title: "Android APK Rogue Permission Heuristics",
+                category: "APK",
+                language: "YARA / Android",
+                filename: "apk_malware_heuristics.yara",
+                status: "Testing",
+                description: "Scans compiled Android manifest payloads for dangerous overlay, SMS interception, and accessibility service abuses.",
+                samplePayload: "<uses-permission android:name=\"android.permission.RECEIVE_SMS\"/>\n<uses-permission android:name=\"android.permission.SYSTEM_ALERT_WINDOW\"/>\n<uses-permission android:name=\"android.permission.BIND_ACCESSIBILITY_SERVICE\"/>",
+                code: `/* Rule ID: SEC-DET-103: APK Malware & Banking Trojan Heuristics */
+rule Rogue_APK_Permissions {
+    meta:
+        description = "Detects dangerous combinations of Android overlay and SMS stealing permissions"
+        threat_type = "Banking Trojan / Spyware"
+
+    strings:
+        $p_sms = "android.permission.RECEIVE_SMS"
+        $p_overlay = "android.permission.SYSTEM_ALERT_WINDOW"
+        $p_access = "android.permission.BIND_ACCESSIBILITY_SERVICE"
+
+    condition:
+        all of ($p_*)
+}`,
+                evaluator: function(payload) {
+                    let score = 0;
+                    let matches = [];
+                    if (payload.includes("RECEIVE_SMS") || payload.includes("READ_SMS")) { score += 35; matches.push("SMS Interception capability"); }
+                    if (payload.includes("SYSTEM_ALERT_WINDOW")) { score += 35; matches.push("Screen Overlay attack vector (SYSTEM_ALERT_WINDOW)"); }
+                    if (payload.includes("BIND_ACCESSIBILITY_SERVICE")) { score += 30; matches.push("Accessibility Service abuse request"); }
+                    return { score: Math.min(score, 100), matches };
+                }
+            },
+            {
+                id: "SEC-DET-104",
+                title: "Banking Smishing & Shortcode Regex",
+                category: "SMS",
+                language: "Regex / Python",
+                filename: "smishing_patterns.py",
+                status: "Active",
+                description: "Matches SMS messages containing urgent banking alert lures, shortener links, and fake verification codes.",
+                samplePayload: "ALERT: Your bank account #4092 is suspended. Verify credentials immediately at http://bit.ly/bank-security-fix or call 1-800-555-0199.",
+                code: `# Rule ID: SEC-DET-104: Smishing Pattern Detection Engine
+import re
+
+SMISHING_REGEX_PATTERNS = [
+    r"(?i)(alert|suspended|unauthorized|blocked).*?(verify|update|confirm)",
+    r"https?://(bit\\.ly|tinyurl\\.com|is\\.gd|cutt\\.ly)/[a-zA-Z0-9]+",
+    r"(?i)account.*?restricted.*?login"
+]
+
+def scan_sms_payload(text_body):
+    matches = []
+    score = 0
+    
+    for pattern in SMISHING_REGEX_PATTERNS:
+        if re.search(pattern, text_body):
+            score += 35
+            matches.append(f"Matched Regex Pattern: {pattern}")
+            
+    return {"risk_score": min(score, 100), "threats": matches}`,
+                evaluator: function(payload) {
+                    let score = 0;
+                    let matches = [];
+                    if (/(alert|suspended|unauthorized|blocked).*?(verify|update|confirm)/i.test(payload)) { score += 40; matches.push("Account suspension panic lure"); }
+                    if (/https?:\/\/(bit\.ly|tinyurl\.com|is\.gd|cutt\.ly)\/[a-zA-Z0-9]+/i.test(payload)) { score += 35; matches.push("Obfuscated URL shortener present"); }
+                    if (/account.*?restricted.*?login/i.test(payload)) { score += 25; matches.push("Restricted login call-to-action"); }
+                    return { score: Math.min(score, 100), matches };
+                }
+            }
+        ];
+
+        let activeRuleIndex = 0;
+        let isEditMode = false;
+
+        // Initialize Module on Load
+        window.onload = function() {
+            renderRulesList();
+            loadRuleDetails(0);
+        };
+
+        // Render Rules in Sidebar based on Filter and Search
+        function renderRulesList() {
+            const categoryFilter = document.getElementById('category-filter').value;
+            const searchQuery = document.getElementById('rule-search').value.toLowerCase();
+            const listContainer = document.getElementById('rules-list');
+            
+            listContainer.innerHTML = "";
+            let matchCount = 0;
+
+            detectionRules.forEach((rule, index) => {
+                const categoryMatch = (categoryFilter === "ALL" || rule.category === categoryFilter);
+                const searchMatch = rule.title.toLowerCase().includes(searchQuery) || 
+                                    rule.id.toLowerCase().includes(searchQuery) || 
+                                    rule.code.toLowerCase().includes(searchQuery);
+
+                if (categoryMatch && searchMatch) {
+                    matchCount++;
+                    const card = document.createElement('div');
+                    card.className = `rule-card ${index === activeRuleIndex ? 'active' : ''}`;
+                    card.onclick = () => selectRule(index);
+
+                    let statusBadgeClass = "badge-active";
+                    if (rule.status === "Testing") statusBadgeClass = "badge-testing";
+                    if (rule.status === "Disabled") statusBadgeClass = "badge-disabled";
+
+                    card.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 11px; font-weight: 700; color: #38bdf8;">${rule.id}</span>
+                            <span class="badge ${statusBadgeClass}">${rule.status}</span>
+                        </div>
+                        <div style="font-size: 13px; font-weight: 600; color: #f8fafc;">${rule.title}</div>
+                        <div style="font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between; align-items: center; margin-top: 2px;">
+                            <span>Tag: ${rule.category}</span>
+                            <span style="font-family: monospace;">${rule.language.split('/')[0]}</span>
+                        </div>
+                    `;
+                    listContainer.appendChild(card);
+                }
+            });
+
+            document.getElementById('rules-count').innerText = `${matchCount} Rule${matchCount !== 1 ? 's' : ''}`;
+        }
+
+        // Select and Load a Rule into View
+        function selectRule(index) {
+            if (isEditMode) {
+                toggleEditMode(); // Exit edit mode when switching rules
+            }
+            activeRuleIndex = index;
+            renderRulesList();
+            loadRuleDetails(index);
+        }
+
+        // Populate Main Details and Code Viewer
+        function loadRuleDetails(index) {
+            const rule = detectionRules[index];
+            
+            document.getElementById('view-rule-title').innerText = rule.title;
+            document.getElementById('view-rule-meta').innerText = `Language: ${rule.language} | ID: ${rule.id}`;
+            document.getElementById('view-rule-desc').innerText = rule.description;
+            document.getElementById('code-filename').innerText = rule.filename;
+            document.getElementById('sandbox-payload').value = rule.samplePayload;
+
+            // Update Status Badge
+            const statusBadge = document.getElementById('view-rule-status');
+            statusBadge.innerText = rule.status;
+            statusBadge.className = `badge ${rule.status === 'Active' ? 'badge-active' : (rule.status === 'Testing' ? 'badge-testing' : 'badge-disabled')}`;
+
+            // Populate Syntax Highlighted Code
+            document.getElementById('code-display').innerHTML = highlightSyntax(rule.code);
+            document.getElementById('code-editor').value = rule.code;
+
+            // Clear previous sandbox test outputs
+            document.getElementById('sandbox-output').style.display = 'none';
+        }
+
+        // Lightweight Syntax Highlighting Utility
+        function highlightSyntax(code) {
+            // Escape HTML characters
+            let escaped = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            
+            // Highlight Strings
+            escaped = escaped.replace(/("[^"]*"|'[^']*'|`[^`]*`)/g, '<span class="token-string">$1</span>');
+            
+            // Highlight Keywords
+            const keywords = /\b(function|return|var|let|const|if|else|for|while|rule|meta|strings|condition|import|def|in|and|or|not|all|any|of)\b/g;
+            escaped = escaped.replace(keywords, '<span class="token-keyword">$1</span>');
+
+            // Highlight Comments
+            escaped = escaped.replace(/(\/\/[^\n]*|\/\*[\s\S]*?\*\/|#[^\n]*)/g, '<span class="token-comment">$1</span>');
+
+            // Highlight Regex literals
+            escaped = escaped.replace(/(\/.*?\/[gimsuy]*)/g, '<span class="token-regex">$1</span>');
+
+            return escaped;
+        }
+
+        // Toggle Edit Mode vs Read-Only View Mode
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const displayEl = document.getElementById('code-display');
+            const editorEl = document.getElementById('code-editor');
+            const toggleBtn = document.getElementById('toggle-edit-btn');
+            const statusSwitcher = document.getElementById('status-switcher');
+
+            if (isEditMode) {
+                displayEl.style.display = 'none';
+                editorEl.style.display = 'block';
+                statusSwitcher.style.display = 'flex';
+                toggleBtn.innerText = '💾 Save Code';
+                toggleBtn.className = 'btn btn-success';
+                document.getElementById('edit-status-select').value = detectionRules[activeRuleIndex].status;
+                showToast("Edit mode active. Modify detection logic directly.");
+            } else {
+                // Save changes back to repository object
+                detectionRules[activeRuleIndex].code = editorEl.value;
+                displayEl.innerHTML = highlightSyntax(editorEl.value);
+                displayEl.style.display = 'block';
+                editorEl.style.display = 'none';
+                statusSwitcher.style.display = 'none';
+                toggleBtn.innerText = '✏️ Edit Rule';
+                toggleBtn.className = 'btn btn-outline';
+                showToast("Detection rule code updated successfully.");
+            }
+        }
+
+        // Live sync changes while typing in editor
+        function syncEditorChanges() {
+            detectionRules[activeRuleIndex].code = document.getElementById('code-editor').value;
+        }
+
+        // Update Rule Active / Testing / Disabled Status
+        function updateRuleStatus(newStatus) {
+            detectionRules[activeRuleIndex].status = newStatus;
+            const statusBadge = document.getElementById('view-rule-status');
+            statusBadge.innerText = newStatus;
+            statusBadge.className = `badge ${newStatus === 'Active' ? 'badge-active' : (newStatus === 'Testing' ? 'badge-testing' : 'badge-disabled')}`;
+            renderRulesList();
+            showToast(`Rule status set to: ${newStatus}`);
+        }
+
+        // Copy Code to Clipboard
+        function copyCodeToClipboard() {
+            const currentCode = detectionRules[activeRuleIndex].code;
+            
+            // execCommand copy implementation for frame compatibility
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = currentCode;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextarea);
+
+            showToast("Rule code copied to clipboard!");
+        }
+
+        // Scroll to Sandbox Component
+        function scrollToSandbox() {
+            document.getElementById('sandbox-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Load Sample Payload
+        function loadSamplePayload() {
+            document.getElementById('sandbox-payload').value = detectionRules[activeRuleIndex].samplePayload;
+            showToast("Sample threat payload loaded into sandbox.");
+        }
+
+        // Execute Detection Engine Sandbox Test
+        function executeSandboxTest() {
+            const payload = document.getElementById('sandbox-payload').value.trim();
+            const outputDiv = document.getElementById('sandbox-output');
+            const rule = detectionRules[activeRuleIndex];
+
+            if (!payload) {
+                showToast("Please enter a test payload first.");
+                return;
+            }
+
+            outputDiv.style.display = 'block';
+            outputDiv.className = "animated-fade";
+
+            // Run Evaluator
+            const result = rule.evaluator(payload);
+            const isThreat = result.score >= 50;
+
+            outputDiv.style.borderLeftColor = isThreat ? '#ef4444' : '#10b981';
+            
+            let indicatorsHtml = result.matches.length > 0 
+                ? result.matches.map(m => `<li style="margin-top: 2px;">• ${m}</li>`).join('') 
+                : '<li>• No suspicious indicators matched in payload.</li>';
+
+            outputDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <strong style="color: ${isThreat ? '#ef4444' : '#10b981'}; font-size: 14px;">
+                        ${isThreat ? '🚨 THREAT DETECTED (MATCH)' : '✅ PAYLOAD PASSED (NO THREAT)'}
+                    </strong>
+                    <span style="font-weight: 700; color: #ffffff; font-size: 13px;">
+                        Calculated Risk: <span style="color: ${isThreat ? '#ef4444' : '#10b981'};">${result.score} / 100</span>
+                    </span>
+                </div>
+                <div style="font-size: 12px; color: #cbd5e1;">
+                    <strong>Matched Threat Indicators:</strong>
+                    <ul style="margin: 4px 0 0 0; padding-left: 10px; list-style: none; color: #94a3b8;">
+                        ${indicatorsHtml}
+                    </ul>
+                </div>
+            `;
+
+            showToast(`Sandbox test executed: ${isThreat ? 'Threat Matched' : 'Clean'}`);
+        }
+
+        // Display Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+`

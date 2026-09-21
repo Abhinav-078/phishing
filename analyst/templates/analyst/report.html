@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC Security Analyst Dashboard - Incident Triage & Report Review</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            900: '#0c4a6e',
+                        },
+                        soc: {
+                            dark: '#0b0f19',
+                            card: '#111827',
+                            border: '#1f2937',
+                            sidebar: '#0d1322',
+                            highlight: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom scrollbar styling for SOC dashboard */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col overflow-hidden bg-slate-950 text-slate-100 antialiased selection:bg-sky-500 selection:text-white">
+
+    <!-- TOP NAVIGATION & STATUS HEADER -->
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex flex-wrap items-center justify-between gap-4 shrink-0 shadow-lg z-20">
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-lg bg-sky-600/20 border border-sky-500/40 flex items-center justify-center text-sky-400 font-extrabold text-lg shadow-inner">
+                    🛡️
+                </div>
+                <div>
+                    <h1 class="text-base font-bold tracking-wide text-white flex items-center gap-2">
+                        SOC Security Analyst Dashboard
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                            ● Live Monitoring
+                        </span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Incident Triage, User Report Verification & AI Cyber Threat Analysis</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- REAL-TIME METRICS & QUEUE COUNTERS -->
+        <div class="flex items-center space-x-3 text-xs">
+            <div class="bg-slate-950/80 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                <span class="text-slate-400">Pending Triage:</span>
+                <span id="counter-pending" class="font-bold text-amber-400 text-sm">4</span>
+            </div>
+            <div class="bg-slate-950/80 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                <span class="text-slate-400">High Risk:</span>
+                <span id="counter-high" class="font-bold text-red-400 text-sm">2</span>
+            </div>
+            <div class="bg-slate-950/80 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span class="text-slate-400">Resolved Today:</span>
+                <span id="counter-resolved" class="font-bold text-emerald-400 text-sm">18</span>
+            </div>
+            
+            <div class="h-6 w-px bg-slate-800 mx-1"></div>
+
+            <!-- ANALYST PROFILE -->
+            <div class="flex items-center space-x-2 pl-1">
+                <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-sky-400">
+                    SA
+                </div>
+                <div class="hidden sm:block">
+                    <div class="font-semibold text-xs text-slate-200">Alex Vance</div>
+                    <div class="text-[10px] text-slate-400">Tier-1 SOC Lead</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SEARCH & FILTER TOOLBAR -->
+    <section class="bg-slate-900/60 border-b border-slate-800 px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[300px]">
+            <!-- Search Input -->
+            <div class="relative flex-1 min-w-[200px] max-w-md">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                    🔍
+                </span>
+                <input type="text" id="filter-search" oninput="applyFilters()" placeholder="Search by Ticket ID, User name, domain, hash, or keyword..." 
+                    class="w-full pl-9 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-md text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-xs">
+            </div>
+
+            <!-- Filter: Vector Type -->
+            <select id="filter-type" onchange="applyFilters()" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-md px-3 py-1.5 focus:outline-none focus:border-sky-500 text-xs">
+                <option value="ALL">All Vector Types</option>
+                <option value="EMAIL">Phishing Email</option>
+                <option value="URL">Malicious URL / Domain</option>
+                <option value="PHONE">Suspicious SMS / Phone</option>
+                <option value="APP">Application / Malware File</option>
+            </select>
+
+            <!-- Filter: Risk Severity -->
+            <select id="filter-risk" onchange="applyFilters()" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-md px-3 py-1.5 focus:outline-none focus:border-sky-500 text-xs">
+                <option value="ALL">All Risk Levels</option>
+                <option value="HIGH">High Risk (Threat)</option>
+                <option value="MEDIUM">Medium Risk (Suspicious)</option>
+                <option value="LOW">Low Risk (Benign)</option>
+            </select>
+
+            <!-- Filter: Ticket Status -->
+            <select id="filter-status" onchange="applyFilters()" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-md px-3 py-1.5 focus:outline-none focus:border-sky-500 text-xs">
+                <option value="ALL">All Statuses</option>
+                <option value="Pending" selected>Pending Triage</option>
+                <option value="In Review">In Review</option>
+                <option value="Escalated">Escalated</option>
+                <option value="Resolved">Resolved</option>
+            </select>
+        </div>
+
+        <button onclick="resetFilters()" class="text-slate-400 hover:text-slate-200 text-xs flex items-center gap-1 transition">
+            🔄 Reset Filters
+        </button>
+    </section>
+
+    <!-- MAIN SPLIT WORKSPACE CONTENT -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- LEFT SIDEBAR: REPORT QUEUE LIST -->
+        <aside class="w-80 lg:w-96 bg-soc-sidebar border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-3 border-b border-slate-800 flex justify-between items-center text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900/40">
+                <span>User Submissions Queue</span>
+                <span id="queue-visible-count" class="bg-slate-800 text-sky-400 px-2 py-0.5 rounded-full text-[10px]">4 Items</span>
+            </div>
+
+            <!-- QUEUE CARDS CONTAINER -->
+            <div id="queue-container" class="flex-1 overflow-y-auto divide-y divide-slate-800/60">
+                <!-- Queue Items Dynamic Generation Targets -->
+            </div>
+        </aside>
+
+        <!-- MAIN WORKSPACE: DETAILED REVIEW & TRIAGE -->
+        <main class="flex-1 bg-slate-950 overflow-y-auto flex flex-col" id="workspace">
+
+            <!-- OVERVIEW HEADER -->
+            <div class="p-6 bg-slate-900/80 border-b border-slate-800 flex flex-wrap justify-between items-start gap-4">
+                <div class="space-y-1">
+                    <div class="flex items-center space-x-3">
+                        <span id="detail-ticket-id" class="code-font text-sky-400 font-bold text-lg">#INC-8821</span>
+                        <span id="detail-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                            Pending Triage
+                        </span>
+                        <span id="detail-vector-type" class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300">
+                            🌐 Malicious URL
+                        </span>
+                    </div>
+                    <h2 id="detail-subject" class="text-xl font-bold text-white pt-1">
+                        Suspicious Banking Password Reset URL in Email
+                    </h2>
+                    <p class="text-xs text-slate-400 flex items-center gap-2">
+                        <span>Submitted <strong id="detail-time" class="text-slate-300">Today, 02:14 PM IST</strong></span>
+                        <span>•</span>
+                        <span>Scan Engine Ref: <span class="code-font text-slate-300" id="detail-scan-id">SCAN-9901-SEC</span></span>
+                    </p>
+                </div>
+
+                <!-- USER REPORTER PROFILE CARD -->
+                <div class="bg-slate-950 border border-slate-800 rounded-lg p-3 flex items-center space-x-3 min-w-[260px]">
+                    <div id="detail-user-avatar" class="w-10 h-10 rounded-full bg-sky-600 text-white font-bold flex items-center justify-center text-sm shadow">
+                        JD
+                    </div>
+                    <div class="text-xs">
+                        <div id="detail-user-name" class="font-bold text-slate-200">John Doe</div>
+                        <div id="detail-user-email" class="text-slate-400 text-[11px]">john.doe@enterprise.com</div>
+                        <div class="mt-1 flex items-center gap-2">
+                            <span class="text-[10px] text-slate-500">Dept: <strong id="detail-user-dept" class="text-slate-400">Finance</strong></span>
+                            <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/20">
+                                Trust Rating: <strong id="detail-user-trust">94%</strong>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BODY CONTENT WORKSPACE (2-COLUMN GRID) -->
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- LEFT COLUMN: EVIDENCE & AI THREAT INTEL (8 COLS) -->
+                <div class="lg:col-span-7 space-y-6">
+
+                    <!-- 1. USER EVIDENTIARY SUBMISSION CARD -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                                📩 User Submitted Evidence & Details
+                            </h3>
+                            <button onclick="copyEvidenceText()" class="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1">
+                                📋 Copy Raw Content
+                            </button>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-semibold text-slate-400 mb-1">User Context / Explanation:</div>
+                            <div id="detail-user-notes" class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs text-slate-300 italic">
+                                "Received an urgent notification claiming my executive account credential will expire in 2 hours. Looks very suspicious."
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-semibold text-slate-400 mb-1">Extracted Vector Indicator (Payload):</div>
+                            <div id="detail-payload-container" class="bg-slate-950 p-3 rounded-lg border border-slate-800 code-font text-xs text-red-400 break-all select-all">
+                                http://update-bank-passcode.net/auth/verify?id=99281
+                            </div>
+                        </div>
+
+                        <!-- RAW DETAILS TOGGLE -->
+                        <details class="text-xs">
+                            <summary class="cursor-pointer text-slate-400 hover:text-sky-400 font-medium transition">
+                                ⚙️ View Raw Header / Payload Inspection
+                            </summary>
+                            <pre id="detail-raw-header" class="mt-2 p-3 bg-slate-950 border border-slate-800 rounded-lg text-[11px] code-font text-slate-400 overflow-x-auto whitespace-pre-wrap">
+Return-Path: <bounce@update-bank-passcode.net>
+Received: from mail.update-bank-passcode.net (185.220.101.42)
+X-Originating-IP: [185.220.101.42]
+Subject: Urgent: Verify Passkey Expiration
+DKIM-Signature: v=1; d=update-bank-passcode.net (FAIL)
+SPF: Neutral (softfail)
+                            </pre>
+                        </details>
+                    </div>
+
+                    <!-- 2. AUTOMATED AI THREAT INTEL & IOC INSPECTION -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <div class="flex items-center space-x-2">
+                                <h3 class="text-sm font-bold text-slate-200">
+                                    🤖 AI Heuristic Engine & IoC Inspection
+                                </h3>
+                            </div>
+                            <div id="detail-risk-score-badge" class="px-3 py-1 rounded-lg text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+                                Threat Score: 94 / 100 (HIGH RISK)
+                            </div>
+                        </div>
+
+                        <!-- MATCHED IOCs -->
+                        <div>
+                            <div class="text-xs font-semibold text-slate-400 mb-2">Detected Indicators of Compromise (IoCs):</div>
+                            <ul id="detail-ioc-list" class="space-y-2 text-xs">
+                                <!-- Dynamic IoC list items -->
+                            </ul>
+                        </div>
+
+                        <!-- LIVE INTEL LOOKUPS (VirusTotal, Whois, AbuseIPDB) -->
+                        <div class="border-t border-slate-800 pt-3">
+                            <div class="text-xs font-semibold text-slate-400 mb-2">External Threat Intelligence Aggregation:</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex flex-col justify-between">
+                                    <div class="flex justify-between items-center text-[11px] text-slate-400">
+                                        <span>VirusTotal</span>
+                                        <span class="text-red-400 font-bold">28/72</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-500 mt-1" id="vt-summary">Malicious Flags</div>
+                                </div>
+                                <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex flex-col justify-between">
+                                    <div class="flex justify-between items-center text-[11px] text-slate-400">
+                                        <span>AbuseIPDB</span>
+                                        <span class="text-amber-400 font-bold">89% Confidence</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-500 mt-1" id="abuse-summary">Host Abuse Rating</div>
+                                </div>
+                                <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex flex-col justify-between">
+                                    <div class="flex justify-between items-center text-[11px] text-slate-400">
+                                        <span>Domain Age</span>
+                                        <span class="text-red-400 font-bold">2 Days Old</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-500 mt-1" id="whois-summary">WHOIS Fresh Reg</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT COLUMN: ANALYST WORKBENCH & ACTION PANEL (5 COLS) -->
+                <div class="lg:col-span-5 space-y-6">
+
+                    <!-- ANALYST RESPONSE & TRIAGE WORKBENCH CARD -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-5 sticky top-4">
+                        <div class="border-b border-slate-800 pb-3 flex justify-between items-center">
+                            <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                                🛠️ Analyst Triage & User Reply
+                            </h3>
+                            <span class="text-[10px] text-slate-400">SOC Tier-1 Active</span>
+                        </div>
+
+                        <!-- DECISION VERDICT SELECTOR -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">
+                                Set Final Classification Verdict:
+                            </label>
+                            <select id="verdict-select" onchange="handleVerdictChange()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 font-medium">
+                                <option value="MALICIOUS" class="text-red-400 font-bold">🛑 Confirmed Malicious - Quarantine Vector</option>
+                                <option value="SUSPICIOUS" class="text-amber-400">⚠️ Suspicious - Escalated for Dynamic Sandbox</option>
+                                <option value="SAFE" class="text-emerald-400">✅ False Positive - Safe Legitimate Content</option>
+                            </select>
+                        </div>
+
+                        <!-- QUICK PRE-WRITTEN RESPONSE TEMPLATES -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1.5">
+                                <label class="text-xs font-semibold text-slate-300">Quick Response Templates:</label>
+                                <span class="text-[10px] text-sky-400">Click to autofill</span>
+                            </div>
+                            <div class="grid grid-cols-1 gap-1.5">
+                                <button type="button" onclick="applyTemplate('CONFIRMED_PHISH')" class="text-left px-2.5 py-1.5 rounded bg-slate-950 hover:bg-slate-800 border border-slate-800 text-[11px] text-slate-300 transition flex items-center justify-between">
+                                    <span>🛑 Confirmed Phishing - Blocked</span>
+                                    <span class="text-[9px] text-slate-500">Auto-Apply</span>
+                                </button>
+                                <button type="button" onclick="applyTemplate('FALSE_POSITIVE')" class="text-left px-2.5 py-1.5 rounded bg-slate-950 hover:bg-slate-800 border border-slate-800 text-[11px] text-slate-300 transition flex items-center justify-between">
+                                    <span>✅ Safe External Email - Verified</span>
+                                    <span class="text-[9px] text-slate-500">Auto-Apply</span>
+                                </button>
+                                <button type="button" onclick="applyTemplate('MALWARE_QUARANTINE')" class="text-left px-2.5 py-1.5 rounded bg-slate-950 hover:bg-slate-800 border border-slate-800 text-[11px] text-slate-300 transition flex items-center justify-between">
+                                    <span>☣️ Executable Malware Quarantined</span>
+                                    <span class="text-[9px] text-slate-500">Auto-Apply</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- RESPONSE TEXT EDITOR -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">
+                                Response Message to Reporting User:
+                            </label>
+                            <textarea id="analyst-reply-text" rows="5" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 leading-relaxed font-sans" placeholder="Type analyst feedback or click a template above..."></textarea>
+                        </div>
+
+                        <!-- GAMIFICATION POINTS TOGGLE -->
+                        <div class="bg-slate-950/80 border border-slate-800 p-3 rounded-lg flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-lg">🏆</span>
+                                <div>
+                                    <div class="text-xs font-bold text-slate-200">Award Security Training Points</div>
+                                    <div class="text-[10px] text-slate-400">Boost user security awareness badge level</div>
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="gamification-toggle" checked class="sr-only peer">
+                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
+                        </div>
+
+                        <!-- ACTION BUTTONS -->
+                        <div class="space-y-2 pt-2 border-t border-slate-800">
+                            <button onclick="submitTriageResponse('RESOLVE')" class="w-full py-2.5 px-4 bg-sky-600 hover:bg-sky-500 text-white rounded-lg font-bold text-xs shadow-lg shadow-sky-600/20 transition flex items-center justify-center space-x-2">
+                                <span>🚀 Send Reply & Resolve Ticket</span>
+                            </button>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="submitTriageResponse('ESCALATE')" class="py-2 px-3 bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 border border-amber-500/30 rounded-lg font-semibold text-xs transition">
+                                    ⚠️ Escalate (IR Tier 2)
+                                </button>
+                                <button onclick="saveDraft()" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-semibold text-xs transition">
+                                    💾 Save Draft
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 border border-sky-500/40 text-slate-100 px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 z-50">
+        <span id="toast-icon" class="text-xl">✅</span>
+        <div>
+            <div id="toast-title" class="font-bold text-xs text-white">Action Completed</div>
+            <div id="toast-message" class="text-[11px] text-slate-300">Ticket updated successfully.</div>
+        </div>
+    </div>
+
+    <script>
+        // MOCK DATABASE OF USER-SUBMITTED THREAT REPORTS
+        const reportsData = [
+            {
+                id: "INC-8821",
+                scanId: "SCAN-9901-SEC",
+                user: {
+                    name: "John Doe",
+                    email: "john.doe@enterprise.com",
+                    avatar: "JD",
+                    dept: "Finance & Accounting",
+                    trustScore: "94%"
+                },
+                vectorType: "URL",
+                vectorLabel: "🌐 Malicious URL",
+                status: "Pending",
+                riskLevel: "HIGH",
+                riskScore: 92,
+                submittedTime: "Today, 02:14 PM IST",
+                subject: "Suspicious Banking Password Reset URL in Email",
+                userNotes: "Received an urgent notification claiming my executive account credential will expire in 2 hours. Looks very suspicious.",
+                payload: "http://update-bank-passcode.net/auth/verify?id=99281",
+                rawHeaders: `Return-Path: <bounce@update-bank-passcode.net>\nReceived: from mail.update-bank-passcode.net (185.220.101.42)\nX-Originating-IP: [185.220.101.42]\nSubject: Urgent: Verify Passkey Expiration\nDKIM-Signature: v=1; d=update-bank-passcode.net (FAIL)\nSPF: Neutral (softfail)`,
+                iocs: [
+                    "Newly registered domain (< 48 hours old)",
+                    "High typosquatting similarity score with target banking brand",
+                    "SSL certificate issued by free untrusted authority",
+                    "Domain hosted in known bulletproof host AS-9021"
+                ],
+                intel: {
+                    vt: "28/72 Flags",
+                    abuse: "89% Abuse Score",
+                    whois: "2 Days Old"
+                }
+            },
+            {
+                id: "INC-8822",
+                scanId: "SCAN-9884-EXE",
+                user: {
+                    name: "Sarah Jenkins",
+                    email: "s.jenkins@enterprise.com",
+                    avatar: "SJ",
+                    dept: "Human Resources",
+                    trustScore: "88%"
+                },
+                vectorType: "APP",
+                vectorLabel: "📁 Malware Executable",
+                status: "Pending",
+                riskLevel: "HIGH",
+                riskScore: 98,
+                submittedTime: "Today, 01:45 PM IST",
+                subject: "Unexpected Attachment in Resume Application",
+                userNotes: "Candidate sent an invoice file attachment ending in .pdf.exe. I didn't open it but flagged it immediately.",
+                payload: "invoice_october_payment_details.pdf.exe [SHA256: 4f8a91c30b92e]",
+                rawHeaders: `File Attachment: invoice_october_payment_details.pdf.exe\nSize: 2.4 MB\nMIME Type: application/x-dosexec\nSandbox Alert: Attempted registry key persistence write & outbound C2 beaconing.`,
+                iocs: [
+                    "Executable double extension trick (.pdf.exe)",
+                    "Unsigned PE Binary payload without corporate signature",
+                    "Sandbox process spawned powershell hidden execution flags",
+                    "C2 Connection attempt to 103.21.244.12:8080"
+                ],
+                intel: {
+                    vt: "54/72 Flags",
+                    abuse: "96% Abuse Score",
+                    whois: "Malware Family: RedLine Stealer"
+                }
+            },
+            {
+                id: "INC-8823",
+                scanId: "SCAN-9762-SMS",
+                user: {
+                    name: "Michael Chen",
+                    email: "m.chen@enterprise.com",
+                    avatar: "MC",
+                    dept: "DevOps & Cloud",
+                    trustScore: "99%"
+                },
+                vectorType: "PHONE",
+                vectorLabel: "📞 SMS / Phone",
+                status: "Pending",
+                riskLevel: "MEDIUM",
+                riskScore: 68,
+                submittedTime: "Today, 11:30 AM IST",
+                subject: "SMS Urgent SIM Deactivation Notice",
+                userNotes: "Got an SMS claiming my corporate SIM will be blocked unless I update e-KYC using a shortened link.",
+                payload: "SMS Sender: +91 98230-01928 | Message: 'Urgent: SIM will be blocked today. Complete KYC at bit.ly/ekyc-verify'",
+                rawHeaders: `SMS Sender ID: +91 98230-01928\nCarrier: Virtual VOIP Line\nShortlink Target: http://telecom-kyc-update-portal.org/login`,
+                iocs: [
+                    "VOIP/Virtual prepaid phone number sender",
+                    "Contains URL shortener redirection to hide destination",
+                    "Matches telecommunication SMS phishing pattern database"
+                ],
+                intel: {
+                    vt: "12/72 Flags",
+                    abuse: "62% Abuse Score",
+                    whois: "VOIP Provider"
+                }
+            },
+            {
+                id: "INC-8824",
+                scanId: "SCAN-9610-EML",
+                user: {
+                    name: "Rachel Adams",
+                    email: "r.adams@enterprise.com",
+                    avatar: "RA",
+                    dept: "Marketing",
+                    trustScore: "91%"
+                },
+                vectorType: "EMAIL",
+                vectorLabel: "✉️ Internal Email",
+                status: "Pending",
+                riskLevel: "LOW",
+                riskScore: 12,
+                submittedTime: "Today, 09:15 AM IST",
+                subject: "Internal All-Hands Meeting Announcement",
+                userNotes: "Just double-checking if this townhall meeting invite from HR is authentic.",
+                payload: "From: hr-announcement@enterprise.com | Link: https://internal.enterprise.com/townhall",
+                rawHeaders: `Return-Path: <hr-announcement@enterprise.com>\nSPF: PASS\nDKIM: PASS (domain enterprise.com)\nDMARC: PASS\nTLS 1.3 Encrypted.`,
+                iocs: [
+                    "Valid SPF, DKIM, and DMARC alignment",
+                    "Link domain matches official corporate FQDN",
+                    "No suspicious parameters or redirects detected"
+                ],
+                intel: {
+                    vt: "0/72 Clean",
+                    abuse: "0% Clean",
+                    whois: "Official Corp Domain"
+                }
+            }
+        ];
+
+        let activeReportId = "INC-8821";
+
+        // INITIALIZE APP ON LOAD
+        window.addEventListener('DOMContentLoaded', () => {
+            renderQueueList(reportsData);
+            loadReportDetails(activeReportId);
+        });
+
+        // RENDER QUEUE LIST SIDEBAR
+        function renderQueueList(data) {
+            const container = document.getElementById('queue-container');
+            container.innerHTML = '';
+
+            document.getElementById('queue-visible-count').innerText = `${data.length} Items`;
+
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center text-slate-500 text-xs">
+                        No submitted reports match the selected filters.
+                    </div>
+                `;
+                return;
+            }
+
+            data.forEach(item => {
+                const isActive = item.id === activeReportId;
+                
+                // Risk Badge Style
+                let riskBadgeClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
+                if (item.riskLevel === "HIGH") riskBadgeClass = "bg-red-500/10 text-red-400 border-red-500/30";
+                else if (item.riskLevel === "MEDIUM") riskBadgeClass = "bg-amber-500/10 text-amber-400 border-amber-500/30";
+
+                const cardHtml = `
+                    <div onclick="selectReport('${item.id}')" 
+                        class="p-3.5 cursor-pointer transition border-l-4 ${isActive ? 'bg-slate-900 border-sky-500' : 'hover:bg-slate-900/60 border-transparent'}">
+                        
+                        <div class="flex items-center justify-between gap-2 mb-1.5">
+                            <span class="code-font text-xs font-bold ${isActive ? 'text-sky-400' : 'text-slate-300'}">${item.id}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold border ${riskBadgeClass}">
+                                ${item.riskLevel} (${item.riskScore})
+                            </span>
+                        </div>
+
+                        <div class="text-xs font-semibold text-slate-200 line-clamp-1 mb-1">
+                            ${item.subject}
+                        </div>
+
+                        <div class="flex items-center justify-between text-[11px] text-slate-400 mt-2">
+                            <span class="flex items-center gap-1">
+                                <span class="w-5 h-5 rounded-full bg-slate-800 text-sky-400 text-[9px] font-bold flex items-center justify-center">
+                                    ${item.user.avatar}
+                                </span>
+                                <span class="truncate max-w-[100px]">${item.user.name}</span>
+                            </span>
+                            <span class="text-[10px] text-slate-500">${item.submittedTime.split(',')[1]}</span>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        // SELECT REPORT & POPULATE WORKSPACE
+        function selectReport(id) {
+            activeReportId = id;
+            renderQueueList(getFilteredData());
+            loadReportDetails(id);
+        }
+
+        // LOAD DETAILED REPORT DATA INTO WORKSPACE
+        function loadReportDetails(id) {
+            const item = reportsData.find(r => r.id === id);
+            if (!item) return;
+
+            document.getElementById('detail-ticket-id').innerText = `#${item.id}`;
+            document.getElementById('detail-scan-id').innerText = item.scanId;
+            document.getElementById('detail-subject').innerText = item.subject;
+            document.getElementById('detail-time').innerText = item.submittedTime;
+            document.getElementById('detail-vector-type').innerText = item.vectorLabel;
+
+            // User Info
+            document.getElementById('detail-user-avatar').innerText = item.user.avatar;
+            document.getElementById('detail-user-name').innerText = item.user.name;
+            document.getElementById('detail-user-email').innerText = item.user.email;
+            document.getElementById('detail-user-dept').innerText = item.user.dept;
+            document.getElementById('detail-user-trust').innerText = item.user.trustScore;
+
+            // User Evidence
+            document.getElementById('detail-user-notes').innerText = `"${item.userNotes}"`;
+            document.getElementById('detail-payload-container').innerText = item.payload;
+            document.getElementById('detail-raw-header').innerText = item.rawHeaders;
+
+            // Risk Gauge & IoCs
+            const riskBadge = document.getElementById('detail-risk-score-badge');
+            riskBadge.innerText = `Threat Score: ${item.riskScore} / 100 (${item.riskLevel} RISK)`;
+            if (item.riskLevel === "HIGH") {
+                riskBadge.className = "px-3 py-1 rounded-lg text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30";
+            } else if (item.riskLevel === "MEDIUM") {
+                riskBadge.className = "px-3 py-1 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30";
+            } else {
+                riskBadge.className = "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+            }
+
+            // IoC List
+            const iocContainer = document.getElementById('detail-ioc-list');
+            iocContainer.innerHTML = '';
+            item.iocs.forEach(ioc => {
+                iocContainer.innerHTML += `
+                    <li class="flex items-start space-x-2 text-slate-300">
+                        <span class="text-red-400 font-bold">•</span>
+                        <span>${ioc}</span>
+                    </li>
+                `;
+            });
+
+            // Threat Intel
+            document.getElementById('vt-summary').innerText = item.intel.vt;
+            document.getElementById('abuse-summary').innerText = item.intel.abuse;
+            document.getElementById('whois-summary').innerText = item.intel.whois;
+
+            // Reset Reply Box
+            applyTemplate(item.riskLevel === "HIGH" ? "CONFIRMED_PHISH" : "FALSE_POSITIVE");
+        }
+
+        // QUICK TEMPLATE AUTOFILL ENGINE
+        function applyTemplate(templateType) {
+            const textarea = document.getElementById('analyst-reply-text');
+            const verdictSelect = document.getElementById('verdict-select');
+            const currentUser = document.getElementById('detail-user-name').innerText;
+
+            if (templateType === 'CONFIRMED_PHISH') {
+                verdictSelect.value = "MALICIOUS";
+                textarea.value = `Hello ${currentUser},\n\nThank you for reporting this suspicious item. Our SOC Security Operations team verified that the link/sender is a CONFIRMED PHISHING ATTACK.\n\nThe domain has been quarantined organization-wide across our DNS firewalls. You did the right thing by reporting it!`;
+            } else if (templateType === 'FALSE_POSITIVE') {
+                verdictSelect.value = "SAFE";
+                textarea.value = `Hello ${currentUser},\n\nThank you for your vigilance. Our security analysis indicates that this communication is LEGITIMATE and safe.\n\nYou may proceed with standard interaction with this email/link safely.`;
+            } else if (templateType === 'MALWARE_QUARANTINE') {
+                verdictSelect.value = "MALICIOUS";
+                textarea.value = `Hello ${currentUser},\n\nWarning: The file attachment in your submitted report contained a malicious executable payload (.exe). It has been quarantined and your endpoint security sensor verified no local execution occurred.\n\nGreat catch reporting this!`;
+            }
+        }
+
+        function handleVerdictChange() {
+            const verdict = document.getElementById('verdict-select').value;
+            if (verdict === 'MALICIOUS') applyTemplate('CONFIRMED_PHISH');
+            else if (verdict === 'SAFE') applyTemplate('FALSE_POSITIVE');
+        }
+
+        // FILTER LOGIC
+        function getFilteredData() {
+            const search = document.getElementById('filter-search').value.toLowerCase();
+            const type = document.getElementById('filter-type').value;
+            const risk = document.getElementById('filter-risk').value;
+            const status = document.getElementById('filter-status').value;
+
+            return reportsData.filter(item => {
+                const matchesSearch = item.id.toLowerCase().includes(search) || 
+                                      item.user.name.toLowerCase().includes(search) ||
+                                      item.subject.toLowerCase().includes(search) ||
+                                      item.payload.toLowerCase().includes(search);
+                const matchesType = (type === 'ALL' || item.vectorType === type);
+                const matchesRisk = (risk === 'ALL' || item.riskLevel === risk);
+                const matchesStatus = (status === 'ALL' || item.status === status);
+
+                return matchesSearch && matchesType && matchesRisk && matchesStatus;
+            });
+        }
+
+        function applyFilters() {
+            renderQueueList(getFilteredData());
+        }
+
+        function resetFilters() {
+            document.getElementById('filter-search').value = '';
+            document.getElementById('filter-type').value = 'ALL';
+            document.getElementById('filter-risk').value = 'ALL';
+            document.getElementById('filter-status').value = 'ALL';
+            applyFilters();
+        }
+
+        // ACTIONS AND NOTIFICATIONS
+        function submitTriageResponse(actionType) {
+            const userName = document.getElementById('detail-user-name').innerText;
+            const isGamification = document.getElementById('gamification-toggle').checked;
+            
+            if (actionType === 'RESOLVE') {
+                showToast("✅ Ticket Resolved & Sent", `Response delivered to ${userName}. ${isGamification ? '+50 Security Points awarded!' : ''}`);
+                
+                // Update item status locally
+                const currentReport = reportsData.find(r => r.id === activeReportId);
+                if (currentReport) currentReport.status = "Resolved";
+
+                // Update counters
+                const pendingCount = parseInt(document.getElementById('counter-pending').innerText);
+                const resolvedCount = parseInt(document.getElementById('counter-resolved').innerText);
+                if (pendingCount > 0) document.getElementById('counter-pending').innerText = pendingCount - 1;
+                document.getElementById('counter-resolved').innerText = resolvedCount + 1;
+
+                applyFilters();
+            } else if (actionType === 'ESCALATE') {
+                showToast("⚠️ Incident Escalated", `Ticket #${activeReportId} escalated to Incident Response Tier 2 Lead.`);
+            }
+        }
+
+        function saveDraft() {
+            showToast("💾 Draft Saved", "Analyst notes saved to active ticket context.");
+        }
+
+        function copyEvidenceText() {
+            const text = document.getElementById('detail-payload-container').innerText;
+            document.execCommand('copy');
+            showToast("📋 Copied", "Payload string copied to clipboard.");
+        }
+
+        function showToast(title, message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-message').innerText = message;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC Threat Intelligence Submission & Intelligence Workbench</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        soc: {
+                            dark: '#0a0f1d',
+                            card: '#111827',
+                            panel: '#1e293b',
+                            border: '#334155',
+                            accent: '#38bdf8',
+                            danger: '#f43f5e',
+                            warning: '#f59e0b',
+                            success: '#10b981',
+                            purple: '#a855f7'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0f1d; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="h-full flex flex-col overflow-x-hidden bg-slate-950 text-slate-100 antialiased selection:bg-sky-500 selection:text-white">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-slate-900/90 border-b border-slate-800 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 shrink-0 shadow-xl sticky top-0 z-30 backdrop-blur-md">
+        <div class="flex items-center space-x-3.5">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 border border-sky-400/40 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-sky-500/20">
+                ⚡
+            </div>
+            <div>
+                <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2.5">
+                    Threat Intelligence Ingestion Console
+                    <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/30 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span> STIX 2.1 Ready
+                    </span>
+                </h1>
+                <p class="text-xs text-slate-400">SOC Analyst Threat Actor, Malware, IOC Entry & OSINT Extraction Portal</p>
+            </div>
+        </div>
+
+        <!-- QUICK ACTIONS & STATS -->
+        <div class="flex items-center space-x-3 text-xs">
+            <div class="bg-slate-950/80 border border-slate-800 px-3.5 py-2 rounded-lg flex items-center space-x-2.5 shadow-inner">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-slate-400 font-medium">Active Indicators:</span>
+                <span id="metric-total-iocs" class="font-extrabold text-emerald-400 text-sm">28</span>
+            </div>
+            <div class="bg-slate-950/80 border border-slate-800 px-3.5 py-2 rounded-lg flex items-center space-x-2.5 shadow-inner hidden md:flex">
+                <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                <span class="text-slate-400 font-medium">Threat Actors:</span>
+                <span id="metric-actors" class="font-extrabold text-purple-400 text-sm">6</span>
+            </div>
+            
+            <div class="h-7 w-px bg-slate-800 mx-1"></div>
+
+            <button onclick="exportStixPackage()" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-3.5 py-2 rounded-lg transition border border-sky-400/30 flex items-center gap-1.5 shadow-md shadow-sky-600/20">
+                <span>📦</span>
+                <span>Export STIX 2.1 Package</span>
+            </button>
+            <button onclick="openSiemModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-3.5 py-2 rounded-lg transition border border-indigo-400/30 flex items-center gap-1.5 shadow-md shadow-indigo-600/20">
+                <span>🔥</span>
+                <span>SIEM Blocklist</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN MAIN CONTAINER -->
+    <main class="flex-1 p-4 lg:p-6 space-y-6 max-w-[1700px] w-full mx-auto">
+
+        <!-- TOP SECTION: RAW OSINT TEXT EXTRACTOR & PARSER -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-xl">🪄</span>
+                    <div>
+                        <h2 class="text-sm font-bold text-white uppercase tracking-wider">Automated OSINT / Header Text IOC Parser</h2>
+                        <p class="text-xs text-slate-400">Paste raw incident reports, email headers, sandbox logs or OSINT blogs to extract IOCs instantly</p>
+                    </div>
+                </div>
+                <button onclick="clearParserText()" class="text-xs text-slate-400 hover:text-rose-400 transition">Clear Parser</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <div class="lg:col-span-8">
+                    <textarea id="raw-osint-input" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 code-font leading-relaxed" placeholder="Paste unstructured OSINT text here... e.g. 'Observed malware calling out to C2 server 185.220.101.5 and downloading payload sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 from domain malicious-phish-portal.org'"></textarea>
+                </div>
+                <div class="lg:col-span-4 flex flex-col justify-between space-y-3">
+                    <button onclick="parseOsintText()" class="w-full py-3 px-4 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-sky-600/20 transition flex items-center justify-center space-x-2">
+                        <span>⚡ Parse & Extract Indicators</span>
+                    </button>
+                    <div id="extracted-summary" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs space-y-1.5 hidden">
+                        <div class="text-[11px] font-bold text-sky-400 flex justify-between">
+                            <span>Extracted IOC Summary:</span>
+                            <span id="extracted-count-total">0 Found</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 pt-1 text-[10px]" id="extracted-tags">
+                            <!-- Dynamic Tag Pills -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MIDDLE SECTION: DETAILED THREAT INTEL INPUT FORM -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- LEFT 7 COLS: FORM FIELDS -->
+            <form id="threat-intel-form" onsubmit="handleFormSubmit(event)" class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+                <div class="border-b border-slate-800 pb-3 flex justify-between items-center">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <span>📝</span> Threat Intelligence Entry Form
+                    </h3>
+                    <span class="text-xs text-slate-400">(*) Required Fields</span>
+                </div>
+
+                <!-- ROW 1: IOC TYPE & VALUE -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Indicator Type *</label>
+                        <select id="form-ioc-type" required onchange="handleTypeChange()" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-2.5 focus:outline-none focus:border-sky-500 text-xs font-semibold">
+                            <option value="IPv4">🌐 IP Address (IPv4)</option>
+                            <option value="Domain">🔗 Domain Name</option>
+                            <option value="URL">🌐 Malicious URL</option>
+                            <option value="SHA256">🔑 File Hash (SHA256)</option>
+                            <option value="MD5">🔑 File Hash (MD5)</option>
+                            <option value="Email">✉️ Sender Email</option>
+                            <option value="Threat Actor">👤 Threat Actor / APT</option>
+                            <option value="Malware Family">☣️ Malware Family</option>
+                        </select>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Indicator Value / Name *</label>
+                        <input type="text" id="form-ioc-value" required placeholder="e.g. 193.42.110.14 or APT29" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-2.5 focus:outline-none focus:border-sky-500 text-xs code-font">
+                    </div>
+                </div>
+
+                <!-- ROW 2: THREAT CATEGORY, THREAT ACTOR, MALWARE FAMILY -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Threat Category *</label>
+                        <select id="form-category" required class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-2.5 focus:outline-none focus:border-sky-500 text-xs">
+                            <option value="Phishing">Phishing Campaign</option>
+                            <option value="Command & Control">Command & Control (C2)</option>
+                            <option value="Ransomware">Ransomware</option>
+                            <option value="Credential Harvesting">Credential Harvesting</option>
+                            <option value="Exploit Kit">Exploit Kit</option>
+                            <option value="Botnet">Botnet Infrastructure</option>
+                            <option value="Initial Access">Initial Access Vector</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Attributed Threat Actor</label>
+                        <input type="text" id="form-actor" placeholder="e.g. Cozy Bear / Fancy Bear / Unknown" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-2.5 focus:outline-none focus:border-sky-500 text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Malware Family / Tool</label>
+                        <input type="text" id="form-malware" placeholder="e.g. Cobalt Strike, QakBot, LockBit" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-2.5 focus:outline-none focus:border-sky-500 text-xs">
+                    </div>
+                </div>
+
+                <!-- ROW 3: SEVERITY, CONFIDENCE SCORE & TLP LEVEL -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Threat Severity *</label>
+                        <select id="form-severity" required class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-2.5 focus:outline-none focus:border-sky-500 text-xs font-semibold">
+                            <option value="CRITICAL">🔴 Critical</option>
+                            <option value="HIGH">🟠 High</option>
+                            <option value="MEDIUM" selected>🟡 Medium</option>
+                            <option value="LOW">🟢 Low</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold text-slate-300 mb-1.5">
+                            <span>Confidence Level</span>
+                            <span id="confidence-val" class="text-sky-400">85%</span>
+                        </div>
+                        <input type="range" id="form-confidence" min="10" max="100" value="85" oninput="document.getElementById('confidence-val').innerText = this.value + '%'" class="w-full accent-sky-500 bg-slate-950 h-2 rounded-lg cursor-pointer">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">TLP Protocol Marking *</label>
+                        <select id="form-tlp" required class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-2.5 focus:outline-none focus:border-sky-500 text-xs font-bold">
+                            <option value="TLP:AMBER" class="text-amber-400" selected>🟡 TLP:AMBER (Restricted)</option>
+                            <option value="TLP:RED" class="text-rose-400">🔴 TLP:RED (Strictly Confidential)</option>
+                            <option value="TLP:GREEN" class="text-emerald-400">🟢 TLP:GREEN (Community)</option>
+                            <option value="TLP:CLEAR" class="text-slate-300">⚪ TLP:CLEAR (Public)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ROW 4: TARGET SECTORS & DESCRIPTION -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Targeted Industry Sector</label>
+                        <select id="form-target-sector" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-2.5 focus:outline-none focus:border-sky-500 text-xs">
+                            <option value="Financial & Banking">Financial & Banking</option>
+                            <option value="Healthcare & Pharma">Healthcare & Pharma</option>
+                            <option value="Critical Infrastructure">Critical Infrastructure & Energy</option>
+                            <option value="Defense & Government">Defense & Government</option>
+                            <option value="Technology & Telecom">Technology & Telecom</option>
+                            <option value="Cross-Sector / Multiple">Cross-Sector / Multiple</option>
+                        </select>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">Analyst Context / Notes</label>
+                        <input type="text" id="form-description" placeholder="Brief technical summary or context regarding observed activity..." class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-2.5 focus:outline-none focus:border-sky-500 text-xs">
+                    </div>
+                </div>
+
+                <!-- SUBMIT BUTTON -->
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center space-x-2">
+                        <span>💾 Save & Publish Threat Intelligence Record</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- RIGHT 5 COLS: MITRE ATT&CK TECHNIQUE SELECTOR MATRIX -->
+            <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4">
+                <div>
+                    <div class="border-b border-slate-800 pb-3 flex justify-between items-center mb-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <span>🎯</span> MITRE ATT&CK® Mapping
+                        </h3>
+                        <span class="text-xs text-sky-400 font-semibold" id="mitre-selected-count">0 Selected</span>
+                    </div>
+
+                    <p class="text-xs text-slate-400 mb-3">Select tactics & techniques associated with this threat intelligence submission:</p>
+
+                    <!-- SEARCH & QUICK FILTER FOR MITRE TECHNIQUES -->
+                    <input type="text" id="mitre-search" oninput="filterMitreTechniques()" placeholder="Search Tactic or Technique (e.g. T1566, Phishing, Scripting)..." class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-2 mb-3 focus:outline-none focus:border-sky-500 text-xs">
+
+                    <!-- MITRE ATT&CK TAG SELECTION GRID -->
+                    <div id="mitre-matrix-container" class="max-h-80 overflow-y-auto space-y-2 pr-1">
+                        <!-- Dynamic Mitre Cards -->
+                    </div>
+                </div>
+
+                <!-- SELECTED MITRE SUMMARY BOX -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs">
+                    <span class="text-slate-400 font-medium block mb-1">Mapped Techniques JSON Tag:</span>
+                    <div id="mitre-active-tags" class="flex flex-wrap gap-1.5 code-font text-[11px] text-sky-300">
+                        <span class="text-slate-600 italic">None selected yet...</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- BOTTOM SECTION: LIVE THREAT FEED TABLE & MANAGEMENT CONTROLS -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <span>📡</span> Active Threat Intelligence Feed
+                    </h3>
+                    <p class="text-xs text-slate-400">Recently verified IOCs, threat campaigns, and telemetry markers</p>
+                </div>
+
+                <!-- SEARCH & FILTER TOOLBAR -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <input type="text" id="table-search" oninput="applyTableFilters()" placeholder="Search IOC, Actor, Category..." class="bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-sky-500 w-48 lg:w-64">
+                    
+                    <select id="table-filter-type" onchange="applyTableFilters()" class="bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-sky-500">
+                        <option value="ALL">All Types</option>
+                        <option value="IPv4">IP Address</option>
+                        <option value="Domain">Domain</option>
+                        <option value="URL">URL</option>
+                        <option value="SHA256">SHA256 Hash</option>
+                        <option value="Threat Actor">Threat Actor</option>
+                    </select>
+
+                    <select id="table-filter-severity" onchange="applyTableFilters()" class="bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-sky-500">
+                        <option value="ALL">All Severities</option>
+                        <option value="CRITICAL">Critical</option>
+                        <option value="HIGH">High</option>
+                        <option value="MEDIUM">Medium</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- TABLE CONTAINER -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-300">
+                    <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-slate-800">
+                        <tr>
+                            <th class="py-3 px-4">Indicator / Value</th>
+                            <th class="py-3 px-4">Type</th>
+                            <th class="py-3 px-4">Category</th>
+                            <th class="py-3 px-4">Severity / Score</th>
+                            <th class="py-3 px-4">Threat Actor & Malware</th>
+                            <th class="py-3 px-4">TLP</th>
+                            <th class="py-3 px-4">MITRE ATT&CK</th>
+                            <th class="py-3 px-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="intel-table-body" class="divide-y divide-slate-800/60 code-font">
+                        <!-- Dynamic Threat Intel Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- STIX 2.1 JSON PREVIEW MODAL -->
+    <div id="stix-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-3xl w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <span>📦</span> STIX 2.1 JSON Bundle Viewer
+                </h3>
+                <button onclick="closeStixModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+            </div>
+            
+            <pre id="stix-json-code" class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs text-sky-400 code-font max-h-96 overflow-y-auto whitespace-pre-wrap"></pre>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="copyStixJson()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold">Copy JSON</button>
+                <button onclick="downloadStixJson()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-bold">Download .stix.json</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIEM / FIREWALL BLOCKLIST EXPORT MODAL -->
+    <div id="siem-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <span>🔥</span> Firewall & SIEM Export Format
+                </h3>
+                <button onclick="closeSiemModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+            </div>
+
+            <div class="space-y-3">
+                <label class="block text-xs font-bold text-slate-300">Select Blocklist Target Engine:</label>
+                <select id="siem-format-select" onchange="generateSiemBlocklist()" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-2.5 text-xs font-semibold">
+                    <option value="IP_RAW">Raw IP Line-Separated Blocklist (Firewall / Proxy)</option>
+                    <option value="DOMAIN_RAW">Raw Domain List (DNS Sinkhole)</option>
+                    <option value="SPLUNK">Splunk Search Query (eval / lookup)</option>
+                    <option value="SURICATA">Suricata Network IDS Rules</option>
+                </select>
+
+                <textarea id="siem-export-text" rows="8" readonly class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-emerald-400 code-font focus:outline-none"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="copySiemExport()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 border border-sky-500/40 text-slate-100 px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 z-50">
+        <span id="toast-icon" class="text-xl">✅</span>
+        <div>
+            <div id="toast-title" class="font-bold text-xs text-white">Action Complete</div>
+            <div id="toast-message" class="text-[11px] text-slate-300">Threat intelligence feed updated.</div>
+        </div>
+    </div>
+
+    <script>
+        // MITRE ATT&CK DICTIONARY
+        const mitreTechniquesList = [
+            { id: "T1566", name: "Phishing", tactic: "Initial Access" },
+            { id: "T1190", name: "Exploit Public-Facing Application", tactic: "Initial Access" },
+            { id: "T1059", name: "Command and Scripting Interpreter", tactic: "Execution" },
+            { id: "T1053", name: "Scheduled Task/Job", tactic: "Persistence" },
+            { id: "T1078", name: "Valid Accounts", tactic: "Defense Evasion" },
+            { id: "T1003", name: "OS Credential Dumping", tactic: "Credential Access" },
+            { id: "T1071", name: "Application Layer Protocol (C2)", tactic: "Command and Control" },
+            { id: "T1573", name: "Encrypted Channel", tactic: "Command and Control" },
+            { id: "T1486", name: "Data Encrypted for Impact (Ransomware)", tactic: "Impact" },
+            { id: "T1041", name: "Exfiltration Over C2 Channel", tactic: "Exfiltration" }
+        ];
+
+        // INITIAL MOCK THREAT INTELLIGENCE DATABASE
+        let threatDatabase = [
+            {
+                id: "IOC-8801",
+                value: "185.220.101.5",
+                type: "IPv4",
+                category: "Command & Control",
+                severity: "CRITICAL",
+                confidence: 95,
+                actor: "APT29 (Cozy Bear)",
+                malware: "Cobalt Strike",
+                tlp: "TLP:AMBER",
+                sector: "Financial & Banking",
+                description: "Primary C2 beacon IP associated with spear-phishing campaign",
+                mitre: ["T1071", "T1573"],
+                timestamp: "2026-09-20 12:40"
+            },
+            {
+                id: "IOC-8802",
+                value: "m365-security-update-verify.net",
+                type: "Domain",
+                category: "Phishing",
+                severity: "HIGH",
+                confidence: 90,
+                actor: "FIN7",
+                malware: "QakBot",
+                tlp: "TLP:RED",
+                sector: "Healthcare & Pharma",
+                description: "Zero-hour credential harvest landing page",
+                mitre: ["T1566"],
+                timestamp: "2026-09-20 11:15"
+            },
+            {
+                id: "IOC-8803",
+                value: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                type: "SHA256",
+                category: "Ransomware",
+                severity: "CRITICAL",
+                confidence: 98,
+                actor: "LockBit Supporter",
+                malware: "LockBit 3.0",
+                tlp: "TLP:AMBER",
+                sector: "Critical Infrastructure",
+                description: "Encrypted payload dropper binary hash",
+                mitre: ["T1486", "T1059"],
+                timestamp: "2026-09-20 09:30"
+            }
+        ];
+
+        let selectedMitreIds = ["T1071"];
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            renderMitreMatrix();
+            renderTableRows(threatDatabase);
+            updateMetrics();
+        });
+
+        // RENDER MITRE MATRIX LIST
+        function renderMitreMatrix(filter = "") {
+            const container = document.getElementById('mitre-matrix-container');
+            container.innerHTML = "";
+
+            const filtered = mitreTechniquesList.filter(item => 
+                item.id.toLowerCase().includes(filter.toLowerCase()) || 
+                item.name.toLowerCase().includes(filter.toLowerCase()) ||
+                item.tactic.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            filtered.forEach(item => {
+                const isSelected = selectedMitreIds.includes(item.id);
+                const card = document.createElement('div');
+                card.className = `p-2.5 rounded-xl border cursor-pointer transition flex items-center justify-between text-xs ${
+                    isSelected ? 'bg-sky-950/80 border-sky-500 text-sky-200' : 'bg-slate-950 border-slate-800 hover:border-slate-700 text-slate-300'
+                }`;
+                card.onclick = () => toggleMitreTechnique(item.id);
+
+                card.innerHTML = `
+                    <div class="space-y-0.5">
+                        <div class="font-bold flex items-center gap-1.5">
+                            <span class="code-font text-sky-400 font-bold">${item.id}</span>
+                            <span>- ${item.name}</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400">Tactic: ${item.tactic}</div>
+                    </div>
+                    <span class="text-sm">${isSelected ? '✅' : '➕'}</span>
+                `;
+                container.appendChild(card);
+            });
+
+            updateMitreTagsDisplay();
+        }
+
+        function toggleMitreTechnique(id) {
+            if (selectedMitreIds.includes(id)) {
+                selectedMitreIds = selectedMitreIds.filter(i => i !== id);
+            } else {
+                selectedMitreIds.push(id);
+            }
+            renderMitreMatrix(document.getElementById('mitre-search').value);
+        }
+
+        function filterMitreTechniques() {
+            const query = document.getElementById('mitre-search').value;
+            renderMitreMatrix(query);
+        }
+
+        function updateMitreTagsDisplay() {
+            const container = document.getElementById('mitre-active-tags');
+            document.getElementById('mitre-selected-count').innerText = `${selectedMitreIds.length} Selected`;
+
+            if (selectedMitreIds.length === 0) {
+                container.innerHTML = `<span class="text-slate-600 italic">None selected yet...</span>`;
+                return;
+            }
+
+            container.innerHTML = selectedMitreIds.map(id => `
+                <span class="bg-sky-500/20 text-sky-300 border border-sky-500/30 px-2 py-0.5 rounded-md flex items-center gap-1">
+                    ${id}
+                    <button onclick="toggleMitreTechnique('${id}')" class="text-xs hover:text-rose-400">✕</button>
+                </span>
+            `).join('');
+        }
+
+        // PARSE RAW OSINT UNSTRUCTURED TEXT
+        function parseOsintText() {
+            const text = document.getElementById('raw-osint-input').value;
+            if (!text.trim()) {
+                showToast("⚠️ Parser Input Empty", "Paste raw text or email headers first.");
+                return;
+            }
+
+            // REGEX PATTERNS FOR EXTRACTION
+            const ipv4Regex = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/g;
+            const domainRegex = /\b(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}\b/g;
+            const sha256Regex = /\b[A-Fa-f0-9]{64}\b/g;
+            const md5Regex = /\b[A-Fa-f0-9]{32}\b/g;
+
+            const ips = [...new Set(text.match(ipv4Regex) || [])];
+            const sha256s = [...new Set(text.match(sha256Regex) || [])];
+            const domains = [...new Set(text.match(domainRegex) || [])].filter(d => !ips.includes(d));
+
+            const totalFound = ips.length + sha256s.length + domains.length;
+
+            const summaryBox = document.getElementById('extracted-summary');
+            const tagsBox = document.getElementById('extracted-tags');
+            summaryBox.classList.remove('hidden');
+
+            document.getElementById('extracted-count-total').innerText = `${totalFound} IOCs Discovered`;
+            tagsBox.innerHTML = "";
+
+            // AUTO-FILL FIRST FOUND IOC INTO FORM FOR EASY ENTRY
+            if (ips.length > 0) {
+                document.getElementById('form-ioc-type').value = "IPv4";
+                document.getElementById('form-ioc-value').value = ips[0];
+            } else if (sha256s.length > 0) {
+                document.getElementById('form-ioc-type').value = "SHA256";
+                document.getElementById('form-ioc-value').value = sha256s[0];
+            } else if (domains.length > 0) {
+                document.getElementById('form-ioc-type').value = "Domain";
+                document.getElementById('form-ioc-value').value = domains[0];
+            }
+
+            ips.forEach(ip => {
+                tagsBox.innerHTML += `<span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded">IP: ${ip}</span>`;
+            });
+            sha256s.forEach(hash => {
+                tagsBox.innerHTML += `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded">Hash: ${hash.substring(0,8)}...</span>`;
+            });
+            domains.forEach(dom => {
+                tagsBox.innerHTML += `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded">Domain: ${dom}</span>`;
+            });
+
+            showToast("🪄 Extraction Complete", `Extracted ${totalFound} indicators from raw text.`);
+        }
+
+        function clearParserText() {
+            document.getElementById('raw-osint-input').value = "";
+            document.getElementById('extracted-summary').classList.add('hidden');
+        }
+
+        // FORM SUBMISSION HANDLER
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const type = document.getElementById('form-ioc-type').value;
+            const value = document.getElementById('form-ioc-value').value.trim();
+            const category = document.getElementById('form-category').value;
+            const actor = document.getElementById('form-actor').value.trim() || "Unattributed";
+            const malware = document.getElementById('form-malware').value.trim() || "Generic";
+            const severity = document.getElementById('form-severity').value;
+            const confidence = parseInt(document.getElementById('form-confidence').value);
+            const tlp = document.getElementById('form-tlp').value;
+            const sector = document.getElementById('form-target-sector').value;
+            const description = document.getElementById('form-description').value.trim();
+
+            const newRecord = {
+                id: `IOC-${Math.floor(1000 + Math.random() * 9000)}`,
+                value,
+                type,
+                category,
+                severity,
+                confidence,
+                actor,
+                malware,
+                tlp,
+                sector,
+                description,
+                mitre: [...selectedMitreIds],
+                timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16)
+            };
+
+            threatDatabase.unshift(newRecord);
+            renderTableRows(threatDatabase);
+            updateMetrics();
+
+            // Reset form
+            document.getElementById('form-ioc-value').value = "";
+            document.getElementById('form-description').value = "";
+
+            showToast("💾 Threat Record Published", `Indicator ${newRecord.id} successfully saved to intelligence repository.`);
+        }
+
+        // RENDER TABLE ROWS
+        function renderTableRows(data) {
+            const tbody = document.getElementById('intel-table-body');
+            tbody.innerHTML = "";
+
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-8 text-slate-500 text-xs">
+                            No threat records match current search filter criteria.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            data.forEach(item => {
+                let sevClass = "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
+                if (item.severity === "CRITICAL") sevClass = "text-rose-400 bg-rose-500/20 border-rose-500/40 font-bold animate-pulse";
+                else if (item.severity === "HIGH") sevClass = "text-rose-400 bg-rose-500/10 border-rose-500/30";
+                else if (item.severity === "MEDIUM") sevClass = "text-amber-400 bg-amber-500/10 border-amber-500/30";
+
+                let tlpClass = "text-amber-400 border-amber-500/30";
+                if (item.tlp === "TLP:RED") tlpClass = "text-rose-400 border-rose-500/30";
+                else if (item.tlp === "TLP:GREEN") tlpClass = "text-emerald-400 border-emerald-500/30";
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-900/60 transition";
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-bold text-slate-100 flex items-center space-x-2">
+                        <span class="truncate max-w-xs text-sky-400">${item.value}</span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[11px]">${item.type}</span>
+                    </td>
+                    <td class="py-3 px-4 text-slate-300">${item.category}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-0.5 rounded border ${sevClass} text-[10px]">
+                            ${item.severity} (${item.confidence}%)
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-slate-300">
+                        <div class="text-xs font-semibold text-purple-300">${item.actor}</div>
+                        <div class="text-[10px] text-slate-400">${item.malware}</div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-0.5 rounded border ${tlpClass} text-[10px] font-bold">${item.tlp}</span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="flex flex-wrap gap-1">
+                            ${item.mitre.map(m => `<span class="bg-slate-800 text-sky-400 px-1.5 py-0.5 rounded text-[9px] font-mono">${m}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 text-right space-x-2">
+                        <button onclick="previewStixRecord('${item.id}')" class="text-sky-400 hover:text-sky-300 font-semibold text-xs">STIX</button>
+                        <button onclick="deleteRecord('${item.id}')" class="text-rose-400 hover:text-rose-300 text-xs">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // FILTER TABLE
+        function applyTableFilters() {
+            const search = document.getElementById('table-search').value.toLowerCase();
+            const typeFilter = document.getElementById('table-filter-type').value;
+            const sevFilter = document.getElementById('table-filter-severity').value;
+
+            const filtered = threatDatabase.filter(item => {
+                const matchesSearch = item.value.toLowerCase().includes(search) || 
+                                      item.actor.toLowerCase().includes(search) ||
+                                      item.category.toLowerCase().includes(search);
+                
+                const matchesType = (typeFilter === "ALL" || item.type === typeFilter);
+                const matchesSev = (sevFilter === "ALL" || item.severity === sevFilter);
+
+                return matchesSearch && matchesType && matchesSev;
+            });
+
+            renderTableRows(filtered);
+        }
+
+        // DELETE RECORD
+        function deleteRecord(id) {
+            threatDatabase = threatDatabase.filter(r => r.id !== id);
+            applyTableFilters();
+            updateMetrics();
+            showToast("🗑️ Record Deleted", `Removed record ${id}.`);
+        }
+
+        // METRICS UPDATE
+        function updateMetrics() {
+            document.getElementById('metric-total-iocs').innerText = threatDatabase.length;
+            const uniqueActors = new Set(threatDatabase.map(i => i.actor).filter(a => a !== "Unattributed"));
+            document.getElementById('metric-actors').innerText = uniqueActors.size;
+        }
+
+        // STIX 2.1 EXPORT MODAL & GENERATION
+        function exportStixPackage() {
+            const bundle = generateStixBundle(threatDatabase);
+            document.getElementById('stix-json-code').innerText = JSON.stringify(bundle, null, 2);
+            document.getElementById('stix-modal').classList.remove('hidden');
+        }
+
+        function previewStixRecord(id) {
+            const item = threatDatabase.find(r => r.id === id);
+            if (!item) return;
+            const bundle = generateStixBundle([item]);
+            document.getElementById('stix-json-code').innerText = JSON.stringify(bundle, null, 2);
+            document.getElementById('stix-modal').classList.remove('hidden');
+        }
+
+        function generateStixBundle(records) {
+            return {
+                type: "bundle",
+                id: `bundle--${crypto.randomUUID()}`,
+                spec_version: "2.1",
+                objects: records.map(r => ({
+                    type: "indicator",
+                    spec_version: "2.1",
+                    id: `indicator--${crypto.randomUUID()}`,
+                    created: new Date().toISOString(),
+                    modified: new Date().toISOString(),
+                    name: `${r.type} - ${r.value}`,
+                    description: r.description || `${r.category} indicator associated with ${r.actor}`,
+                    pattern: `[${r.type.toLowerCase()}:value = '${r.value}']`,
+                    pattern_type: "stix",
+                    valid_from: new Date().toISOString(),
+                    confidence: r.confidence,
+                    labels: [r.category.toLowerCase().replace(/\s+/g, '-'), r.severity.toLowerCase()],
+                    object_marking_refs: [r.tlp]
+                }))
+            };
+        }
+
+        function closeStixModal() {
+            document.getElementById('stix-modal').classList.add('hidden');
+        }
+
+        function copyStixJson() {
+            const code = document.getElementById('stix-json-code').innerText;
+            document.execCommand('copy');
+            showToast("📋 Copied STIX JSON", "JSON bundle copied to clipboard.");
+        }
+
+        function downloadStixJson() {
+            const code = document.getElementById('stix-json-code').innerText;
+            const blob = new Blob([code], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `threat_intel_stix2.1_${Date.now()}.json`;
+            a.click();
+            showToast("💾 STIX Downloaded", "JSON file saved locally.");
+        }
+
+        // SIEM / FIREWALL BLOCKLIST EXPORT MODAL
+        function openSiemModal() {
+            generateSiemBlocklist();
+            document.getElementById('siem-modal').classList.remove('hidden');
+        }
+
+        function closeSiemModal() {
+            document.getElementById('siem-modal').classList.add('hidden');
+        }
+
+        function generateSiemBlocklist() {
+            const fmt = document.getElementById('siem-format-select').value;
+            const textarea = document.getElementById('siem-export-text');
+
+            if (fmt === "IP_RAW") {
+                const ips = threatDatabase.filter(i => i.type === "IPv4").map(i => i.value);
+                textarea.value = ips.join('\n');
+            } else if (fmt === "DOMAIN_RAW") {
+                const doms = threatDatabase.filter(i => i.type === "Domain").map(i => i.value);
+                textarea.value = doms.join('\n');
+            } else if (fmt === "SPLUNK") {
+                const values = threatDatabase.map(i => `"${i.value}"`).join(', ');
+                textarea.value = `index=firewall OR index=proxy [search dest IN (${values})] | stats count by src, dest, action`;
+            } else if (fmt === "SURICATA") {
+                const rules = threatDatabase.filter(i => i.type === "IPv4").map((i, idx) => 
+                    `alert ip any any -> ${i.value} any (msg:"SOC Threat Intel Match: ${i.actor}"; sid:10000${idx + 1}; rev:1;)`
+                );
+                textarea.value = rules.join('\n');
+            }
+        }
+
+        function copySiemExport() {
+            const text = document.getElementById('siem-export-text').value;
+            document.execCommand('copy');
+            showToast("🔥 Blocklist Copied", "Export payload copied to clipboard.");
+        }
+
+        // TOAST SYSTEM
+        function showToast(title, message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-message').innerText = message;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

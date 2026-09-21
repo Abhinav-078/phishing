@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Generated Risk Score Engine - PhishShield</title>
+</head>
+<body style="margin: 0; padding: 40px 20px; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; justify-content: center; align-items: center; box-sizing: border-box;">
+
+    <!-- MAIN ENGINE CONTAINER -->
+    <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 16px; width: 100%; max-width: 800px; padding: 32px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5); box-sizing: border-box;">
+        
+        <!-- HEADER SECTION -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                    <span style="background-color: #0284c7; color: #ffffff; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px;">AI v4.2</span>
+                    <h1 style="margin: 0; font-size: 22px; color: #ffffff; font-weight: 700;">AI Risk Score Engine</h1>
+                </div>
+                <p style="margin: 0; font-size: 13px; color: #94a3b8;">Multi-vector heuristic & behavioral threat assessment engine.</p>
+            </div>
+            <div style="text-align: right; background-color: #0f172a; padding: 8px 14px; border-radius: 8px; border: 1px solid #334155;">
+                <div style="font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Engine Status</div>
+                <div style="font-size: 12px; color: #10b981; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background-color: #10b981; border-radius: 50%;"></span>
+                    Model Loaded & Ready
+                </div>
+            </div>
+        </div>
+
+        <!-- TARGET INPUT SECTION -->
+        <form onsubmit="calculateRiskScore(event)" style="margin-bottom: 24px;">
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px;">
+                Enter Security Vector Target (URL, IP, Email Payload, APK Name, or Phone)
+            </label>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <select id="target-type" style="background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; padding: 12px 14px; font-size: 13px; outline: none; flex: 1; min-width: 140px; font-family: inherit; cursor: pointer;">
+                    <option value="URL">🌐 URL / Domain</option>
+                    <option value="IP">🖥️ IP Address</option>
+                    <option value="Email">✉️ Email Content</option>
+                    <option value="APK">📱 App / APK Package</option>
+                    <option value="Phone">📞 Phone Number</option>
+                </select>
+                <input type="text" id="target-input" placeholder="e.g. http://secure-login-bank.verify-acc.net" required style="background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; padding: 12px 16px; font-size: 13px; outline: none; flex: 3; min-width: 260px; font-family: inherit;">
+                <button type="submit" id="analyze-btn" style="background-color: #0284c7; color: #ffffff; border: none; border-radius: 8px; padding: 12px 24px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap; transition: background-color 0.2s;">
+                    <span>⚡</span> Generate Risk Score
+                </button>
+            </div>
+            
+            <!-- QUICK PRESET SAMPLES -->
+            <div style="display: flex; gap: 8px; margin-top: 12px; align-items: center; flex-wrap: wrap;">
+                <span style="font-size: 11px; color: #64748b;">Try Sample:</span>
+                <button type="button" onclick="loadSample('http://secure-login-update.com/verify', 'URL')" style="background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 11px; padding: 4px 10px; border-radius: 20px; cursor: pointer;">High Risk URL</button>
+                <button type="button" onclick="loadSample('+1 (800) 555-0199', 'Phone')" style="background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 11px; padding: 4px 10px; border-radius: 20px; cursor: pointer;">Suspicious Phone</button>
+                <button type="button" onclick="loadSample('https://github.com', 'URL')" style="background-color: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; padding: 4px 10px; border-radius: 20px; cursor: pointer;">Safe Domain</button>
+            </div>
+        </form>
+
+        <!-- ANIMATED LOADING STATE -->
+        <div id="loading-state" style="display: none; background-color: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 30px; text-align: center; margin-top: 20px;">
+            <div style="display: inline-block; width: 36px; height: 36px; border: 3px solid rgba(56, 189, 248, 0.2); border-radius: 50%; border-top-color: #38bdf8; animation: spin 0.8s linear infinite;"></div>
+            <div id="loading-text" style="font-size: 14px; font-weight: 600; color: #f8fafc; margin-top: 12px;">Initializing Neural Model...</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Evaluating heuristic markers, domain age, SSL telemetry, and threat feeds.</div>
+        </div>
+
+        <style>
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+
+        <!-- RESULTS PANEL CONTAINER -->
+        <div id="results-panel" style="display: none; flex-direction: column; gap: 20px; margin-top: 20px;">
+            
+            <!-- TOP METRICS (GAUGE & CONFIDENCE) -->
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                
+                <!-- SCORE GAUGE CARD -->
+                <div style="background-color: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 20px; flex: 2; min-width: 280px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase;">Calculated Risk Score</span>
+                        <span id="risk-badge" style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase;">--</span>
+                    </div>
+
+                    <!-- SCORE NUMBER DISPLAY -->
+                    <div style="display: flex; align-items: baseline; gap: 8px; margin: 16px 0;">
+                        <span id="score-display" style="font-size: 48px; font-weight: 800; color: #ffffff; line-height: 1;">0</span>
+                        <span style="font-size: 18px; color: #64748b; font-weight: 600;">/ 100</span>
+                    </div>
+
+                    <!-- PROGRESS METER BAR -->
+                    <div>
+                        <div style="width: 100%; height: 10px; background-color: #1e293b; border-radius: 10px; overflow: hidden; border: 1px solid #334155;">
+                            <div id="meter-fill" style="width: 0%; height: 100%; background-color: #10b981; transition: width 1s ease-out, background-color 0.5s ease;"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-top: 6px; font-weight: 600;">
+                            <span>0 (SAFE)</span>
+                            <span>40</span>
+                            <span>70</span>
+                            <span>100 (CRITICAL)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI CONFIDENCE CARD -->
+                <div style="background-color: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 20px; flex: 1; min-width: 220px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase;">AI Model Confidence</div>
+                        <div id="confidence-val" style="font-size: 28px; font-weight: 700; color: #38bdf8; margin: 12px 0 4px 0;">98.2%</div>
+                        <div style="font-size: 11px; color: #64748b;">Based on 142 cross-referenced security telemetry features.</div>
+                    </div>
+
+                    <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #1e293b;">
+                        <div style="font-size: 11px; color: #cbd5e1; font-weight: 600;">Primary Classifier:</div>
+                        <div id="classifier-tag" style="font-size: 12px; color: #38bdf8; font-weight: 600; margin-top: 2px;">PhishDetect Neural Net</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RISK FACTOR BREAKDOWN TABLE -->
+            <div style="background-color: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 20px;">
+                <div style="font-size: 13px; font-weight: 700; color: #ffffff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                    <span>📊</span> Heuristic & Threat Factor Analysis
+                </div>
+                
+                <div id="factors-list" style="display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Dynamically Injected Factors -->
+                </div>
+            </div>
+
+            <!-- ACTION RECOMMENDATION BOX -->
+            <div id="recommendation-box" style="padding: 16px; border-radius: 10px; border: 1px solid #334155; background-color: #0f172a; display: flex; align-items: center; gap: 14px;">
+                <div id="recommendation-icon" style="font-size: 24px;">🛡️</div>
+                <div>
+                    <div id="recommendation-title" style="font-size: 14px; font-weight: 700; color: #ffffff;">Action Required</div>
+                    <div id="recommendation-desc" style="font-size: 12px; color: #cbd5e1; margin-top: 2px;">--</div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+    <script>
+        function loadSample(target, type) {
+            document.getElementById('target-input').value = target;
+            document.getElementById('target-type').value = type;
+        }
+
+        function calculateRiskScore(e) {
+            e.preventDefault();
+
+            const target = document.getElementById('target-input').value.trim();
+            const type = document.getElementById('target-type').value;
+
+            if (!target) return;
+
+            // UI Elements
+            const loadingState = document.getElementById('loading-state');
+            const resultsPanel = document.getElementById('results-panel');
+            const loadingText = document.getElementById('loading-text');
+
+            // Reset View
+            resultsPanel.style.display = 'none';
+            loadingState.style.display = 'block';
+
+            // Animated status updates
+            const stages = [
+                "Parsing target payload structure...",
+                "Querying Global Blacklist & Threat Feeds...",
+                "Running Natural Language Anomaly Heuristics...",
+                "Calculating Risk Score Weights..."
+            ];
+
+            let stageIdx = 0;
+            const interval = setInterval(() => {
+                stageIdx++;
+                if (stageIdx < stages.length) {
+                    loadingText.innerText = stages[stageIdx];
+                }
+            }, 350);
+
+            // Complete simulation after 1.6 seconds
+            setTimeout(() => {
+                clearInterval(interval);
+                loadingState.style.display = 'none';
+                resultsPanel.style.display = 'flex';
+
+                // Determine Score based on target keywords or generated fallback
+                let score = 15; // Safe default
+
+                const lowerTarget = target.toLowerCase();
+                if (lowerTarget.includes('verify') || lowerTarget.includes('login') || lowerTarget.includes('bank') || lowerTarget.includes('update') || lowerTarget.includes('passcode')) {
+                    score = 88; // Suspicious keyword match
+                } else if (lowerTarget.includes('+1 (800)') || lowerTarget.includes('apk')) {
+                    score = 62;
+                } else if (lowerTarget.includes('github') || lowerTarget.includes('google') || lowerTarget.includes('microsoft')) {
+                    score = 8;
+                } else {
+                    // Random dynamic score for demo
+                    score = Math.floor(Math.random() * 85) + 10;
+                }
+
+                renderResults(target, type, score);
+            }, 1600);
+        }
+
+        function renderResults(target, type, score) {
+            const scoreDisplay = document.getElementById('score-display');
+            const meterFill = document.getElementById('meter-fill');
+            const riskBadge = document.getElementById('risk-badge');
+            const confidenceVal = document.getElementById('confidence-val');
+            const factorsList = document.getElementById('factors-list');
+            const recBox = document.getElementById('recommendation-box');
+            const recIcon = document.getElementById('recommendation-icon');
+            const recTitle = document.getElementById('recommendation-title');
+            const recDesc = document.getElementById('recommendation-desc');
+
+            // Counter Animation for Score
+            let current = 0;
+            scoreDisplay.innerText = "0";
+            const counter = setInterval(() => {
+                if (current >= score) {
+                    clearInterval(counter);
+                    scoreDisplay.innerText = score;
+                } else {
+                    current++;
+                    scoreDisplay.innerText = current;
+                }
+            }, 15);
+
+            // Meter Fill Width & Styling
+            meterFill.style.width = score + '%';
+
+            let themeColor = '#10b981'; // Green (Safe)
+            let riskLevel = 'SAFE / LOW RISK';
+            let badgeBg = 'rgba(16, 185, 129, 0.15)';
+            let badgeText = '#34d399';
+
+            if (score > 40 && score <= 70) {
+                themeColor = '#f59e0b'; // Yellow (Suspicious)
+                riskLevel = 'SUSPICIOUS';
+                badgeBg = 'rgba(245, 158, 11, 0.15)';
+                badgeText = '#fbbf24';
+            } else if (score > 70) {
+                themeColor = '#ef4444'; // Red (Critical)
+                riskLevel = 'CRITICAL THREAT';
+                badgeBg = 'rgba(239, 68, 68, 0.15)';
+                badgeText = '#f87171';
+            }
+
+            meterFill.style.backgroundColor = themeColor;
+            riskBadge.style.backgroundColor = badgeBg;
+            riskBadge.style.color = badgeText;
+            riskBadge.innerText = riskLevel;
+
+            // Random Confidence Rating
+            const confidence = (91 + Math.random() * 8.5).toFixed(1);
+            confidenceVal.innerText = confidence + '%';
+
+            // Generate Factors List
+            factorsList.innerHTML = '';
+            const factors = getFactorsForScore(type, score);
+
+            factors.forEach(f => {
+                const item = document.createElement('div');
+                item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; background-color: #1e293b; border-radius: 8px; font-size: 12px; border-left: 3px solid ' + f.color + ';';
+                item.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span>${f.icon}</span>
+                        <span style="color: #cbd5e1; font-weight: 500;">${f.name}</span>
+                    </div>
+                    <span style="color: ${f.color}; font-weight: 700;">${f.impact}</span>
+                `;
+                factorsList.appendChild(item);
+            });
+
+            // Action Recommendations
+            if (score > 70) {
+                recBox.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                recBox.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                recIcon.innerText = '🚨';
+                recTitle.innerText = 'High Risk Detected - Block & Quarantine';
+                recDesc.innerText = 'This vector exhibits strong malicious indicators. Immediately flag, isolate, and block access across the perimeter.';
+            } else if (score > 40) {
+                recBox.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
+                recBox.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+                recIcon.innerText = '⚠️';
+                recTitle.innerText = 'Proceed With Caution - Step-Up Verification';
+                recDesc.innerText = 'Suspicious heuristic anomalies found. Require secondary analyst review or user authentication before interaction.';
+            } else {
+                recBox.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                recBox.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                recIcon.innerText = '✅';
+                recTitle.innerText = 'Safe Target - No Threat Identified';
+                recDesc.innerText = 'Vector passed all heuristic models, domain age checks, and threat intel databases with minimal risk markers.';
+            }
+        }
+
+        function getFactorsForScore(type, score) {
+            if (score > 70) {
+                return [
+                    { icon: '🌐', name: 'Domain Registration Age (< 14 Days)', impact: '+35 Risk', color: '#f87171' },
+                    { icon: '🔒', name: 'SSL Certificate Anomaly / Misconfigured CA', impact: '+25 Risk', color: '#f87171' },
+                    { icon: '🔤', name: 'Brand Impersonation Keywords Detected', impact: '+20 Risk', color: '#f87171' },
+                    { icon: '🛡️', name: 'Flagged in Community Threat Database', impact: '+18 Risk', color: '#fbbf24' }
+                ];
+            } else if (score > 40) {
+                return [
+                    { icon: '✉️', name: 'Unverified Origin / SPF Alignment Failure', impact: '+22 Risk', color: '#fbbf24' },
+                    { icon: '📊', name: 'Unusual Traffic / Spike In Subdomains', impact: '+18 Risk', color: '#fbbf24' },
+                    { icon: '🔍', name: 'Recent WHOIS Contact Privacy Shielding', impact: '+12 Risk', color: '#34d399' }
+                ];
+            } else {
+                return [
+                    { icon: '📜', name: 'Established Domain Reputation (> 5 Years)', impact: '-30 Risk (Safe)', color: '#34d399' },
+                    { icon: '🔒', name: 'Valid Enterprise Extended Validation SSL', impact: '-25 Risk (Safe)', color: '#34d399' },
+                    { icon: '🛡️', name: 'Clean Threat Intelligence Telemetry', impact: '-20 Risk (Safe)', color: '#34d399' }
+                ];
+            }
+        }
+    </script>
+</body>
+</html>

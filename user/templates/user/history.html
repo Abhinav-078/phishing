@@ -1,0 +1,195 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection History - PhishShield LMS</title>
+</head>
+<body style="margin: 0; padding: 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; box-sizing: border-box;">
+
+    <!-- MAIN CONTAINER -->
+    <div style="width: 100%; max-width: 1050px; background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 28px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);">
+
+        <!-- PAGE HEADER -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 24px; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h1 style="margin: 0; font-size: 22px; color: #ffffff; display: flex; align-items: center; gap: 10px;">
+                    📜 Previous Detection History
+                </h1>
+                <p style="margin: 6px 0 0 0; font-size: 13px; color: #94a3b8;">
+                    Audit log of scanned vectors, AI threat assessments, and automated detection actions for target user.
+                </p>
+            </div>
+
+            <!-- USER INFO CARD -->
+            <div style="display: flex; align-items: center; gap: 12px; background-color: #0f172a; border: 1px solid #334155; padding: 8px 14px; border-radius: 8px;">
+                <div style="width: 36px; height: 36px; background-color: #0284c7; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">
+                    JD
+                </div>
+                <div>
+                    <div style="font-size: 13px; font-weight: 700; color: #f8fafc;">John Doe</div>
+                    <div style="font-size: 11px; color: #38bdf8;">john.doe@enterprise.com</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUMMARY METRICS -->
+        <div style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 180px; background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 16px;">
+                <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Total Vector Scans</div>
+                <div style="font-size: 24px; font-weight: 700; color: #ffffff; margin-top: 4px;">24</div>
+            </div>
+            <div style="flex: 1; min-width: 180px; background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 16px;">
+                <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Threats Blocked</div>
+                <div style="font-size: 24px; font-weight: 700; color: #ef4444; margin-top: 4px;">8</div>
+            </div>
+            <div style="flex: 1; min-width: 180px; background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 16px;">
+                <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Suspicious Flagged</div>
+                <div style="font-size: 24px; font-weight: 700; color: #f59e0b; margin-top: 4px;">5</div>
+            </div>
+            <div style="flex: 1; min-width: 180px; background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 16px;">
+                <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Safe Clean Items</div>
+                <div style="font-size: 24px; font-weight: 700; color: #10b981; margin-top: 4px;">11</div>
+            </div>
+        </div>
+
+        <!-- SEARCH AND FILTER CONTROLS -->
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+            <input type="text" id="history-search" onkeyup="filterHistory()" placeholder="Search domain, URL, phone number, file name, or Scan ID..." style="flex: 2; min-width: 220px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #ffffff; outline: none;">
+            
+            <select id="type-filter" onchange="filterHistory()" style="flex: 1; min-width: 150px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #ffffff; outline: none;">
+                <option value="ALL">All Vector Types</option>
+                <option value="URL">URL / Domain</option>
+                <option value="EMAIL">Email Content</option>
+                <option value="FILE">File / APK Attachment</option>
+                <option value="PHONE">Phone / SMS</option>
+            </select>
+
+            <select id="verdict-filter" onchange="filterHistory()" style="flex: 1; min-width: 150px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #ffffff; outline: none;">
+                <option value="ALL">All Verdicts</option>
+                <option value="HIGH">High Risk (Malicious)</option>
+                <option value="MEDIUM">Medium Risk (Suspicious)</option>
+                <option value="LOW">Low Risk (Safe)</option>
+            </select>
+        </div>
+
+        <!-- HISTORY TABLE -->
+        <div style="overflow-x: auto; border: 1px solid #334155; border-radius: 8px;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; background-color: #0f172a;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #334155; color: #94a3b8; background-color: rgba(30, 41, 59, 0.7);">
+                        <th style="padding: 12px 16px;">Timestamp</th>
+                        <th style="padding: 12px 16px;">Scan ID</th>
+                        <th style="padding: 12px 16px;">Vector Type</th>
+                        <th style="padding: 12px 16px;">Target / Indicator</th>
+                        <th style="padding: 12px 16px;">AI Risk Score</th>
+                        <th style="padding: 12px 16px;">Verdict & Action</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body">
+
+                    <!-- RECORD 1 -->
+                    <tr class="history-row" data-type="URL" data-verdict="HIGH" data-search="scan-9901 update-bank-passcode.net url high risk blocked" style="border-bottom: 1px solid #1e293b;">
+                        <td style="padding: 12px 16px; color: #94a3b8; white-space: nowrap;">Sep 20, 2026 - 11:14 AM</td>
+                        <td style="padding: 12px 16px; font-weight: 600; color: #38bdf8;">#SCAN-9901</td>
+                        <td style="padding: 12px 16px;"><span style="background-color: #1e293b; color: #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px;">🌐 URL</span></td>
+                        <td style="padding: 12px 16px; color: #f8fafc; font-family: monospace;">http://update-bank-passcode.net</td>
+                        <td style="padding: 12px 16px; font-weight: 700; color: #ef4444;">92 / 100</td>
+                        <td style="padding: 12px 16px;">
+                            <span style="background-color: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600;">
+                                🛑 Malicious (Quarantined)
+                            </span>
+                        </td>
+                    </tr>
+
+                    <!-- RECORD 2 -->
+                    <tr class="history-row" data-type="FILE" data-verdict="HIGH" data-search="scan-9884 invoice_october.pdf.exe file malicious quarantined" style="border-bottom: 1px solid #1e293b;">
+                        <td style="padding: 12px 16px; color: #94a3b8; white-space: nowrap;">Sep 18, 2026 - 02:10 PM</td>
+                        <td style="padding: 12px 16px; font-weight: 600; color: #38bdf8;">#SCAN-9884</td>
+                        <td style="padding: 12px 16px;"><span style="background-color: #1e293b; color: #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px;">📁 File (EXE)</span></td>
+                        <td style="padding: 12px 16px; color: #f8fafc; font-family: monospace;">invoice_october.pdf.exe</td>
+                        <td style="padding: 12px 16px; font-weight: 700; color: #ef4444;">98 / 100</td>
+                        <td style="padding: 12px 16px;">
+                            <span style="background-color: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600;">
+                                🛑 Executable Malware
+                            </span>
+                        </td>
+                    </tr>
+
+                    <!-- RECORD 3 -->
+                    <tr class="history-row" data-type="PHONE" data-verdict="MEDIUM" data-search="scan-9762 +91 98230-xxxxx phone smishing warning" style="border-bottom: 1px solid #1e293b;">
+                        <td style="padding: 12px 16px; color: #94a3b8; white-space: nowrap;">Sep 15, 2026 - 09:42 AM</td>
+                        <td style="padding: 12px 16px; font-weight: 600; color: #38bdf8;">#SCAN-9762</td>
+                        <td style="padding: 12px 16px;"><span style="background-color: #1e293b; color: #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px;">📞 Phone / SMS</span></td>
+                        <td style="padding: 12px 16px; color: #f8fafc; font-family: monospace;">+91 98230-XXXXX</td>
+                        <td style="padding: 12px 16px; font-weight: 700; color: #f59e0b;">68 / 100</td>
+                        <td style="padding: 12px 16px;">
+                            <span style="background-color: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600;">
+                                ⚠️ Suspicious Sender
+                            </span>
+                        </td>
+                    </tr>
+
+                    <!-- RECORD 4 -->
+                    <tr class="history-row" data-type="EMAIL" data-verdict="LOW" data-search="scan-9610 internal-hr-portal.enterprise.com email safe clean" style="border-bottom: 1px solid #1e293b;">
+                        <td style="padding: 12px 16px; color: #94a3b8; white-space: nowrap;">Sep 10, 2026 - 04:15 PM</td>
+                        <td style="padding: 12px 16px; font-weight: 600; color: #38bdf8;">#SCAN-9610</td>
+                        <td style="padding: 12px 16px;"><span style="background-color: #1e293b; color: #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px;">✉️ Email</span></td>
+                        <td style="padding: 12px 16px; color: #f8fafc; font-family: monospace;">hr-announcement@enterprise.com</td>
+                        <td style="padding: 12px 16px; font-weight: 700; color: #10b981;">12 / 100</td>
+                        <td style="padding: 12px 16px;">
+                            <span style="background-color: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600;">
+                                ✅ Verified Legitimate
+                            </span>
+                        </td>
+                    </tr>
+
+                    <!-- RECORD 5 -->
+                    <tr class="history-row" data-type="URL" data-verdict="LOW" data-search="scan-9502 github.com/enterprise-dev url safe clean" style="border-bottom: 1px solid #1e293b;">
+                        <td style="padding: 12px 16px; color: #94a3b8; white-space: nowrap;">Sep 05, 2026 - 10:05 AM</td>
+                        <td style="padding: 12px 16px; font-weight: 600; color: #38bdf8;">#SCAN-9502</td>
+                        <td style="padding: 12px 16px;"><span style="background-color: #1e293b; color: #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px;">🌐 URL</span></td>
+                        <td style="padding: 12px 16px; color: #f8fafc; font-family: monospace;">https://github.com/enterprise-dev</td>
+                        <td style="padding: 12px 16px; font-weight: 700; color: #10b981;">05 / 100</td>
+                        <td style="padding: 12px 16px;">
+                            <span style="background-color: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600;">
+                                ✅ Clean URL
+                            </span>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        function filterHistory() {
+            const searchVal = document.getElementById('history-search').value.toLowerCase();
+            const typeVal = document.getElementById('type-filter').value;
+            const verdictVal = document.getElementById('verdict-filter').value;
+            const rows = document.querySelectorAll('.history-row');
+
+            rows.forEach(row => {
+                const rowType = row.getAttribute('data-type');
+                const rowVerdict = row.getAttribute('data-verdict');
+                const rowSearch = row.getAttribute('data-search').toLowerCase();
+
+                const matchesType = (typeVal === 'ALL' || rowType === typeVal);
+                const matchesVerdict = (verdictVal === 'ALL' || rowVerdict === verdictVal);
+                const matchesSearch = rowSearch.includes(searchVal);
+
+                if (matchesType && matchesVerdict && matchesSearch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
+```

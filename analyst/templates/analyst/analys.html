@@ -1,0 +1,537 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suspicious Vector Analysis Console | Threat Intel SOC</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --panel-bg: #1e293b;
+            --panel-border: #334155;
+            --accent-blue: #0284c7;
+            --accent-cyan: #38bdf8;
+            --accent-danger: #ef4444;
+            --accent-warning: #f59e0b;
+            --accent-success: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .title-area h1 {
+            margin: 0;
+            font-size: 22px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title-area p {
+            margin: 6px 0 0 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* VECTOR TAB SELECTOR */
+        .vector-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 12px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--panel-border);
+            color: var(--text-muted);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            border-color: var(--accent-cyan);
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-blue);
+            color: #ffffff;
+            border-color: var(--accent-blue);
+        }
+
+        /* SCANNER FORM AREA */
+        .scan-form {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        input[type="text"], input[type="tel"], textarea {
+            width: 100%;
+            background-color: #1e293b;
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 13px;
+            color: #ffffff;
+            outline: none;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+
+        .btn-submit {
+            background-color: var(--accent-blue);
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            background-color: #0369a1;
+        }
+
+        /* ANALYSIS RESULT PANEL */
+        .results-panel {
+            display: none;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 24px;
+            margin-top: 20px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--panel-border);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .risk-gauge {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .score-box {
+            font-size: 28px;
+            font-weight: 800;
+            padding: 8px 16px;
+            border-radius: 8px;
+            min-width: 90px;
+            text-align: center;
+        }
+
+        .score-high {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--accent-danger);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .score-medium {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--accent-warning);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .score-low {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--accent-success);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .data-card {
+            background-color: #1e293b;
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 13px;
+        }
+
+        .data-card h4 {
+            margin: 0 0 10px 0;
+            color: var(--accent-cyan);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            border-top: 1px solid var(--panel-border);
+            padding-top: 18px;
+        }
+
+        .btn-action {
+            background-color: #334155;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-action:hover {
+            background-color: #475569;
+        }
+
+        .btn-danger {
+            background-color: var(--accent-danger);
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        /* SCANNING ANIMATION SPINNER */
+        .spinner {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            font-size: 14px;
+            color: var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- CONSOLE HEADER -->
+        <div class="header">
+            <div class="title-area">
+                <h1>🔍 Suspicious Vector Analysis Console</h1>
+                <p>Inspect URLs, raw email headers/content, phone numbers, and application packages for threat indicators.</p>
+            </div>
+            <span class="status-badge">● Engine v4.8 Active</span>
+        </div>
+
+        <!-- VECTOR TYPE TAB SWITCHER -->
+        <div class="vector-tabs">
+            <button class="tab-btn active" onclick="switchTab('URL')">🌐 1. Suspicious URL</button>
+            <button class="tab-btn" onclick="switchTab('EMAIL')">✉️ 2. Suspicious Email</button>
+            <button class="tab-btn" onclick="switchTab('PHONE')">📞 3. Suspicious Phone / SMS</button>
+            <button class="tab-btn" onclick="switchTab('APP')">📱 4. Suspicious Application</button>
+        </div>
+
+        <!-- VECTOR SCANNER FORM -->
+        <div class="scan-form">
+
+            <!-- 1. URL SCAN FORM -->
+            <div id="form-URL" class="vector-form">
+                <div class="input-group">
+                    <label>Target URL / FQDN Domain</label>
+                    <input type="text" id="target-url" placeholder="https://secure-login-verify-account.net/login.php" value="http://update-bank-passcode.net">
+                </div>
+            </div>
+
+            <!-- 2. EMAIL SCAN FORM -->
+            <div id="form-EMAIL" class="vector-form" style="display: none;">
+                <div class="input-group">
+                    <label>Raw Email Headers or Body Content</label>
+                    <textarea id="target-email" rows="4" placeholder="Paste full email headers, subject line, or body message here...">From: IT Support <noreply@update-account-auth.org>
+Subject: Urgent: Verify Passkey Expiration within 2 hours
+Body: Click http://update-bank-passcode.net immediately to retain account access.</textarea>
+                </div>
+            </div>
+
+            <!-- 3. PHONE SCAN FORM -->
+            <div id="form-PHONE" class="vector-form" style="display: none;">
+                <div class="input-group">
+                    <label>Phone Number or Sender ID</label>
+                    <input type="tel" id="target-phone" placeholder="+1 (800) 000-0000 or SMS Shortcode" value="+91 98230-01928">
+                </div>
+                <div class="input-group">
+                    <label>SMS Content Text (Optional)</label>
+                    <input type="text" id="target-sms" placeholder="Paste incoming SMS text..." value="Dear user, your SIM card will be deactivated today. Complete e-KYC here: bit.ly/ekyc-verify">
+                </div>
+            </div>
+
+            <!-- 4. APPLICATION SCAN FORM -->
+            <div id="form-APP" class="vector-form" style="display: none;">
+                <div class="input-group">
+                    <label>Application Package Identifier or Executable Name</label>
+                    <input type="text" id="target-app" placeholder="com.fake.banking.app OR invoice_october.pdf.exe" value="com.financial.banking.update.apk">
+                </div>
+                <div class="input-group">
+                    <label>Upload File / Package for Dynamic Sandbox Analysis</label>
+                    <input type="file" style="background-color: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 8px; font-size: 12px; color: #cbd5e1;">
+                </div>
+            </div>
+
+            <button type="button" class="btn-submit" onclick="runAnalysis()">
+                ⚡ Deep Threat Inspection
+            </button>
+        </div>
+
+        <!-- SCAN SPINNER -->
+        <div id="loading-spinner" class="spinner">
+            ⏳ Querying Global Threat Intelligence Feed & AI Heuristic Engines...
+        </div>
+
+        <!-- DYNAMIC ANALYSIS RESULTS PANEL -->
+        <div id="results-panel" class="results-panel">
+
+            <div class="results-header">
+                <div>
+                    <span style="font-size: 11px; color: var(--accent-cyan); font-weight: 700; text-transform: uppercase;">Analysis Verdict</span>
+                    <h3 style="margin: 4px 0 0 0; font-size: 18px;" id="verdict-title">High Risk Phishing Target Detected</h3>
+                </div>
+                <div class="risk-gauge">
+                    <div style="text-align: right; font-size: 11px; color: var(--text-muted);">
+                        <div>AI Confidence: <strong>98.2%</strong></div>
+                        <div>Category: <strong id="verdict-category">Credential Harvesting</strong></div>
+                    </div>
+                    <div id="risk-score-box" class="score-box score-high">
+                        92 / 100
+                    </div>
+                </div>
+            </div>
+
+            <!-- DETAILS GRID -->
+            <div class="grid-2">
+                <div class="data-card">
+                    <h4>🔍 Threat Indicators Matched</h4>
+                    <ul id="indicators-list" style="margin: 0; padding-left: 18px; color: #cbd5e1; line-height: 1.6;">
+                        <li>Newly registered domain (&lt; 3 days old)</li>
+                        <li>High typosquatting similarity score with target brand</li>
+                        <li>SSL certificate issued by free authority (Zero-Trust)</li>
+                    </ul>
+                </div>
+
+                <div class="data-card">
+                    <h4>🌐 Infrastructure Intelligence</h4>
+                    <div id="infra-details" style="color: #cbd5e1; line-height: 1.6;">
+                        <div><strong>Hosting Provider:</strong> Suspicious Host AS-9021</div>
+                        <div><strong>Server IP:</strong> 185.220.101.42 (Russia / Moscow)</div>
+                        <div><strong>Blacklist Matches:</strong> 14 SOC Engines Flagged</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="action-bar">
+                <button class="btn-action" onclick="toast('Report exported as JSON/PDF.')">📥 Export Report</button>
+                <button class="btn-action" onclick="toast('Committed to global blacklist.')">🛡️ Add to Threat Intel</button>
+                <button class="btn-action btn-danger" onclick="toast('Domain Quarantine order dispatched to DNS Firewall.')">🛑 Block & Quarantine Vector</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-msg" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: var(--accent-success); color: white; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.4);">
+        Action completed.
+    </div>
+
+    <script>
+        let currentType = 'URL';
+
+        function switchTab(type) {
+            currentType = type;
+            
+            // Switch tab styling
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Switch form visibility
+            document.querySelectorAll('.vector-form').forEach(form => form.style.display = 'none');
+            document.getElementById(`form-${type}`).style.display = 'block';
+
+            // Hide previous results
+            document.getElementById('results-panel').style.display = 'none';
+        }
+
+        function runAnalysis() {
+            document.getElementById('results-panel').style.display = 'none';
+            document.getElementById('loading-spinner').style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('loading-spinner').style.display = 'none';
+                document.getElementById('results-panel').style.display = 'block';
+
+                const verdictTitle = document.getElementById('verdict-title');
+                const categoryBox = document.getElementById('verdict-category');
+                const scoreBox = document.getElementById('risk-score-box');
+                const indicators = document.getElementById('indicators-list');
+                const infra = document.getElementById('infra-details');
+
+                if (currentType === 'URL') {
+                    verdictTitle.innerText = "High Risk Malicious URL Detected";
+                    categoryBox.innerText = "Credential Harvesting Domain";
+                    scoreBox.className = "score-box score-high";
+                    scoreBox.innerText = "92 / 100";
+                    indicators.innerHTML = `
+                        <li>Newly registered domain (&lt; 3 days old)</li>
+                        <li>High typosquatting similarity score with financial portal</li>
+                        <li>SSL Certificate issued by untrusted authority</li>
+                    `;
+                    infra.innerHTML = `
+                        <div><strong>Hosting IP:</strong> 185.220.101.42</div>
+                        <div><strong>Registrar:</strong> NameCheap Inc / Anon Privacy</div>
+                        <div><strong>Reputation Engine:</strong> Blocked in 14 Blacklists</div>
+                    `;
+                } else if (currentType === 'EMAIL') {
+                    verdictTitle.innerText = "Spear Phishing Email Attempt";
+                    categoryBox.innerText = "Brand Impersonation / Urgency Attack";
+                    scoreBox.className = "score-box score-high";
+                    scoreBox.innerText = "88 / 100";
+                    indicators.innerHTML = `
+                        <li>DKIM & SPF Authentication Failed (Header Spoofing)</li>
+                        <li>High urgency trigger phrases detected ("Within 2 Hours")</li>
+                        <li>Embedded URL points to unverified external IP</li>
+                    `;
+                    infra.innerHTML = `
+                        <div><strong>Sender Host:</strong> mail.update-account-auth.org</div>
+                        <div><strong>Origin IP:</strong> 103.21.244.12</div>
+                        <div><strong>DMARC Status:</strong> Fail (Reject Policy Triggered)</div>
+                    `;
+                } else if (currentType === 'PHONE') {
+                    verdictTitle.innerText = "Smishing Scam Vector Detected";
+                    categoryBox.innerText = "Telecommunication KYC Fraud";
+                    scoreBox.className = "score-box score-medium";
+                    scoreBox.innerText = "74 / 100";
+                    indicators.innerHTML = `
+                        <li>Multiple user reports filed against phone number</li>
+                        <li>SMS message contains shortened bit.ly URL redirect</li>
+                        <li>Pattern matches telecom deactivation scam template</li>
+                    `;
+                    infra.innerHTML = `
+                        <div><strong>Carrier / Region:</strong> Telecom Operator (Prepaid)</div>
+                        <div><strong>Line Type:</strong> VOIP / Virtual Number</div>
+                        <div><strong>Spam Rating:</strong> 85% User Spam Reports</div>
+                    `;
+                } else if (currentType === 'APP') {
+                    verdictTitle.innerText = "Malicious Application Package";
+                    categoryBox.innerText = "Rogue Banker Trojan / Spyware";
+                    scoreBox.className = "score-box score-high";
+                    scoreBox.innerText = "96 / 100";
+                    indicators.innerHTML = `
+                        <li>Double Extension Trick Detected (.pdf.exe)</li>
+                        <li>Requests dangerous accessibility & SMS reading permissions</li>
+                        <li>Unsigned APK Binary without valid digital certificate</li>
+                    `;
+                    infra.innerHTML = `
+                        <div><strong>SHA-256 Hash:</strong> 4f8a91c30...b92e</div>
+                        <div><strong>Static Analysis:</strong> Suspicious Payload Dropper Included</div>
+                        <div><strong>Sandbox Behavior:</strong> Attempts C2 Server Contact</div>
+                    `;
+                }
+            }, 1000);
+        }
+
+        function toast(message) {
+            const toastEl = document.getElementById('toast-msg');
+            toastEl.innerText = message;
+            toastEl.style.display = 'block';
+            setTimeout(() => {
+                toastEl.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+
+```

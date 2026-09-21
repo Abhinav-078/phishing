@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishShield LMS - View Report Status</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; background-color: #0f172a; color: #f8fafc; display: flex; min-height: 100vh; overflow-x: hidden;">
+
+    <!-- NAVIGATION SIDEBAR -->
+    <aside style="width: 280px; background-color: #1e293b; border-right: 1px solid #334155; display: flex; flex-direction: column; flex-shrink: 0; position: sticky; top: 0; height: 100vh;">
+        <!-- Logo Header -->
+        <div style="padding: 20px; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 12px;">
+            <div style="background-color: #0284c7; color: #ffffff; padding: 8px 12px; border-radius: 8px; font-weight: 800; font-size: 16px; letter-spacing: 0.5px;">SEC</div>
+            <div>
+                <div style="font-size: 16px; font-weight: 700; color: #f8fafc;">PhishShield LMS</div>
+                <div style="font-size: 11px; color: #38bdf8; font-weight: 600;">SOC Operations Portal</div>
+            </div>
+        </div>
+
+        <!-- Analyst Profile summary -->
+        <div style="padding: 14px 20px; background-color: rgba(15, 23, 42, 0.5); border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; background-color: #0369a1; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; border: 2px solid #38bdf8;">
+                SJ
+            </div>
+            <div style="overflow: hidden;">
+                <div style="font-size: 13px; font-weight: 600; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Dr. Sarah Jenkins</div>
+                <div style="font-size: 11px; color: #10b981; font-weight: 500;">● Senior Threat Analyst</div>
+            </div>
+        </div>
+
+        <!-- Sidebar Navigation Menu -->
+        <nav style="padding: 15px 10px; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 10px 12px 4px 12px; letter-spacing: 0.5px;">Navigation</div>
+            
+            <a href="javascript:void(0)" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: #94a3b8; text-decoration: none; border-radius: 6px; font-size: 13px;">
+                📊 Dashboard
+            </a>
+            <a href="javascript:void(0)" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: #ffffff; background-color: #0284c7; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600;">
+                📋 View Report Status
+            </a>
+            <a href="javascript:void(0)" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: #94a3b8; text-decoration: none; border-radius: 6px; font-size: 13px;">
+                🔍 Deep Vector Analysis
+            </a>
+            <a href="javascript:void(0)" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: #94a3b8; text-decoration: none; border-radius: 6px; font-size: 13px;">
+                🛡️ Threat Intel Engine
+            </a>
+            <a href="javascript:void(0)" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: #94a3b8; text-decoration: none; border-radius: 6px; font-size: 13px;">
+                ⚙️ Security Analyst Profile
+            </a>
+        </nav>
+
+        <div style="padding: 15px; border-top: 1px solid #334155;">
+            <button onclick="showToast('Session refreshed successfully.')" style="width: 100%; padding: 9px; background-color: #334155; color: #cbd5e1; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                🔄 Refresh Session
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE CONTENT -->
+    <main style="flex-grow: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 24px; min-width: 0;">
+
+        <!-- Header Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid #334155; padding-bottom: 20px;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <h1 style="font-size: 24px; margin: 0; color: #ffffff; font-weight: 700;">Report Status Management</h1>
+                    <span style="background-color: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600;">PhishShield LMS</span>
+                </div>
+                <p style="font-size: 13px; color: #94a3b8; margin: 6px 0 0 0;">Inspect, filter, and modify security report status codes across enterprise submissions.</p>
+            </div>
+
+            <!-- Stats Bar -->
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <div style="background-color: #1e293b; border: 1px solid #334155; padding: 10px 16px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 11px; color: #94a3b8;">Total Queue</div>
+                    <div id="stat-total" style="font-size: 18px; font-weight: 700; color: #ffffff;">5</div>
+                </div>
+                <div style="background-color: #1e293b; border: 1px solid #334155; padding: 10px 16px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 11px; color: #94a3b8;">Pending Review</div>
+                    <div id="stat-pending" style="font-size: 18px; font-weight: 700; color: #38bdf8;">1</div>
+                </div>
+                <div style="background-color: #1e293b; border: 1px solid #334155; padding: 10px 16px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 11px; color: #94a3b8;">Escalated Incidents</div>
+                    <div id="stat-escalated" style="font-size: 18px; font-weight: 700; color: #c084fc;">1</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATUS CODE REFERENCE BAR -->
+        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+            <div style="font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Standard SOC Status Code Reference</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <span style="background-color: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                    100: Under Review
+                </span>
+                <span style="background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                    200: Verified Threat
+                </span>
+                <span style="background-color: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                    300: Whitelisted / False Positive
+                </span>
+                <span style="background-color: rgba(192, 132, 252, 0.15); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3); padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                    400: Escalated to Incident Response
+                </span>
+                <span style="background-color: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                    500: Archived / Resolved
+                </span>
+            </div>
+        </div>
+
+        <!-- SEARCH AND FILTER TOOLBAR -->
+        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+            
+            <!-- Search Bar -->
+            <div style="flex: 2; min-width: 220px; position: relative;">
+                <input type="text" id="search-input" oninput="applyFilters()" placeholder="Search Report ID, Target Vector, Reporter Name..." style="width: 100%; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 12px; font-size: 13px; color: #ffffff; box-sizing: border-box; outline: none;">
+            </div>
+
+            <!-- Filter by Status Code -->
+            <div style="flex: 1; min-width: 160px;">
+                <select id="filter-status" onchange="applyFilters()" style="width: 100%; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 12px; font-size: 13px; color: #ffffff; box-sizing: border-box; outline: none;">
+                    <option value="ALL">All Status Codes</option>
+                    <option value="100">Status 100 - Under Review</option>
+                    <option value="200">Status 200 - Verified Threat</option>
+                    <option value="300">Status 300 - Whitelisted / FP</option>
+                    <option value="400">Status 400 - Escalated to IR</option>
+                    <option value="500">Status 500 - Archived</option>
+                </select>
+            </div>
+
+            <!-- Filter by Vector -->
+            <div style="flex: 1; min-width: 140px;">
+                <select id="filter-vector" onchange="applyFilters()" style="width: 100%; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 12px; font-size: 13px; color: #ffffff; box-sizing: border-box; outline: none;">
+                    <option value="ALL">All Threat Vectors</option>
+                    <option value="URL">URL / Domain</option>
+                    <option value="Email">Phishing Email</option>
+                    <option value="Phone">Smishing SMS/Phone</option>
+                    <option value="APK">Rogue APK/App</option>
+                </select>
+            </div>
+
+            <!-- Reset Button -->
+            <button onclick="resetFilters()" style="background-color: #334155; color: #ffffff; border: none; padding: 10px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                ↺ Reset
+            </button>
+        </div>
+
+        <!-- MAIN REPORTS STATUS TABLE -->
+        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; overflow: hidden;">
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                    <thead>
+                        <tr style="background-color: #0f172a; border-bottom: 1px solid #334155; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <th style="padding: 14px 16px;">Report ID</th>
+                            <th style="padding: 14px 16px;">Vector Type</th>
+                            <th style="padding: 14px 16px;">Target Vector</th>
+                            <th style="padding: 14px 16px;">Reporter</th>
+                            <th style="padding: 14px 16px;">AI Risk</th>
+                            <th style="padding: 14px 16px;">Current Status Code</th>
+                            <th style="padding: 14px 16px;">Last Updated</th>
+                            <th style="padding: 14px 16px; text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reports-table-body">
+                        <!-- Dynamically Populated via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Footer -->
+            <div style="padding: 12px 16px; background-color: #0f172a; border-top: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #94a3b8;">
+                <span id="showing-count">Showing 5 of 5 reports</span>
+                <span>PhishShield LMS Status Audit Engine v2.4</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- DETAILED REPORT INSPECTION MODAL -->
+    <div id="report-modal" style="display: none; position: fixed; inset: 0; background-color: rgba(15, 23, 42, 0.85); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+            
+            <!-- Modal Header -->
+            <div style="padding: 18px 24px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; background-color: #0f172a;">
+                <div>
+                    <span id="modal-report-id" style="font-size: 18px; font-weight: 700; color: #ffffff;">Report #REP-2026-901</span>
+                    <span id="modal-status-badge" style="margin-left: 10px;"></span>
+                </div>
+                <button onclick="closeModal()" style="background: transparent; border: none; color: #94a3b8; font-size: 20px; font-weight: 700; cursor: pointer;">✕</button>
+            </div>
+
+            <!-- Modal Content (Scrollable) -->
+            <div style="padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;">
+                
+                <!-- Metadata Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background-color: #0f172a; padding: 16px; border-radius: 8px; border: 1px solid #334155;">
+                    <div>
+                        <div style="font-size: 11px; color: #94a3b8;">Target Vector</div>
+                        <div id="modal-target" style="font-size: 13px; font-weight: 600; color: #f8fafc; word-break: break-all; margin-top: 2px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #94a3b8;">Vector Type</div>
+                        <div id="modal-vector-type" style="font-size: 13px; font-weight: 600; color: #38bdf8; margin-top: 2px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #94a3b8;">Submitted By</div>
+                        <div id="modal-reporter" style="font-size: 13px; font-weight: 600; color: #f8fafc; margin-top: 2px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #94a3b8;">AI Risk Score</div>
+                        <div id="modal-risk-score" style="font-size: 13px; font-weight: 700; margin-top: 2px;">-</div>
+                    </div>
+                </div>
+
+                <!-- UPDATE STATUS FORM SECTION -->
+                <div style="background-color: rgba(2, 132, 199, 0.1); border: 1px solid rgba(2, 132, 199, 0.3); border-radius: 8px; padding: 16px;">
+                    <h3 style="margin: 0 0 12px 0; font-size: 14px; color: #38bdf8; font-weight: 700;">⚙️ Update Status Code</h3>
+                    <form onsubmit="submitStatusChange(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                        
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 220px;">
+                                <label style="display: block; font-size: 11px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Select New Status Code</label>
+                                <select id="update-status-code" style="width: 100%; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 9px 12px; font-size: 13px; color: #ffffff; outline: none;">
+                                    <option value="100">Status 100 - Under Review</option>
+                                    <option value="200">Status 200 - Verified Threat</option>
+                                    <option value="300">Status 300 - Whitelisted / False Positive</option>
+                                    <option value="400">Status 400 - Escalated to Incident Response</option>
+                                    <option value="500">Status 500 - Archived / Resolved</option>
+                                </select>
+                            </div>
+                            <div style="flex: 2; min-width: 240px;">
+                                <label style="display: block; font-size: 11px; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">Analyst Investigation Remark</label>
+                                <input type="text" id="update-remark" placeholder="Enter investigation notes or justification..." required style="width: 100%; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 9px 12px; font-size: 13px; color: #ffffff; outline: none; box-sizing: border-box;">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button type="submit" style="background-color: #10b981; color: #ffffff; border: none; padding: 9px 18px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                💾 Commit Status Change
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- AUDIT & TIMELINE LOG -->
+                <div>
+                    <h3 style="margin: 0 0 12px 0; font-size: 14px; color: #ffffff; font-weight: 700;">📜 Status Timeline & Audit Log</h3>
+                    <div id="modal-timeline" style="display: flex; flex-direction: column; gap: 12px; border-left: 2px solid #334155; padding-left: 16px; margin-left: 8px;">
+                        <!-- Dynamically filled timeline items -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div style="padding: 14px 24px; border-top: 1px solid #334155; background-color: #0f172a; display: flex; justify-content: flex-end;">
+                <button onclick="closeModal()" style="background-color: #334155; color: #ffffff; border: none; padding: 8px 18px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-notification" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: #10b981; color: #ffffff; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.4); z-index: 2000;">
+        Action completed successfully.
+    </div>
+
+    <script>
+        // Sample Report Data Store
+        let reportsData = [
+            {
+                id: "REP-2026-901",
+                vectorType: "URL",
+                target: "http://update-secure-bank-passcode.net/login",
+                reporter: "Alice Smith (Finance Dept)",
+                riskScore: 92,
+                statusCode: "200",
+                lastUpdated: "2026-09-20 12:45 IST",
+                history: [
+                    { time: "2026-09-20 10:15 IST", code: "100", remark: "Report submitted by user via Outlook Add-in.", analyst: "System Automated" },
+                    { time: "2026-09-20 12:45 IST", code: "200", remark: "Confirmed credential harvester hosting active login scam page.", analyst: "Dr. Sarah Jenkins" }
+                ]
+            },
+            {
+                id: "REP-2026-902",
+                vectorType: "Phone",
+                target: "+1 (800) 492-0192 [Smishing SMS]",
+                reporter: "Bob Johnson (Sales)",
+                riskScore: 64,
+                statusCode: "100",
+                lastUpdated: "2026-09-20 11:30 IST",
+                history: [
+                    { time: "2026-09-20 11:30 IST", code: "100", remark: "SMS text claiming urgent package delivery submitted.", analyst: "System Automated" }
+                ]
+            },
+            {
+                id: "REP-2026-903",
+                vectorType: "Email",
+                target: "payroll-update@internal-hr-corp.com",
+                reporter: "Carol Danvers (Engineering)",
+                riskScore: 88,
+                statusCode: "400",
+                lastUpdated: "2026-09-20 13:10 IST",
+                history: [
+                    { time: "2026-09-20 09:00 IST", code: "100", remark: "Spoofed executive payroll alteration request.", analyst: "System Automated" },
+                    { time: "2026-09-20 11:00 IST", code: "200", remark: "Verified spear phishing targeting high value targets.", analyst: "Dr. Sarah Jenkins" },
+                    { time: "2026-09-20 13:10 IST", code: "400", remark: "Escalated to IR team for active domain block execution.", analyst: "Dr. Sarah Jenkins" }
+                ]
+            },
+            {
+                id: "REP-2026-904",
+                vectorType: "URL",
+                target: "https://docs.google.com/forms/d/e/1FAIpQLSc...",
+                reporter: "David Lee (HR)",
+                riskScore: 22,
+                statusCode: "300",
+                lastUpdated: "2026-09-19 16:20 IST",
+                history: [
+                    { time: "2026-09-19 14:00 IST", code: "100", remark: "Internal feedback survey flagged by automated filter.", analyst: "System Automated" },
+                    { time: "2026-09-19 16:20 IST", code: "300", remark: "Whitelisted. Verified legitimately created internal HR survey form.", analyst: "Dr. Sarah Jenkins" }
+                ]
+            },
+            {
+                id: "REP-2026-905",
+                vectorType: "APK",
+                target: "com.authenticator.v2.apk [Rogue APK]",
+                reporter: "Emma Watson (IT Support)",
+                riskScore: 96,
+                statusCode: "500",
+                lastUpdated: "2026-09-18 18:00 IST",
+                history: [
+                    { time: "2026-09-18 10:00 IST", code: "100", remark: "Sideloaded authenticator package submitted for inspection.", analyst: "System Automated" },
+                    { time: "2026-09-18 14:30 IST", code: "200", remark: "Malicious APK embedding keylogger binary verified.", analyst: "Dr. Sarah Jenkins" },
+                    { time: "2026-09-18 18:00 IST", code: "500", remark: "MDM rule deployed and report archived.", analyst: "Dr. Sarah Jenkins" }
+                ]
+            }
+        ];
+
+        let activeReportId = null;
+
+        // Render Status Badge Helpers
+        function getStatusBadgeHtml(statusCode) {
+            switch (statusCode) {
+                case "100":
+                    return `<span style="background-color: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700;">100: Under Review</span>`;
+                case "200":
+                    return `<span style="background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700;">200: Verified Threat</span>`;
+                case "300":
+                    return `<span style="background-color: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700;">300: Whitelisted / FP</span>`;
+                case "400":
+                    return `<span style="background-color: rgba(192, 132, 252, 0.15); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3); font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700;">400: Escalated to IR</span>`;
+                case "500":
+                    return `<span style="background-color: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700;">500: Archived</span>`;
+                default:
+                    return `<span style="color: #cbd5e1;">Unknown</span>`;
+            }
+        }
+
+        function getRiskBadgeColor(score) {
+            if (score >= 75) return '#ef4444';
+            if (score >= 45) return '#f59e0b';
+            return '#10b981';
+        }
+
+        // Render Table Data
+        function renderTable(dataToRender) {
+            const tbody = document.getElementById('reports-table-body');
+            tbody.innerHTML = '';
+
+            if (dataToRender.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="padding: 30px; text-align: center; color: #64748b; font-size: 13px;">
+                            No security reports matching the selected filters.
+                        </td>
+                    </tr>`;
+                document.getElementById('showing-count').innerText = `Showing 0 of ${reportsData.length} reports`;
+                return;
+            }
+
+            dataToRender.forEach(report => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid rgba(51, 65, 85, 0.5)';
+                tr.style.transition = 'background-color 0.15s ease';
+                tr.onmouseover = () => tr.style.backgroundColor = 'rgba(30, 41, 59, 0.7)';
+                tr.onmouseout = () => tr.style.backgroundColor = 'transparent';
+
+                tr.innerHTML = `
+                    <td style="padding: 14px 16px; font-weight: 700; color: #f8fafc;">${report.id}</td>
+                    <td style="padding: 14px 16px; color: #38bdf8; font-weight: 600;">${report.vectorType}</td>
+                    <td style="padding: 14px 16px; color: #cbd5e1; max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${report.target}">${report.target}</td>
+                    <td style="padding: 14px 16px; color: #94a3b8;">${report.reporter}</td>
+                    <td style="padding: 14px 16px; font-weight: 800; color: ${getRiskBadgeColor(report.riskScore)};">${report.riskScore} / 100</td>
+                    <td style="padding: 14px 16px;">${getStatusBadgeHtml(report.statusCode)}</td>
+                    <td style="padding: 14px 16px; color: #64748b; font-size: 12px;">${report.lastUpdated}</td>
+                    <td style="padding: 14px 16px; text-align: right;">
+                        <button onclick="openModal('${report.id}')" style="background-color: #0284c7; color: #ffffff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                            Inspect & Update
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('showing-count').innerText = `Showing ${dataToRender.length} of ${reportsData.length} reports`;
+            updateSummaryCounters();
+        }
+
+        // Apply Filters & Search
+        function applyFilters() {
+            const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+            const statusVal = document.getElementById('filter-status').value;
+            const vectorVal = document.getElementById('filter-vector').value;
+
+            const filtered = reportsData.filter(report => {
+                const matchesSearch = report.id.toLowerCase().includes(searchVal) || 
+                                      report.target.toLowerCase().includes(searchVal) || 
+                                      report.reporter.toLowerCase().includes(searchVal);
+                
+                const matchesStatus = statusVal === 'ALL' || report.statusCode === statusVal;
+                const matchesVector = vectorVal === 'ALL' || report.vectorType === vectorVal;
+
+                return matchesSearch && matchesStatus && matchesVector;
+            });
+
+            renderTable(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('filter-status').value = 'ALL';
+            document.getElementById('filter-vector').value = 'ALL';
+            renderTable(reportsData);
+            showToast('Filters reset.');
+        }
+
+        // Update Statistics Counters
+        function updateSummaryCounters() {
+            document.getElementById('stat-total').innerText = reportsData.length;
+            document.getElementById('stat-pending').innerText = reportsData.filter(r => r.statusCode === '100').length;
+            document.getElementById('stat-escalated').innerText = reportsData.filter(r => r.statusCode === '400').length;
+        }
+
+        // Modal Operations
+        function openModal(reportId) {
+            activeReportId = reportId;
+            const report = reportsData.find(r => r.id === reportId);
+            if (!report) return;
+
+            document.getElementById('modal-report-id').innerText = `Report #${report.id}`;
+            document.getElementById('modal-status-badge').innerHTML = getStatusBadgeHtml(report.statusCode);
+            document.getElementById('modal-target').innerText = report.target;
+            document.getElementById('modal-vector-type').innerText = report.vectorType;
+            document.getElementById('modal-reporter').innerText = report.reporter;
+            
+            const riskElem = document.getElementById('modal-risk-score');
+            riskElem.innerText = `${report.riskScore} / 100`;
+            riskElem.style.color = getRiskBadgeColor(report.riskScore);
+
+            document.getElementById('update-status-code').value = report.statusCode;
+            document.getElementById('update-remark').value = '';
+
+            renderTimeline(report.history);
+
+            const modal = document.getElementById('report-modal');
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('report-modal').style.display = 'none';
+            activeReportId = null;
+        }
+
+        // Render Audit Log Timeline
+        function renderTimeline(history) {
+            const container = document.getElementById('modal-timeline');
+            container.innerHTML = '';
+
+            history.slice().reverse().forEach(item => {
+                const div = document.createElement('div');
+                div.style.position = 'relative';
+                div.innerHTML = `
+                    <div style="position: absolute; left: -21px; top: 2px; width: 8px; height: 8px; border-radius: 50%; background-color: #38bdf8; border: 2px solid #1e293b;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <span style="font-size: 12px; font-weight: 700; color: #ffffff;">${getStatusBadgeHtml(item.code)}</span>
+                        <span style="font-size: 11px; color: #64748b;">${item.time}</span>
+                    </div>
+                    <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">"${item.remark}"</div>
+                    <div style="font-size: 11px; color: #94a3b8; margin-top: 2px; font-style: italic;">Actor: ${item.analyst}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Submit Status Change Form
+        function submitStatusChange(e) {
+            e.preventDefault();
+            if (!activeReportId) return;
+
+            const newCode = document.getElementById('update-status-code').value;
+            const remark = document.getElementById('update-remark').value.trim();
+
+            const report = reportsData.find(r => r.id === activeReportId);
+            if (report) {
+                const now = new Date();
+                const formattedTime = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')} IST`;
+
+                report.statusCode = newCode;
+                report.lastUpdated = formattedTime;
+                report.history.push({
+                    time: formattedTime,
+                    code: newCode,
+                    remark: remark,
+                    analyst: "Dr. Sarah Jenkins (Analyst)"
+                });
+
+                // Update UI Components
+                document.getElementById('modal-status-badge').innerHTML = getStatusBadgeHtml(newCode);
+                renderTimeline(report.history);
+                applyFilters();
+                showToast(`Status updated to ${newCode} successfully!`);
+                document.getElementById('update-remark').value = '';
+            }
+        }
+
+        // Toast Handler
+        function showToast(message) {
+            const toast = document.getElementById('toast-notification');
+            toast.innerText = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Initial Data Load
+        window.onload = function() {
+            renderTable(reportsData);
+        };
+    </script>
+</body>
+</html>
