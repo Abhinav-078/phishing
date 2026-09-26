@@ -11,14 +11,9 @@ urlpatterns = [
     path('records/',views.records),
     path('analys/',views.analys),
     path('report/',views.report),
-<<<<<<< HEAD
     path('verify/',views.verify),
-<<<<<<< Updated upstream
-=======
->>>>>>> a3ec0e37fed7a60b9c57d1f1f5cc2f52bca2d287
-    path('threat/',views.threat)
-=======
     path('threat/',views.threat),
->>>>>>> Stashed changes
+    path('threat/',views.threat),
+
 ]
 
