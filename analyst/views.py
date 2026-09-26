@@ -21,7 +21,5 @@ def analys(request):
     return render(request,'analyst/analys.html')
 def report(request):
     return render(request,'analyst/report.html')
-def verify(request):
-    return render(request,'analyst/verify.html')
 def threat(request):
     return render(request,'analyst/threat.html')
