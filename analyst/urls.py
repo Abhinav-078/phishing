@@ -12,6 +12,10 @@ urlpatterns = [
     path('analys/',views.analys),
     path('report/',views.report),
     path('verify/',views.verify),
+<<<<<<< Updated upstream
     path('threat/',views.threat)
+=======
+    path('threat/',views.threat),
+>>>>>>> Stashed changes
 ]
 
