@@ -8,7 +8,7 @@ def register(request):
 def profile(request):
     return render(request,'user/profile.html')
 def aiscore(request):
-    return render(request,'user/aisc.html')    
+    return render(request,'user/aiscore.html')    
 def detection(request):
     return render(request,'user/detection.html')
 def explanation(request):

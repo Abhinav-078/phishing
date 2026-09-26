@@ -38,18 +38,19 @@
             </a>
 
             <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Account Management</div>
-            <a href="#profile" onclick="showSection('profile')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">⚙️ View & Update Profile</a>
+            <a href="/user/profile/"showSection('profile')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">⚙️ View & Update Profile</a>
 
             <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">AI Phishing Checking</div>
-            <a href="#scanner" onclick="showSection('scanner')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🛡️ AI Scanner (URL/Ph/App/Mail)</a>
+            <a href="/user/aiscore/" onclick="showSection('scanner')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🛡️ AI Scanner (URL/Phone/App/Mail)</a>
 
             <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Threat Logs & Learning</div>
-            <a href="#detection-history" onclick="showSection('detection-history')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📜 Detection History</a>
-            <a href="#sec-reports" onclick="showSection('sec-reports')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📄 Security Reports</a>
-            <a href="#doubts" onclick="showSection('doubts')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">💬 Ask Doubt & Replies</a>
+            <a href="/user/history/" onclick="showSection('detection-history')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📜 Detection History</a>
+            <a href="/user/report/" onclick="showSection('sec-reports')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📄 Security Reports</a>
+            <a href="/user/awareness/" onclick="showSection('Awarness-tips')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📄 Awarness Tips</a>
+            <a href="/user/ask/" onclick="showSection('doubts')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">💬 Ask Doubt & Replies</a>
 
             <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Support & Feedback</div>
-            <a href="#support" onclick="showSection('support')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🚨 Complaints & Feedback</a>
+            <a href="/user/replies/" onclick="showSection('support')" class="nav-btn" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🚨 Complaints & Feedback</a>
 
         </nav>
 
@@ -190,8 +191,30 @@
                 </div>
             </div>
         </div>
+        <!-- SECTION 6: AWARNESS TIPS (SEPARATED) -->
+        <div id="section-awarness-tips" class="content-section" style="display: none;">
+            <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">Awarness Reports</h2>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background-color: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155;">
+                        <div>
+                            <div style="font-weight: 600; color: #ffffff; font-size: 14px;">Awarness Report</div>
+                            <div style="font-size: 11px; color: #94a3b8;">Generated: Sep 20, 2026</div>
+                        </div>
+                        <button onclick="alert('Downloading Awarness Report...')" style="background-color: transparent; border: 1px solid #38bdf8; color: #38bdf8; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Download PDF</button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background-color: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155;">
+                        <div>
+                            <div style="font-weight: 600; color: #ffffff; font-size: 14px;">Monthly Awarness Report</div>
+                            <div style="font-size: 11px; color: #94a3b8;">Generated: Sep 01, 2026</div>
+                        </div>
+                        <button onclick="alert('Downloading Monthly Awarness Report...')" style="background-color: transparent; border: 1px solid #38bdf8; color: #38bdf8; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Download PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <!-- SECTION 6: ASK DOUBT & REPLIES -->
+        <!-- SECTION 7: ASK DOUBT & REPLIES -->
         <div id="section-doubts" class="content-section" style="display: none;">
             <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
                 <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">Ask Doubt & Replies[cite: 1]</h2>
@@ -206,7 +229,7 @@
             </div>
         </div>
 
-        <!-- SECTION 7: COMPLAINTS & FEEDBACK -->
+        <!-- SECTION 8: COMPLAINTS & FEEDBACK -->
         <div id="section-support" class="content-section" style="display: none;">
             <div style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px; max-width: 600px;">
                 <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">Complaints & Feedbacks[cite: 1]</h2>

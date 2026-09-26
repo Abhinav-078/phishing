@@ -1,6 +1,5 @@
 from django.shortcuts import render
 
-<<<<<<< Updated upstream
 # Create your views here.
 from django.http import HttpResponse
 # Create your views here.
@@ -18,7 +17,6 @@ def aiscore(request):
     return render(request,'analyst/aiscore.html')
 def records(request):
     return render(request,'analyst/records.html')
-=======
 def analys(request):
     return render(request,'analyst/analys.html')
 def report(request):
@@ -27,4 +25,3 @@ def verify(request):
     return render(request,'analyst/verify.html')
 def threat(request):
     return render(request,'analyst/threat.html')
->>>>>>> Stashed changes

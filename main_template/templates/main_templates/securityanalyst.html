@@ -1,778 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PhishShield LMS - Analyst Workspace</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      display: flex;
-      background-color: #0f172a;
-      color: #f8fafc;
-      min-height: 100vh;
-    }
-
-    /* Sidebar Navigation */
-    aside {
-      width: 280px;
-      background-color: #1e293b;
-      border-right: 1px solid #334155;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-    }
-
-    .brand {
-      padding: 24px;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #38bdf8;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid #334155;
-    }
-
-    .nav-list {
-      list-style: none;
-      padding: 16px 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      color: #94a3b8;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 500;
-      transition: all 0.2s ease;
-    }
-
-    .nav-item:hover {
-      background-color: #334155;
-      color: #f8fafc;
-    }
-
-    .nav-item.active {
-      background-color: #0284c7;
-      color: #ffffff;
-    }
-
-    .user-profile-summary {
-      margin-top: auto;
-      padding: 16px;
-      border-top: 1px solid #334155;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #0284c7;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-    }
-
-    /* Main Content Area */
-    main {
-      flex-grow: 1;
-      padding: 32px;
-      overflow-y: auto;
-    }
-
-    /* Tab Page Separation Logic */
-    .page-view {
-      display: none;
-      animation: fadeIn 0.2s ease-in-out;
-    }
-
-    .page-view.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .page-header {
-      margin-bottom: 24px;
-    }
-
-    .page-header h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: #f8fafc;
-    }
-
-    .page-header p {
-      color: #94a3b8;
-      margin-top: 4px;
-    }
-
-    /* Layout Grids & UI Components */
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      margin-bottom: 32px;
-    }
-
-    .content-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-
-    .card {
-      background-color: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 24px;
-    }
-
-    .metric-card h3 {
-      font-size: 0.875rem;
-      color: #94a3b8;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .metric-card .value {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #38bdf8;
-    }
-
-    /* Forms & Inputs */
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: #cbd5e1;
-      font-weight: 500;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 12px 16px;
-      background-color: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      color: #f8fafc;
-      outline: none;
-    }
-
-    .form-control:focus {
-      border-color: #38bdf8;
-    }
-
-    select.form-control {
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 1rem center;
-      background-size: 1em;
-    }
-
-    .btn {
-      padding: 12px 24px;
-      background-color: #0284c7;
-      color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .btn:hover {
-      background-color: #0369a1;
-    }
-
-    .btn-danger {
-      background-color: #ef4444;
-    }
-
-    .btn-danger:hover {
-      background-color: #dc2626;
-    }
-
-    .btn-secondary {
-      background-color: #334155;
-      color: #f8fafc;
-    }
-
-    .btn-secondary:hover {
-      background-color: #475569;
-    }
-
-    /* Tables */
-    .table-container {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    th, td {
-      padding: 16px;
-      border-bottom: 1px solid #334155;
-    }
-
-    th {
-      color: #94a3b8;
-      font-weight: 600;
-    }
-
-    .badge {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .badge-pending {
-      background-color: #f59e0b20;
-      color: #fbbf24;
-    }
-
-    .badge-verified {
-      background-color: #10b98120;
-      color: #34d399;
-    }
-
-    .badge-critical {
-      background-color: #ef444420;
-      color: #f87171;
-    }
-
-    /* Activity Feed List */
-    .activity-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .activity-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #334155;
-    }
-
-    .activity-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .activity-title {
-      font-weight: 600;
-      color: #f8fafc;
-      font-size: 0.95rem;
-    }
-
-    .activity-sub {
-      font-size: 0.8rem;
-      color: #94a3b8;
-      margin-top: 2px;
-    }
-
-    .activity-time {
-      font-size: 0.75rem;
-      color: #64748b;
-    }
-
-    /* Notification Toast */
-    #toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background-color: #10b981;
-      color: #ffffff;
-      padding: 14px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-      display: none;
-      z-index: 1000;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Analyst Workspace - PhishShield LMS</title>
 </head>
-<body>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; display: flex; min-height: 100vh;">
 
-  <!-- SIDEBAR NAVIGATION -->
-  <aside>
-    <div class="brand">
-      <span>🛡️</span> PhishShield LMS
-    </div>
-    <ul class="nav-list">
-      <li><a href="#dashboard" class="nav-item active"><span>📊</span> Dashboard</a></li>
-      <li><a href="#analyse" class="nav-item"><span>🔍</span> Deep Scan</a></li>
-      <li><a href="#user-reports" class="nav-item"><span>🚩</span> User Reports</a></li>
-      <li><a href="#categories" class="nav-item"><span>🏷️</span> Categories</a></li>
-      <li><a href="#profile" class="nav-item"><span>👤</span> Profile</a></li>
-      <li><a href="#awareness" class="nav-item"><span>📢</span> Awareness</a></li>
-    </ul>
-    <div class="user-profile-summary">
-      <div class="avatar" id="sidebar-avatar">SA</div>
-      <div>
-        <div id="sidebar-user-name" style="font-weight: 600; font-size: 0.9rem;">Security Analyst</div>
-        <div style="font-size: 0.75rem; color: #94a3b8;">Level 2 SOC</div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- MAIN CONTENT AREA -->
-  <main>
-
-    <!-- 1. DASHBOARD PAGE -->
-    <section id="dashboard" class="page-view active">
-      <div class="page-header">
-        <h1>Overview Dashboard</h1>
-        <p>Real-time system stats and active security metrics across organization channels.</p>
-      </div>
-
-      <!-- METRICS SECTION -->
-      <div class="metrics-grid">
-        <div class="card metric-card">
-          <h3>Total Reports</h3>
-          <div class="value">1,248</div>
-        </div>
-        <div class="card metric-card">
-          <h3>Pending Verification</h3>
-          <div class="value" style="color: #fbbf24;">42</div>
-        </div>
-        <div class="card metric-card">
-          <h3>Verified Phishing</h3>
-          <div class="value" style="color: #ef4444;">312</div>
-        </div>
-        <div class="card metric-card">
-          <h3>Accuracy Rate</h3>
-          <div class="value" style="color: #34d399;">98.4%</div>
-        </div>
-      </div>
-
-      <!-- DASHBOARD DETAILED PANELS -->
-      <div class="content-grid">
-        <div class="card">
-          <h2 style="font-size: 1.1rem; margin-bottom: 16px; color: #f8fafc;">Recent Incident Feed</h2>
-          <ul class="activity-list">
-            <li class="activity-item">
-              <div>
-                <div class="activity-title">Executive Spear Phishing Email</div>
-                <div class="activity-sub">Targeted CEO spoofing reported by Finance Dept</div>
-              </div>
-              <div class="activity-time">5 mins ago</div>
-            </li>
-            <li class="activity-item">
-              <div>
-                <div class="activity-title">Bulk Credential Harvesting Link</div>
-                <div class="activity-sub">Fake Microsoft 365 login detected across 14 users</div>
-              </div>
-              <div class="activity-time">22 mins ago</div>
-            </li>
-            <li class="activity-item">
-              <div>
-                <div class="activity-title">Fake Invoice Attachment (Malware)</div>
-                <div class="activity-sub">Malicious .xlsm attachment quarantined by Gateway</div>
-              </div>
-              <div class="activity-time">1 hour ago</div>
-            </li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <h2 style="font-size: 1.1rem; margin-bottom: 16px; color: #f8fafc;">Top Targeted Departments</h2>
-          <div style="display: flex; flex-direction: column; gap: 12px;">
+    <!-- LEFT SIDEBAR / ANALYST NAVIGATION MENU -->
+    <aside style="width: 290px; background-color: #1e293b; border-right: 1px solid #334155; display: flex; flex-direction: column; flex-shrink: 0;">
+        
+        <!-- App Header / Logo -->
+        <div style="padding: 20px; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 10px;">
+            <span style="background-color: #0284c7; color: #ffffff; padding: 6px 10px; border-radius: 6px; font-weight: 700; font-size: 16px;">SEC</span>
             <div>
-              <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 4px;">
-                <span>Finance & Accounting</span>
-                <span style="color: #38bdf8;">45% of attacks</span>
-              </div>
-              <div style="width: 100%; height: 8px; background-color: #0f172a; border-radius: 4px; overflow: hidden;">
-                <div style="width: 45%; height: 100%; background-color: #0284c7;"></div>
-              </div>
+                <div style="font-size: 16px; font-weight: 700; color: #f8fafc;">PhishShield LMS</div>
+                <div style="font-size: 11px; color: #38bdf8; font-weight: 600;">Analyst Operations Console</div>
+            </div>
+        </div>
+
+        <!-- Analyst Profile Card -->
+        <div style="padding: 15px 20px; background-color: rgba(15, 23, 42, 0.4); border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 12px;">
+            <div style="width: 38px; height: 38px; background-color: #0284c7; color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+                SA
+            </div>
+            <div style="overflow: hidden;">
+                <div style="font-size: 13px; font-weight: 600; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Dr. Sarah Jenkins</div>
+                <div style="font-size: 11px; color: #10b981; font-weight: 500;">● Senior Threat Analyst</div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav style="padding: 15px 10px; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+            
+            <a href="#overview" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background-color: #0284c7; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600;">
+                📊 Analyst Dashboard
+            </a>
+
+            <!-- 1. View & Update Profile -->
+            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Account Management</div>
+            <a href="/analyst/profile/" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">⚙️ View & Update Profile</a>
+
+            <!-- 2. Analyse Suspicious & 3. User Submitted Report -->
+            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Threat Inspection</div>
+            <a href="/analyst/analys/" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🔍 Analyse Suspicious (URL, App, Phno, Email)</a>
+            <a href="/analyst/report/" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📥 User Submitted Reports</a>
+
+            <!-- 4. Add Threat Intelligence Info & 5. Detection Categories & 6. View AI Risk Score -->
+            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Intelligence & AI Rules</div>
+            <a href="/analyst/threat/" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🛡️ Add Threat Intelligence Info</a>
+            <a href="/user/explanation/" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🏷️ Detection Explanation</a>
+            <a href="/analyst/aiscore/" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">🎯 View AI Risk Score Engine</a>
+
+            <!-- 7. Monitor Phishing Trends & 8. Provide Security Info -->
+            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Analytics & Awareness</div>
+            <a href="/analyst/trends/" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📈 Monitor Phishing Trends</a>
+            <a href="/analyst/security/" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📢 Provide Security Info & Tips</a>
+
+            <!-- 9. Respond to User Doubt & 10. Detection History & 11. Security Reports -->
+            <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 12px 12px 4px 12px; letter-spacing: 0.5px;">Support & Logs</div>
+            <a href="/analyst/doubt/" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">💬 Respond to User Doubts</a>
+            <a href="/analyst/dethistory/" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📜 Detection History</a>
+            <a href="/analyst/records/" style="display: flex; align-items: center; gap: 10px; padding: 9px 12px; color: #cbd5e1; text-decoration: none; border-radius: 6px; font-size: 13px;">📄 Security Reports</a>
+
+        </nav>
+
+        <!-- Sidebar Footer / Logout -->
+        <div style="padding: 15px; border-top: 1px solid #334155;">
+            <a href="#" style="display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; padding: 10px 0; background-color: #334155; color: #ffffff; border: none; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600;">
+                🚪 Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main style="flex-grow: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 25px;">
+        
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid #334155; padding-bottom: 20px;">
+            <div>
+                <h1 style="font-size: 26px; margin: 0; color: #ffffff;">Security Analyst Operations Console</h1>
+                <p style="font-size: 14px; color: #94a3b8; margin: 4px 0 0 0;">Inspect vectors, feed intelligence, monitor risk scores, and manage security awareness.</p>
             </div>
             <div>
-              <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 4px;">
-                <span>Human Resources</span>
-                <span style="color: #38bdf8;">30% of attacks</span>
-              </div>
-              <div style="width: 100%; height: 8px; background-color: #0f172a; border-radius: 4px; overflow: hidden;">
-                <div style="width: 30%; height: 100%; background-color: #0284c7;"></div>
-              </div>
+                <span style="background-color: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-size: 12px; padding: 6px 14px; border-radius: 20px; font-weight: 600;">
+                    Threat Level: Moderate
+                </span>
             </div>
-            <div>
-              <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 4px;">
-                <span>IT Support & Admin</span>
-                <span style="color: #38bdf8;">15% of attacks</span>
-              </div>
-              <div style="width: 100%; height: 8px; background-color: #0f172a; border-radius: 4px; overflow: hidden;">
-                <div style="width: 15%; height: 100%; background-color: #0284c7;"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. DEEP SCAN PAGE -->
-    <section id="analyse" class="page-view">
-      <div class="page-header">
-        <h1>Deep Scan & URL Analysis</h1>
-        <p>Analyze suspicious links, IP addresses, domain reputation, and header payloads for malicious artifacts.</p>
-      </div>
-
-      <div class="content-grid">
-        <div class="card">
-          <h2 style="font-size: 1.1rem; margin-bottom: 16px;">URL & Domain Scanner</h2>
-          <form onsubmit="runDeepScan(event)">
-            <div class="form-group">
-              <label for="scan-url">Target URL or Suspicious IP Address</label>
-              <input type="text" id="scan-url" class="form-control" placeholder="https://suspicious-login-portal.com" required>
-            </div>
-            <div class="form-group">
-              <label for="scan-depth">Scan Depth Engine</label>
-              <select id="scan-depth" class="form-control">
-                <option value="quick">Quick Heuristic Scan</option>
-                <option value="deep" selected>Deep Sandbox Analysis (Recommended)</option>
-                <option value="full">Full Domain & Threat Intel Lookup</option>
-              </select>
-            </div>
-            <button type="submit" class="btn">Initiate Deep Scan</button>
-          </form>
         </div>
 
-        <div class="card">
-          <h2 style="font-size: 1.1rem; margin-bottom: 16px;">Raw Email Header Analyzer</h2>
-          <div class="form-group">
-            <label for="raw-headers">Paste Full Email Headers</label>
-            <textarea id="raw-headers" class="form-control" rows="5" placeholder="Received: from mail.attacker.com (attacker.com [192.0.2.1])..."></textarea>
-          </div>
-          <button type="button" class="btn btn-secondary" onclick="showNotification('Email headers analyzed successfully.')">Parse Headers</button>
+        <!-- MODULE 1: Analyse Suspicious (URL, App, Phno, Email) -->
+        <div id="analyse" style="background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+            <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">1. Analyse Suspicious Target</h2>
+            <form style="display: flex; flex-direction: column; gap: 15px;" onsubmit="event.preventDefault();">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <select style="padding: 12px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none; flex: 1; min-width: 180px;">
+                        <option value="url">Analyse Suspicious URL</option>
+                        <option value="app">Analyse Suspicious App (APK/Package)</option>
+                        <option value="phno">Analyse Suspicious Phone Number</option>
+                        <option value="email">Analyse Suspicious Email Content</option>
+                    </select>
+
+                    <input type="text" placeholder="Enter URL, application identifier, phone number, or raw email..." required style="flex: 3; min-width: 280px; padding: 12px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 14px; outline: none;">
+                    
+                    <button type="submit" style="background-color: #0284c7; color: #ffffff; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer;">Deep Scan</button>
+                </div>
+            </form>
         </div>
-      </div>
-    </section>
 
-    <!-- 3. USER REPORTS PAGE -->
-    <section id="user-reports" class="page-view">
-      <div class="page-header">
-        <h1>User Reported Phishing Emails</h1>
-        <p>Review submitted emails from employee inbox reporting plugin and verify active threats.</p>
-      </div>
-
-      <div class="card">
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Reporter</th>
-                <th>Sender</th>
-                <th>Subject Line</th>
-                <th>Threat Score</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>john.doe@company.com</td>
-                <td>payroll@fake-company.com</td>
-                <td>Urgent: Update Direct Deposit Details</td>
-                <td><span class="badge badge-critical">92 / 100</span></td>
-                <td><span class="badge badge-pending">Pending</span></td>
-                <td><button class="btn" onclick="verifyReport(this)">Mark Verified</button></td>
-              </tr>
-              <tr>
-                <td>alice.smith@company.com</td>
-                <td>support@micros0ft-verify.net</td>
-                <td>Password Security Expiration Alert</td>
-                <td><span class="badge badge-critical">98 / 100</span></td>
-                <td><span class="badge badge-verified">Verified</span></td>
-                <td><button class="btn btn-danger" disabled>Verified</button></td>
-              </tr>
-              <tr>
-                <td>michael.brown@company.com</td>
-                <td>hr-updates@internal-info.org</td>
-                <td>Quarterly Employee Benefits Review</td>
-                <td><span class="badge badge-pending">45 / 100</span></td>
-                <td><span class="badge badge-pending">Pending</span></td>
-                <td><button class="btn" onclick="verifyReport(this)">Mark Verified</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. CATEGORIES PAGE -->
-    <section id="categories" class="page-view">
-      <div class="page-header">
-        <h1>Threat Category Management</h1>
-        <p>Add and manage threat classification tags, severity levels, and automated response playbooks.</p>
-      </div>
-
-      <div class="content-grid">
-        <div class="card">
-          <h2 style="font-size: 1.1rem; margin-bottom: 16px;">Add New Category</h2>
-          <form onsubmit="addCategory(event)">
-            <div class="form-group">
-              <label for="cat-name">Category Name</label>
-              <input type="text" id="cat-name" class="form-control" placeholder="Credential Harvesting" required>
+        <!-- MODULE 2 & 3: User Submitted Reports & AI Risk Score Engine -->
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            
+            <!-- User Submitted Reports Queue -->
+            <div id="user-reports" style="flex: 2; min-width: 320px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">2. User Submitted Reports Queue</h2>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #334155; color: #94a3b8;">
+                                <th style="padding: 10px;">Type</th>
+                                <th style="padding: 10px;">Submitted Vector</th>
+                                <th style="padding: 10px;">AI Risk Score</th>
+                                <th style="padding: 10px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
+                                <td style="padding: 10px; color: #cbd5e1;">URL</td>
+                                <td style="padding: 10px; color: #ef4444;">http://update-bank-passcode.net</td>
+                                <td style="padding: 10px; font-weight: 700; color: #ef4444;">92 / 100</td>
+                                <td style="padding: 10px;"><button style="background-color: #0284c7; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px;">Verify</button></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.5);">
+                                <td style="padding: 10px; color: #cbd5e1;">Phone</td>
+                                <td style="padding: 10px; color: #f59e0b;">+1 (800) 492-0192</td>
+                                <td style="padding: 10px; font-weight: 700; color: #f59e0b;">64 / 100</td>
+                                <td style="padding: 10px;"><button style="background-color: #0284c7; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px;">Verify</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="form-group">
-              <label for="cat-severity">Default Threat Level</label>
-              <select id="cat-severity" class="form-control">
-                <option value="low">Low Risk</option>
-                <option value="medium">Medium Risk</option>
-                <option value="high" selected>High Risk</option>
-                <option value="critical">Critical Threat</option>
-              </select>
+
+            <!-- View AI Risk Score Engine Overview -->
+            <div id="risk-score" style="flex: 1; min-width: 280px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">3. View AI Risk Score</h2>
+                <div style="background-color: #0f172a; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                    <div style="font-size: 12px; color: #94a3b8;">Average System Risk Score</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #38bdf8; margin: 4px 0;">76.4 / 100</div>
+                    <div style="font-size: 11px; color: #10b981;">AI Model: PhishDetect v4.2</div>
+                </div>
+                <div style="font-size: 12px; color: #cbd5e1;">
+                    <p style="margin: 5px 0;">🔴 High Threat Threshold: &gt; 75 Risk</p>
+                    <p style="margin: 5px 0;">🟡 Suspicious Threshold: 45 - 74 Risk</p>
+                    <p style="margin: 5px 0;">🟢 Safe Threshold: &lt; 45 Risk</p>
+                </div>
             </div>
-            <button type="submit" class="btn">Create Category</button>
-          </form>
+
         </div>
 
-        <div class="card">
-          <h2 style="font-size: 1.1rem; margin-bottom: 16px;">Active Threat Categories</h2>
-          <ul class="activity-list">
-            <li class="activity-item">
-              <div>
-                <div class="activity-title">Credential Harvesting</div>
-                <div class="activity-sub">Fake login pages and OAuth prompt manipulation</div>
-              </div>
-              <span class="badge badge-critical">Critical</span>
-            </li>
-            <li class="activity-item">
-              <div>
-                <div class="activity-title">CEO / Executive Impersonation</div>
-                <div class="activity-sub">Wire transfers, gift card fraud, and fake CFO orders</div>
-              </div>
-              <span class="badge badge-critical">High</span>
-            </li>
-            <li class="activity-item">
-              <div>
-                <div class="activity-title">Malicious Macro Attachment</div>
-                <div class="activity-sub">Office documents containing weaponized VBA scripts</div>
-              </div>
-              <span class="badge badge-verified">Medium</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
+        <!-- MODULE 4 & 5: Add Threat Intelligence Info & Detection Categories -->
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            
+            <!-- Add Threat Intelligence Info -->
+            <div id="threat-intel" style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">4. Add Threat Intelligence Info</h2>
+                <form style="display: flex; flex-direction: column; gap: 10px;" onsubmit="event.preventDefault();">
+                    <input type="text" placeholder="Indicator of Compromise (IoC / Domain / IP)" style="padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                    <textarea placeholder="Technical threat intelligence notes..." style="height: 60px; padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 13px; resize: none; outline: none;"></textarea>
+                    <button type="submit" style="background-color: #10b981; color: white; border: none; padding: 9px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;">Commit Threat Intel</button>
+                </form>
+            </div>
 
-    <!-- 5. PROFILE PAGE -->
-    <section id="profile" class="page-view">
-      <div class="page-header">
-        <h1>Analyst Profile Settings</h1>
-        <p>Manage analyst account credentials, security clearance level, and alert notification preferences.</p>
-      </div>
+            <!-- Detection Categories -->
+            <div id="categories" style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">5. Detection Categories</h2>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span style="background-color: #0f172a; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #cbd5e1;">🌐 Credential Harvesting URL</span>
+                    <span style="background-color: #0f172a; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #cbd5e1;">✉️ Spear Phishing Email</span>
+                    <span style="background-color: #0f172a; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #cbd5e1;">📞 Smishing / Phone Scam</span>
+                    <span style="background-color: #0f172a; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #cbd5e1;">📱 Rogue APK Application</span>
+                </div>
+            </div>
 
-      <div class="content-grid">
-        <div class="card">
-          <h2 style="font-size: 1.1rem; margin-bottom: 16px;">Account Details</h2>
-          <form onsubmit="updateProfile(event)">
-            <div class="form-group">
-              <label for="profile-name">Full Name</label>
-              <input type="text" id="profile-name" class="form-control" value="Security Analyst" required>
-            </div>
-            <div class="form-group">
-              <label for="profile-email">Email Address</label>
-              <input type="email" id="profile-email" class="form-control" value="analyst@phishshield.io" required>
-            </div>
-            <div class="form-group">
-              <label for="profile-role">SOC Clearance Tier</label>
-              <input type="text" class="form-control" value="Tier 2 Senior Incident Responder" disabled style="opacity: 0.6;">
-            </div>
-            <button type="submit" class="btn">Save Profile Updates</button>
-          </form>
         </div>
 
-        <div class="card">
-          <h2 style="font-size: 1.1rem; margin-bottom: 16px;">Notification Preferences</h2>
-          <div class="form-group">
-            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-              <input type="checkbox" checked style="width: 18px; height: 18px;">
-              <span>Email notifications for Critical priority incidents</span>
-            </label>
-          </div>
-          <div class="form-group">
-            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-              <input type="checkbox" checked style="width: 18px; height: 18px;">
-              <span>Slack integration alerts for new user reports</span>
-            </label>
-          </div>
-          <div class="form-group">
-            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-              <input type="checkbox" style="width: 18px; height: 18px;">
-              <span>Daily Automated SOC Summary Digest</span>
-            </label>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 6. AWARENESS PAGE -->
-    <section id="awareness" class="page-view">
-      <div class="page-header">
-        <h1>Security Awareness Broadcast</h1>
-        <p>Publish phishing alerts, safety training advisories, and warning bulletins to employees.</p>
-      </div>
-
-      <div class="content-grid">
-        <div class="card">
-          <h2 style="font-size: 1.1rem; margin-bottom: 16px;">Broadcast Security Warning</h2>
-          <form onsubmit="broadcastTip(event)">
-            <div class="form-group">
-              <label for="tip-title">Advisory Title</label>
-              <input type="text" id="tip-title" class="form-control" placeholder="Alert: Urgent Payroll Email Campaign Detected" required>
+        <!-- MODULE 6 & 7: Monitor Phishing Trends & Provide Security Info -->
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            
+            <!-- Monitor Phishing Trends -->
+            <div id="trends" style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">6. Monitor Phishing Trends</h2>
+                <div style="background-color: #0f172a; padding: 15px; border-radius: 8px;">
+                    <div style="font-size: 13px; color: #38bdf8; font-weight: 600;">🔥 Spike in Banking Smishing SMS</div>
+                    <p style="font-size: 12px; color: #94a3b8; margin: 5px 0 0 0;">Recent surge in fake OTP verification requests received via SMS across users.</p>
+                </div>
             </div>
-            <div class="form-group">
-              <label for="tip-content">Security Advisory Message</label>
-              <textarea id="tip-content" class="form-control" rows="5" placeholder="Always check sender domains carefully before clicking external links or entering login credentials..." required></textarea>
+
+            <!-- Provide Security Info -->
+            <div id="sec-info" style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">7. Provide Security Info & Tips</h2>
+                <form style="display: flex; flex-direction: column; gap: 10px;" onsubmit="event.preventDefault();">
+                    <input type="text" placeholder="Tip Header (e.g. How to Spot Fake Domains)" style="padding: 10px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 13px; outline: none;">
+                    <button type="submit" style="background-color: #0284c7; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer;">Broadcast Advisory to Users</button>
+                </form>
             </div>
-            <button type="submit" class="btn">Broadcast Advisory</button>
-          </form>
+
         </div>
 
-        <div class="card">
-          <h2 style="font-size: 1.1rem; margin-bottom: 16px;">Recent Published Bulletins</h2>
-          <ul class="activity-list">
-            <li class="activity-item">
-              <div>
-                <div class="activity-title">Beware of Fake Microsoft Teams Invites</div>
-                <div class="activity-sub">Published to All Employees • 2 days ago</div>
-              </div>
-              <span class="badge badge-verified">Active</span>
-            </li>
-            <li class="activity-item">
-              <div>
-                <div class="activity-title">How to Spot Executive Impersonation</div>
-                <div class="activity-sub">Published to Finance Dept • 1 week ago</div>
-              </div>
-              <span class="badge badge-verified">Active</span>
-            </li>
-          </ul>
+        <!-- MODULE 8, 9 & 10: Respond to User Doubts, Detection History, Security Reports & Profile -->
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            
+            <!-- Respond to User Doubts -->
+            <div id="user-doubts" style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">8. Respond to User Doubts</h2>
+                <div style="background-color: #0f172a; padding: 12px; border-radius: 6px; border-left: 3px solid #0284c7;">
+                    <div style="font-size: 12px; color: #94a3b8; margin-bottom: 4px;">User Query (ID: 801):</div>
+                    <p style="font-size: 13px; color: #cbd5e1; margin: 0 0 10px 0;">"Is this email asking for account update legitimate?"</p>
+                    <button style="background-color: #0284c7; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer;">Send Expert Response</button>
+                </div>
+            </div>
+
+            <!-- Detection History & Security Reports -->
+            <div id="detection-history" style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">9. History & 10. Security Reports</h2>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: #cbd5e1; background-color: #0f172a; padding: 10px; border-radius: 6px;">
+                        <span>📜 1,420 Scans Analyzed</span>
+                        <a href="#detection-history" style="color: #38bdf8; text-decoration: none;">View Logs</a>
+                    </div>
+                    <div id="sec-reports" style="display: flex; justify-content: space-between; font-size: 13px; color: #cbd5e1; background-color: #0f172a; padding: 10px; border-radius: 6px;">
+                        <span>📄 Weekly Analyst Report</span>
+                        <a href="#sec-reports" style="color: #38bdf8; text-decoration: none;">Download PDF</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Management Form -->
+            <div id="profile" style="flex: 1; min-width: 300px; background-color: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 25px;">
+                <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #ffffff;">11. View & Update Profile</h2>
+                <form style="display: flex; flex-direction: column; gap: 8px;" onsubmit="event.preventDefault();">
+                    <input type="text" value="Dr. Sarah Jenkins" style="padding: 8px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 12px; outline: none;">
+                    <input type="email" value="s.jenkins@cybersec.org" style="padding: 8px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #ffffff; font-size: 12px; outline: none;">
+                    <button type="submit" style="background-color: #10b981; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer;">Save Changes</button>
+                </form>
+            </div>
+
         </div>
-      </div>
-    </section>
 
-  </main>
+    </main>
 
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast">Action completed successfully!</div>
-
-  <!-- NAVIGATION & COMPONENT SCRIPT -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const navItems = document.querySelectorAll('.nav-item');
-      const pageViews = document.querySelectorAll('.page-view');
-
-      // Page Router Logic
-      navItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-          e.preventDefault();
-
-          const targetId = this.getAttribute('href').replace('#', '');
-          const targetPage = document.getElementById(targetId);
-
-          if (targetPage) {
-            // Update Active Navigation Item Styling
-            navItems.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
-
-            // Hide all pages and show requested page
-            pageViews.forEach(page => page.classList.remove('active'));
-            targetPage.classList.add('active');
-
-            // Reset scroll position to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-        });
-      });
-    });
-
-    // Helper Toast Function
-    function showNotification(msg) {
-      const toast = document.getElementById('toast');
-      toast.innerText = msg;
-      toast.style.display = 'block';
-      setTimeout(() => {
-        toast.style.display = 'none';
-      }, 3000);
-    }
-
-    // Event Handlers
-    function runDeepScan(e) {
-      e.preventDefault();
-      const url = document.getElementById('scan-url').value;
-      showNotification(`Deep Scan initiated for target: ${url}`);
-    }
-
-    function verifyReport(btn) {
-      btn.innerText = 'Verified';
-      btn.disabled = true;
-      btn.className = 'btn btn-danger';
-      const badge = btn.closest('tr').querySelector('td:nth-child(5) .badge');
-      badge.className = 'badge badge-verified';
-      badge.innerText = 'Verified';
-      showNotification('Report marked as verified phishing threat.');
-    }
-
-    function addCategory(e) {
-      e.preventDefault();
-      const val = document.getElementById('cat-name').value;
-      showNotification(`Threat Category "${val}" created successfully.`);
-      document.getElementById('cat-name').value = '';
-    }
-
-    function updateProfile(e) {
-      e.preventDefault();
-      const newName = document.getElementById('profile-name').value;
-      document.getElementById('sidebar-user-name').innerText = newName;
-      
-      const initials = newName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-      document.getElementById('sidebar-avatar').innerText = initials || 'SA';
-      
-      showNotification('Analyst profile updated successfully.');
-    }
-
-    function broadcastTip(e) {
-      e.preventDefault();
-      showNotification('Security advisory broadcasted across company channels.');
-      document.getElementById('tip-title').value = '';
-      document.getElementById('tip-content').value = '';
-    }
-  </script>
 </body>
 </html>

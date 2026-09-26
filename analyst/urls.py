@@ -2,19 +2,16 @@ from django.urls import path
 from analyst import views
 
 urlpatterns = [
-<<<<<<< Updated upstream
     path('profile/',views.profile),
     path('security/',views.security),
     path('dethistory/',views.dethistory),
     path('doubt/',views.doubt),
     path('trends/',views.trends),
     path('aiscore/',views.aiscore),
-    path('records/',views.records)
-=======
- path('analys/',views.analys),
-path('report/',views.report),
-path('verify/',views.verify),
-path('threat/',views.threat),
->>>>>>> Stashed changes
+    path('records/',views.records),
+    path('analys/',views.analys),
+    path('report/',views.report),
+    path('verify/',views.verify),
+    path('threat/',views.threat)
 ]
 
