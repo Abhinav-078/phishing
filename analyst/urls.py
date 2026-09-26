@@ -11,7 +11,6 @@ urlpatterns = [
     path('records/',views.records),
     path('analys/',views.analys),
     path('report/',views.report),
-    path('verify/',views.verify),
     path('threat/',views.threat)
 ]
 
